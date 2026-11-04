@@ -28,6 +28,7 @@ A passing `cargo check` does not prove a component renders. Look at it.
 | `public/r/` | `oniko build` | Run `cargo run -p oniko-cli -- build`. Never edit by hand. |
 | `apps/preview/src/components/ui/` | `oniko add` | Run `cargo run -p oniko-cli -- add <name> --overwrite --cwd apps/preview`. Never edit by hand. |
 | `apps/preview/tailwind.css` | `oniko init` | Only the block between the `oniko-cn:begin` and `oniko-cn:end` markers is generated. |
+| `apps/preview/assets/tailwind.css` | `dx` | `dx serve` and `dx build` regenerate it. Commit it, because `asset!()` needs the file to exist when the preview compiles. |
 
 To change a component, edit `registry/ui/<name>.rs`, rebuild `public/r`, then reinstall it into the preview.
 
