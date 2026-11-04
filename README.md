@@ -7,9 +7,12 @@ Like [shadcn/ui](https://ui.shadcn.com), this is not a dependency you import
 components from: the CLI copies the component source into your crate, and from
 then on the code is yours.
 
+Docs and live components: https://oniko.orsik.site/ui
+
 ```sh
-oniko init --registry <url-or-path>   # oniko.toml + theme CSS + module wiring
-oniko add button                      # src/components/ui/button.rs
+cargo install --git https://github.com/SergeyGalaxyOrsik/oniko-cn oniko-cli
+oniko init --style mira   # oniko.toml + theme CSS + module wiring
+oniko add button          # src/components/ui/button.rs
 ```
 
 ```rust
@@ -35,6 +38,7 @@ registry/
   base.css         shared custom variants and keyframes
 public/r/          `oniko build` output: what `init` / `add` read
 apps/preview/      gallery app; its components are installed with `oniko add`
+apps/site/         the website at oniko.orsik.site/ui, built with oniko-cn (Dockerfile inside)
 ```
 
 ## How styles work

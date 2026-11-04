@@ -29,9 +29,16 @@ A passing `cargo check` does not prove a component renders. Look at it.
 | `public/r/` | `oniko build` | Run `cargo run -p oniko-cli -- build`. Never edit by hand. |
 | `apps/preview/src/components/ui/` | `oniko add` | Run `cargo run -p oniko-cli -- add <name> --overwrite --cwd apps/preview`. Never edit by hand. |
 | `apps/preview/tailwind.css` | `oniko init` | Only the block between the `oniko-cn:begin` and `oniko-cn:end` markers is generated. |
-| `apps/preview/assets/tailwind.css` | `dx` | `dx serve` and `dx build` regenerate it. Commit it, because `asset!()` needs the file to exist when the preview compiles. |
+| `apps/*/assets/tailwind.css` | `dx` | `dx serve` and `dx build` regenerate it. Commit it, because `asset!()` needs the file to exist when the app compiles. |
+| `apps/site/src/components/ui/` | `oniko add` | Run `cargo run -p oniko-cli -- add <name> --overwrite --cwd apps/site`. Never edit by hand. |
 
 To change a component, edit `registry/ui/<name>.rs`, rebuild `public/r`, then reinstall it into the preview.
+
+## Work on the website
+
+`apps/site` is the website at `oniko.orsik.site/ui`, built with oniko-cn itself in the `mira` style. Its design follows `oniko.orsik.site`: the `--l-*` color scale and the shared classes in `apps/site/src/widgets.rs`. Component pages are generated from `registry/registry.json`, so a new component gets a page automatically. Add a live preview and a usage snippet for it in `apps/site/src/demos.rs`.
+
+`apps/site/Dockerfile` builds the image that serves the site and the registry (`/ui/r`). Run `cd apps/site && dx serve --web` to work on it locally.
 
 ## Add a component
 

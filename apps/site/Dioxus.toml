@@ -1,0 +1,6 @@
+[application]
+name = "oniko-site"
+
+[web.app]
+title = "Oniko UI: components for Dioxus"
+base_path = "ui"

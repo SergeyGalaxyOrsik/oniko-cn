@@ -17,6 +17,10 @@ use config::Config;
 use project::WriteOutcome;
 use source::Source;
 
+const DEFAULT_REGISTRY: &str = "https://oniko.orsik.site/ui/r";
+/// oniko-cn is not on crates.io yet, so apps depend on the git repository.
+const ONIKO_CN_GIT: &str = env!("CARGO_PKG_REPOSITORY");
+
 #[derive(Parser)]
 #[command(
     name = "oniko",
@@ -33,13 +37,13 @@ enum Command {
     /// Set up oniko-cn in a Dioxus crate: oniko.toml, theme CSS, modules.
     Init {
         /// Registry URL or local path (relative to the crate).
-        #[arg(long)]
+        #[arg(long, default_value = DEFAULT_REGISTRY)]
         registry: String,
         #[arg(long, default_value = "vega")]
         style: String,
         #[arg(long, default_value = "neutral")]
         base_color: String,
-        /// Use a local checkout of the oniko-cn crate instead of crates.io.
+        /// Use a local checkout of the oniko-cn crate instead of the git repository.
         #[arg(long)]
         cn_path: Option<PathBuf>,
         #[arg(long)]
@@ -131,11 +135,12 @@ fn init(
         Config::ensure_absent(root)?;
     }
     let mut config = Config::new(root, registry, style, base_color);
-    if let Some(path) = cn_path {
-        let mut spec = InlineTable::new();
-        spec.insert("path", Value::from(path.to_string_lossy().as_ref()));
-        config.dependency_overrides["oniko-cn"] = Item::Value(Value::InlineTable(spec));
-    }
+    let mut spec = InlineTable::new();
+    match cn_path {
+        Some(path) => spec.insert("path", Value::from(path.to_string_lossy().as_ref())),
+        None => spec.insert("git", Value::from(ONIKO_CN_GIT)),
+    };
+    config.dependency_overrides["oniko-cn"] = Item::Value(Value::InlineTable(spec));
 
     let source = Source::new(&config);
     let index = source.index()?;
@@ -161,7 +166,7 @@ fn init(
     let block = theme::render_block(style_item.css.as_deref().unwrap_or_default(), &vars);
     fs::write(&css_path, theme::upsert_block(&existing, &block))
         .with_context(|| format!("writing {}", css_path.display()))?;
-    project::ensure_module_dir(root, &config.ui)?;
+    project::ensure_ui_dir(root, &config.ui)?;
     let added =
         project::add_dependencies(root, &style_item.dependencies, &config.dependency_overrides)?;
 

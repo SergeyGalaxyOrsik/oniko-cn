@@ -1,0 +1,23 @@
+[package]
+name = "oniko-site"
+description = "The oniko-cn website at oniko.orsik.site/ui, built with oniko-cn."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish = false
+
+[dependencies]
+dioxus = { workspace = true, features = ["router"] }
+oniko-registry.workspace = true
+serde_json.workspace = true
+oniko-cn = { path = "../../crates/oniko-cn" }
+
+[features]
+default = ["web"]
+web = ["dioxus/web"]
+
+[lints]
+workspace = true
+
+[build-dependencies]
+serde_json.workspace = true
