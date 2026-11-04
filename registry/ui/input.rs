@@ -1,0 +1,63 @@
+//! Input: a single-line text field for forms and user data entry.
+//!
+//! Pass `value` and `oninput` to control it, or leave `value` out and let the browser keep the text.
+//! Set `r#type`, `placeholder`, `aria-invalid` and other HTML attributes directly on the component.
+//!
+//! Installed by oniko-cn. This file is yours: edit it freely.
+
+use dioxus::prelude::*;
+use oniko_cn::{cn, take_class};
+
+const INPUT_BASE: &str = "cn-input w-full min-w-0 outline-none file:inline-flex file:border-0 file:bg-transparent disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50";
+
+#[component]
+pub fn Input(
+    onclick: Option<EventHandler<MouseEvent>>,
+    oninput: Option<EventHandler<FormEvent>>,
+    onchange: Option<EventHandler<FormEvent>>,
+    onfocus: Option<EventHandler<FocusEvent>>,
+    onblur: Option<EventHandler<FocusEvent>>,
+    onkeydown: Option<EventHandler<KeyboardEvent>>,
+    #[props(extends = GlobalAttributes, extends = input)] attributes: Vec<Attribute>,
+) -> Element {
+    let mut attributes = attributes;
+    let class = cn!(INPUT_BASE, take_class(&mut attributes));
+
+    rsx! {
+        input {
+            "data-slot": "input",
+            class: class,
+            onclick: move |event| {
+                if let Some(handler) = onclick {
+                    handler.call(event);
+                }
+            },
+            oninput: move |event| {
+                if let Some(handler) = oninput {
+                    handler.call(event);
+                }
+            },
+            onchange: move |event| {
+                if let Some(handler) = onchange {
+                    handler.call(event);
+                }
+            },
+            onfocus: move |event| {
+                if let Some(handler) = onfocus {
+                    handler.call(event);
+                }
+            },
+            onblur: move |event| {
+                if let Some(handler) = onblur {
+                    handler.call(event);
+                }
+            },
+            onkeydown: move |event| {
+                if let Some(handler) = onkeydown {
+                    handler.call(event);
+                }
+            },
+            ..attributes,
+        }
+    }
+}

@@ -24,6 +24,171 @@
       "name": "button",
       "type": "registry:ui",
       "description": "Displays a button or a component that looks like a button."
+    },
+    {
+      "name": "avatar",
+      "type": "registry:ui",
+      "description": "An image element with a fallback for representing the user."
+    },
+    {
+      "name": "badge",
+      "type": "registry:ui",
+      "description": "Displays a badge or a component that looks like a badge."
+    },
+    {
+      "name": "aspect-ratio",
+      "type": "registry:ui",
+      "description": "Displays content within a desired ratio."
+    },
+    {
+      "name": "alert",
+      "type": "registry:ui",
+      "description": "Displays a callout for user attention."
+    },
+    {
+      "name": "alert-dialog",
+      "type": "registry:ui",
+      "description": "A modal dialog that interrupts the user with important content and expects a response."
+    },
+    {
+      "name": "bubble",
+      "type": "registry:ui",
+      "description": "A chat message bubble with variants, alignment and reactions."
+    },
+    {
+      "name": "accordion",
+      "type": "registry:ui",
+      "description": "A vertically stacked set of interactive headings that each reveal a section of content."
+    },
+    {
+      "name": "command",
+      "type": "registry:ui",
+      "description": "A filterable list of actions that the user searches and picks with the keyboard or the mouse."
+    },
+    {
+      "name": "breadcrumb",
+      "type": "registry:ui",
+      "description": "Displays the path to the current resource using a hierarchy of links."
+    },
+    {
+      "name": "collapsible",
+      "type": "registry:ui",
+      "description": "An interactive region that shows and hides a block of content."
+    },
+    {
+      "name": "calendar",
+      "type": "registry:ui",
+      "description": "A month grid for picking a single day, with disabled days and a today marker."
+    },
+    {
+      "name": "card",
+      "type": "registry:ui",
+      "description": "Displays a card with a header, content and footer."
+    },
+    {
+      "name": "carousel",
+      "type": "registry:ui",
+      "description": "A horizontal or vertical slideshow with previous and next controls."
+    },
+    {
+      "name": "button-group",
+      "type": "registry:ui",
+      "description": "A container that groups related buttons into one joined control."
+    },
+    {
+      "name": "input-group",
+      "type": "registry:ui",
+      "description": "Adds addons, buttons and helper text to an input or a textarea."
+    },
+    {
+      "name": "code-block",
+      "type": "registry:ui",
+      "description": "Displays code, terminal output or a diff with an optional title, copy button and line numbers."
+    },
+    {
+      "name": "checkbox",
+      "type": "registry:ui",
+      "description": "A control that toggles between checked and unchecked."
+    },
+    {
+      "name": "combobox",
+      "type": "registry:ui",
+      "description": "A text input that filters a list of options and selects one of them."
+    },
+    {
+      "name": "dialog",
+      "type": "registry:ui",
+      "description": "A window overlaid on the page that shows content and can be dismissed."
+    },
+    {
+      "name": "drawer",
+      "type": "registry:ui",
+      "description": "A panel that slides in from an edge of the screen."
+    },
+    {
+      "name": "table",
+      "type": "registry:ui",
+      "description": "A responsive table with header, body, footer and cell parts."
+    },
+    {
+      "name": "data-table",
+      "type": "registry:ui",
+      "description": "A table with sorting, filtering, pagination and row selection."
+    },
+    {
+      "name": "popover",
+      "type": "registry:ui",
+      "description": "A floating panel that opens from a trigger and closes on outside click or Escape."
+    },
+    {
+      "name": "date-picker",
+      "type": "registry:ui",
+      "description": "A button that opens a calendar popover to pick a single day."
+    },
+    {
+      "name": "empty",
+      "type": "registry:ui",
+      "description": "Displays an empty state with an icon, a title, a description and actions."
+    },
+    {
+      "name": "hover-card",
+      "type": "registry:ui",
+      "description": "A floating card that opens when the pointer rests on, or focus lands on, a trigger."
+    },
+    {
+      "name": "field",
+      "type": "registry:ui",
+      "description": "Combines a label, a control, helper text and a validation message into one accessible form field."
+    },
+    {
+      "name": "input",
+      "type": "registry:ui",
+      "description": "A single-line text field for forms and user data entry."
+    },
+    {
+      "name": "dropdown-menu",
+      "type": "registry:ui",
+      "description": "A menu of actions, toggles and choices that opens from a trigger."
+    },
+    {
+      "name": "context-menu",
+      "type": "registry:ui",
+      "description": "A menu that opens at the pointer on right click, with items, checkbox and radio options."
+    },
+    {
+      "name": "input-otp",
+      "type": "registry:ui",
+      "description": "A row of single-character slots for one-time codes and PIN-like input."
+    },
+    {
+      "name": "separator",
+      "type": "registry:ui",
+      "description": "A thin line that divides content horizontally or vertically."
+    },
+    {
+      "name": "item",
+      "type": "registry:ui",
+      "description": "A flex row for media, text and actions, with optional header, footer and grouped lists."
     }
   ]
 }

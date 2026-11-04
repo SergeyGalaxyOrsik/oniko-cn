@@ -223,6 +223,11 @@
     @apply bg-input;
   }
 
+  /* MARK: Date Picker */
+  .cn-date-picker-trigger {
+    @apply font-normal data-[empty=true]:text-muted-foreground;
+  }
+
   /* MARK: Calendar */
   .cn-calendar {
     @apply p-3 [--cell-radius:0] [--cell-size:--spacing(8)];
@@ -238,6 +243,26 @@
 
   .cn-calendar-caption {
     @apply text-xs font-semibold uppercase tracking-wide;
+  }
+
+  .cn-calendar-nav {
+    @apply gap-1;
+  }
+
+  .cn-calendar-weekday {
+    @apply text-muted-foreground text-[0.8rem] font-normal;
+  }
+
+  .cn-calendar-day {
+    @apply rounded-md text-sm font-normal hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring;
+  }
+
+  .cn-calendar-day-selected {
+    @apply bg-primary text-primary-foreground hover:bg-primary/90;
+  }
+
+  .cn-calendar-day-today {
+    @apply bg-accent text-accent-foreground;
   }
 
   /* MARK: Card */
@@ -263,6 +288,15 @@
 
   .cn-card-footer {
     @apply px-(--card-spacing) [.border-t]:pt-(--card-spacing);
+  }
+
+  /* MARK: Carousel */
+  .cn-carousel-previous {
+    @apply rounded-full;
+  }
+
+  .cn-carousel-next {
+    @apply rounded-full;
   }
 
   /* MARK: Chart */
@@ -1389,13 +1423,13 @@
     @apply text-muted-foreground **:data-[slot=kbd]:bg-muted-foreground/10 h-auto gap-2 py-2 text-sm font-medium group-data-[disabled=true]/input-group:opacity-50 **:data-[slot=kbd]:rounded-none **:data-[slot=kbd]:px-1.5 [&>svg:not([class*='size-'])]:size-3.5;
   }
 
-  /* .cn-input-group-addon-align-inline-start {
+  .cn-input-group-addon-align-inline-start {
     @apply has-[>button]:-ml-1 has-[>kbd]:-ml-1;
   }
 
   .cn-input-group-addon-align-inline-end {
     @apply has-[>button]:-mr-1 has-[>kbd]:-mr-1;
-  } */
+  }
 
   .cn-input-group-addon-align-block-start {
     @apply pt-3 group-has-[>input]/input-group:pt-3.5 [.border-b]:pb-3.5;

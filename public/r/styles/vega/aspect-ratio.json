@@ -1,0 +1,17 @@
+{
+  "$schema": "https://oniko.dev/schema/registry-item.json",
+  "name": "aspect-ratio",
+  "type": "registry:ui",
+  "title": "Aspect Ratio",
+  "description": "Displays content within a desired ratio.",
+  "dependencies": [
+    "oniko-cn@0.1"
+  ],
+  "files": [
+    {
+      "path": "ui/aspect_ratio.rs",
+      "type": "registry:ui",
+      "content": "//! AspectRatio: displays content within a desired ratio.\n//!\n//! Installed by oniko-cn. This file is yours: edit it freely.\n\nuse dioxus::prelude::*;\nuse oniko_cn::{cn, take_class};\n\n#[component]\npub fn AspectRatio(\n    /// Width divided by height, e.g. `16.0 / 9.0`.\n    ratio: f64,\n    #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,\n    children: Element,\n) -> Element {\n    let mut attributes = attributes;\n    let class = cn!(\n        \"relative aspect-(--ratio)\",\n        take_class(&mut attributes).as_deref()\n    );\n\n    rsx! {\n        div {\n            \"data-slot\": \"aspect-ratio\",\n            style: \"--ratio: {ratio}\",\n            class: class,\n            ..attributes,\n            {children}\n        }\n    }\n}\n"
+    }
+  ]
+}

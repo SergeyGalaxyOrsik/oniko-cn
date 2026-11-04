@@ -1,0 +1,17 @@
+{
+  "$schema": "https://oniko.dev/schema/registry-item.json",
+  "name": "separator",
+  "type": "registry:ui",
+  "title": "Separator",
+  "description": "A thin line that divides content horizontally or vertically.",
+  "dependencies": [
+    "oniko-cn@0.1"
+  ],
+  "files": [
+    {
+      "path": "ui/separator.rs",
+      "type": "registry:ui",
+      "content": "//! Separator: a thin line that divides content horizontally or vertically.\n//!\n//! Installed by oniko-cn. This file is yours: edit it freely.\n\nuse dioxus::prelude::*;\nuse oniko_cn::{cn, take_class};\n\n#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]\npub enum SeparatorOrientation {\n    #[default]\n    Horizontal,\n    Vertical,\n}\n\nimpl SeparatorOrientation {\n    /// Value of the `data-orientation` and `aria-orientation` attributes.\n    pub fn as_str(self) -> &'static str {\n        match self {\n            Self::Horizontal => \"horizontal\",\n            Self::Vertical => \"vertical\",\n        }\n    }\n\n    fn class(self) -> &'static str {\n        match self {\n            Self::Horizontal => \"h-px w-full\",\n            Self::Vertical => \"h-full w-px\",\n        }\n    }\n}\n\n/// Classes for a separator element, for components that render their own.\npub fn separator_variants(orientation: SeparatorOrientation, class: Option<&str>) -> String {\n    cn!(\"bg-border shrink-0\", orientation.class(), class)\n}\n\n#[component]\npub fn Separator(\n    #[props(default)] orientation: SeparatorOrientation,\n    #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,\n) -> Element {\n    let mut attributes = attributes;\n    let class = separator_variants(orientation, take_class(&mut attributes).as_deref());\n\n    rsx! {\n        div {\n            \"data-slot\": \"separator\",\n            role: \"separator\",\n            \"data-orientation\": orientation.as_str(),\n            \"aria-orientation\": orientation.as_str(),\n            class: class,\n            ..attributes,\n        }\n    }\n}\n"
+    }
+  ]
+}

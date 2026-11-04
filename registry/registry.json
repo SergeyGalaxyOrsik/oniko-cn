@@ -9,6 +9,281 @@
       "description": "Displays a button or a component that looks like a button.",
       "dependencies": ["oniko-cn@0.1"],
       "files": [{ "path": "ui/button.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "avatar",
+      "type": "registry:ui",
+      "title": "Avatar",
+      "description": "An image element with a fallback for representing the user.",
+      "dependencies": ["oniko-cn@0.1"],
+      "files": [{"path": "ui/avatar.rs", "type": "registry:ui"}]
+    },
+    {
+      "name": "badge",
+      "type": "registry:ui",
+      "title": "Badge",
+      "description": "Displays a badge or a component that looks like a badge.",
+      "dependencies": ["oniko-cn@0.1"],
+      "files": [{ "path": "ui/badge.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "aspect-ratio",
+      "type": "registry:ui",
+      "title": "Aspect Ratio",
+      "description": "Displays content within a desired ratio.",
+      "dependencies": ["oniko-cn@0.1"],
+      "files": [{ "path": "ui/aspect_ratio.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "alert",
+      "type": "registry:ui",
+      "title": "Alert",
+      "description": "Displays a callout for user attention.",
+      "dependencies": ["oniko-cn@0.1"],
+      "files": [{ "path": "ui/alert.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "alert-dialog",
+      "type": "registry:ui",
+      "title": "Alert Dialog",
+      "description": "A modal dialog that interrupts the user with important content and expects a response.",
+      "dependencies": ["oniko-cn@0.1"],
+      "registryDependencies": ["button"],
+      "files": [{ "path": "ui/alert_dialog.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "bubble",
+      "type": "registry:ui",
+      "title": "Bubble",
+      "description": "A chat message bubble with variants, alignment and reactions.",
+      "dependencies": ["oniko-cn@0.1"],
+      "files": [{ "path": "ui/bubble.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "accordion",
+      "type": "registry:ui",
+      "title": "Accordion",
+      "description": "A vertically stacked set of interactive headings that each reveal a section of content.",
+      "dependencies": ["oniko-cn@0.1"],
+      "files": [{ "path": "ui/accordion.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "command",
+      "type": "registry:ui",
+      "title": "Command",
+      "description": "A filterable list of actions that the user searches and picks with the keyboard or the mouse.",
+      "dependencies": ["oniko-cn@0.1"],
+      "files": [{ "path": "ui/command.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "breadcrumb",
+      "type": "registry:ui",
+      "title": "Breadcrumb",
+      "description": "Displays the path to the current resource using a hierarchy of links.",
+      "dependencies": ["oniko-cn@0.1"],
+      "files": [{ "path": "ui/breadcrumb.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "collapsible",
+      "type": "registry:ui",
+      "title": "Collapsible",
+      "description": "An interactive region that shows and hides a block of content.",
+      "dependencies": ["oniko-cn@0.1"],
+      "files": [{ "path": "ui/collapsible.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "calendar",
+      "type": "registry:ui",
+      "title": "Calendar",
+      "description": "A month grid for picking a single day, with disabled days and a today marker.",
+      "dependencies": ["oniko-cn@0.1"],
+      "registryDependencies": ["button"],
+      "files": [{ "path": "ui/calendar.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "card",
+      "type": "registry:ui",
+      "title": "Card",
+      "description": "Displays a card with a header, content and footer.",
+      "dependencies": ["oniko-cn@0.1"],
+      "files": [{ "path": "ui/card.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "carousel",
+      "type": "registry:ui",
+      "title": "Carousel",
+      "description": "A horizontal or vertical slideshow with previous and next controls.",
+      "dependencies": ["oniko-cn@0.1"],
+      "registryDependencies": ["button"],
+      "files": [{ "path": "ui/carousel.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "button-group",
+      "type": "registry:ui",
+      "title": "Button Group",
+      "description": "A container that groups related buttons into one joined control.",
+      "dependencies": ["oniko-cn@0.1"],
+      "files": [{ "path": "ui/button_group.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "input-group",
+      "type": "registry:ui",
+      "title": "Input Group",
+      "description": "Adds addons, buttons and helper text to an input or a textarea.",
+      "dependencies": ["oniko-cn@0.1"],
+      "registryDependencies": ["button"],
+      "files": [{ "path": "ui/input_group.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "code-block",
+      "type": "registry:ui",
+      "title": "Code Block",
+      "description": "Displays code, terminal output or a diff with an optional title, copy button and line numbers.",
+      "dependencies": ["oniko-cn@0.1"],
+      "registryDependencies": ["button"],
+      "files": [{ "path": "ui/code_block.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "checkbox",
+      "type": "registry:ui",
+      "title": "Checkbox",
+      "description": "A control that toggles between checked and unchecked.",
+      "dependencies": ["oniko-cn@0.1"],
+      "files": [{ "path": "ui/checkbox.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "combobox",
+      "type": "registry:ui",
+      "title": "Combobox",
+      "description": "A text input that filters a list of options and selects one of them.",
+      "dependencies": ["oniko-cn@0.1"],
+      "files": [{ "path": "ui/combobox.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "dialog",
+      "type": "registry:ui",
+      "title": "Dialog",
+      "description": "A window overlaid on the page that shows content and can be dismissed.",
+      "dependencies": ["oniko-cn@0.1"],
+      "registryDependencies": ["button"],
+      "files": [{ "path": "ui/dialog.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "drawer",
+      "type": "registry:ui",
+      "title": "Drawer",
+      "description": "A panel that slides in from an edge of the screen.",
+      "dependencies": ["oniko-cn@0.1"],
+      "registryDependencies": ["button"],
+      "files": [{ "path": "ui/drawer.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "table",
+      "type": "registry:ui",
+      "title": "Table",
+      "description": "A responsive table with header, body, footer and cell parts.",
+      "dependencies": ["oniko-cn@0.1"],
+      "files": [{ "path": "ui/table.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "data-table",
+      "type": "registry:ui",
+      "title": "Data Table",
+      "description": "A table with sorting, filtering, pagination and row selection.",
+      "dependencies": ["oniko-cn@0.1"],
+      "registryDependencies": ["button", "checkbox", "table"],
+      "files": [{ "path": "ui/data_table.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "popover",
+      "type": "registry:ui",
+      "title": "Popover",
+      "description": "A floating panel that opens from a trigger and closes on outside click or Escape.",
+      "dependencies": ["oniko-cn@0.1"],
+      "files": [{ "path": "ui/popover.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "date-picker",
+      "type": "registry:ui",
+      "title": "Date Picker",
+      "description": "A button that opens a calendar popover to pick a single day.",
+      "dependencies": ["oniko-cn@0.1"],
+      "registryDependencies": ["button", "calendar", "popover"],
+      "files": [{ "path": "ui/date_picker.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "empty",
+      "type": "registry:ui",
+      "title": "Empty",
+      "description": "Displays an empty state with an icon, a title, a description and actions.",
+      "dependencies": ["oniko-cn@0.1"],
+      "files": [{ "path": "ui/empty.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "hover-card",
+      "type": "registry:ui",
+      "title": "Hover Card",
+      "description": "A floating card that opens when the pointer rests on, or focus lands on, a trigger.",
+      "dependencies": ["oniko-cn@0.1"],
+      "files": [{ "path": "ui/hover_card.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "field",
+      "type": "registry:ui",
+      "title": "Field",
+      "description": "Combines a label, a control, helper text and a validation message into one accessible form field.",
+      "dependencies": ["oniko-cn@0.1"],
+      "files": [{ "path": "ui/field.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "input",
+      "type": "registry:ui",
+      "title": "Input",
+      "description": "A single-line text field for forms and user data entry.",
+      "dependencies": ["oniko-cn@0.1"],
+      "files": [{ "path": "ui/input.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "dropdown-menu",
+      "type": "registry:ui",
+      "title": "Dropdown Menu",
+      "description": "A menu of actions, toggles and choices that opens from a trigger.",
+      "dependencies": ["oniko-cn@0.1"],
+      "registryDependencies": ["button"],
+      "files": [{ "path": "ui/dropdown_menu.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "context-menu",
+      "type": "registry:ui",
+      "title": "Context Menu",
+      "description": "A menu that opens at the pointer on right click, with items, checkbox and radio options.",
+      "dependencies": ["oniko-cn@0.1"],
+      "files": [{ "path": "ui/context_menu.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "input-otp",
+      "type": "registry:ui",
+      "title": "Input OTP",
+      "description": "A row of single-character slots for one-time codes and PIN-like input.",
+      "dependencies": ["oniko-cn@0.1"],
+      "files": [{ "path": "ui/input_otp.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "separator",
+      "type": "registry:ui",
+      "title": "Separator",
+      "description": "A thin line that divides content horizontally or vertically.",
+      "dependencies": ["oniko-cn@0.1"],
+      "files": [{ "path": "ui/separator.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "item",
+      "type": "registry:ui",
+      "title": "Item",
+      "description": "A flex row for media, text and actions, with optional header, footer and grouped lists.",
+      "dependencies": ["oniko-cn@0.1"],
+      "registryDependencies": ["separator"],
+      "files": [{ "path": "ui/item.rs", "type": "registry:ui" }]
     }
   ]
 }

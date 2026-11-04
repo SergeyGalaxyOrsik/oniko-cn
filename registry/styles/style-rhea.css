@@ -434,6 +434,26 @@
     @apply text-sm;
   }
 
+  .cn-calendar-nav {
+    @apply gap-1;
+  }
+
+  .cn-calendar-weekday {
+    @apply text-muted-foreground text-[0.8rem] font-normal;
+  }
+
+  .cn-calendar-day {
+    @apply rounded-md text-sm font-normal hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring;
+  }
+
+  .cn-calendar-day-selected {
+    @apply bg-primary text-primary-foreground hover:bg-primary/90;
+  }
+
+  .cn-calendar-day-today {
+    @apply bg-accent text-accent-foreground;
+  }
+
   /* MARK: Card */
   .cn-card {
     @apply bg-card text-card-foreground ring-foreground/5 dark:ring-foreground/10 gap-(--card-spacing) overflow-hidden rounded-[min(var(--radius-4xl),24px)] py-(--card-spacing) text-sm shadow-sm ring-1 [--card-spacing:--spacing(5)] has-[>img:first-child]:pt-0 data-[size=sm]:[--card-spacing:--spacing(4)] *:[img:first-child]:rounded-t-[min(var(--radius-4xl),24px)] *:[img:last-child]:rounded-b-[min(var(--radius-4xl),24px)];
@@ -1404,6 +1424,11 @@
 
   .cn-empty-content {
     @apply gap-4 text-sm;
+  }
+
+  /* MARK: Date Picker */
+  .cn-date-picker-trigger {
+    @apply font-normal data-[empty=true]:text-muted-foreground;
   }
 
   /* MARK: Calendar */

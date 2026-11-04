@@ -227,6 +227,11 @@
     @apply bg-input;
   }
 
+  /* MARK: Date Picker */
+  .cn-date-picker-trigger {
+    @apply font-normal data-[empty=true]:text-muted-foreground;
+  }
+
   /* MARK: Calendar */
   .cn-calendar {
     @apply p-3 [--cell-radius:var(--radius-4xl)] [--cell-size:--spacing(8)];
@@ -238,6 +243,26 @@
 
   .cn-calendar-caption-label {
     @apply h-8 pr-2 pl-3;
+  }
+
+  .cn-calendar-nav {
+    @apply gap-1;
+  }
+
+  .cn-calendar-weekday {
+    @apply text-muted-foreground text-[0.8rem] font-normal;
+  }
+
+  .cn-calendar-day {
+    @apply rounded-md text-sm font-normal hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring;
+  }
+
+  .cn-calendar-day-selected {
+    @apply bg-primary text-primary-foreground hover:bg-primary/90;
+  }
+
+  .cn-calendar-day-today {
+    @apply bg-accent text-accent-foreground;
   }
 
   /* MARK: Card */
