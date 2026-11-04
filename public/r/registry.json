@@ -1,0 +1,29 @@
+{
+  "name": "oniko",
+  "styles": [
+    "luma",
+    "lyra",
+    "maia",
+    "mira",
+    "nova",
+    "rhea",
+    "sera",
+    "vega"
+  ],
+  "themes": [
+    "mauve",
+    "mist",
+    "neutral",
+    "olive",
+    "stone",
+    "taupe",
+    "zinc"
+  ],
+  "items": [
+    {
+      "name": "button",
+      "type": "registry:ui",
+      "description": "Displays a button or a component that looks like a button."
+    }
+  ]
+}

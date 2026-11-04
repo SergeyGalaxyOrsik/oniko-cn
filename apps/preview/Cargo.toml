@@ -1,0 +1,19 @@
+[package]
+name = "oniko-preview"
+description = "Component gallery for oniko-cn, runs on web and desktop."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish = false
+
+[dependencies]
+dioxus.workspace = true
+oniko-cn = { path = "../../crates/oniko-cn" }
+
+[features]
+default = ["web"]
+web = ["dioxus/web"]
+desktop = ["dioxus/desktop"]
+
+[lints]
+workspace = true

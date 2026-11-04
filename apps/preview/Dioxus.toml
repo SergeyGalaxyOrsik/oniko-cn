@@ -1,0 +1,5 @@
+[application]
+name = "oniko-preview"
+
+[web.app]
+title = "oniko-cn preview"

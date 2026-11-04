@@ -1,0 +1,14 @@
+{
+  "name": "oniko",
+  "homepage": "https://github.com/SergeyGalaxyOrsik/oniko-cn",
+  "items": [
+    {
+      "name": "button",
+      "type": "registry:ui",
+      "title": "Button",
+      "description": "Displays a button or a component that looks like a button.",
+      "dependencies": ["oniko-cn@0.1"],
+      "files": [{ "path": "ui/button.rs", "type": "registry:ui" }]
+    }
+  ]
+}

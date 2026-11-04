@@ -1,0 +1,10 @@
+{
+  "$schema": "https://oniko.dev/schema/registry-item.json",
+  "name": "nova",
+  "type": "registry:style",
+  "description": "The `nova` style.",
+  "dependencies": [
+    "oniko-cn@0.1"
+  ],
+  "css": "/* Shared utilities every oniko-cn style relies on.\n   Adapted from shadcn/tailwind.css (MIT, https://github.com/shadcn-ui/ui). */\n\n@custom-variant dark (&:is(.dark *));\n\n@theme inline {\n  @keyframes accordion-down {\n    from {\n      height: 0;\n    }\n    to {\n      height: var(--accordion-panel-height, auto);\n    }\n  }\n\n  @keyframes accordion-up {\n    from {\n      height: var(--accordion-panel-height, auto);\n    }\n    to {\n      height: 0;\n    }\n  }\n}\n\n@custom-variant data-open {\n  &:where([data-state=\"open\"]),\n  &:where([data-open]:not([data-open=\"false\"])) {\n    @slot;\n  }\n}\n\n@custom-variant data-closed {\n  &:where([data-state=\"closed\"]),\n  &:where([data-closed]:not([data-closed=\"false\"])) {\n    @slot;\n  }\n}\n\n@custom-variant data-checked {\n  &:where([data-state=\"checked\"]),\n  &:where([data-checked]:not([data-checked=\"false\"])) {\n    @slot;\n  }\n}\n\n@custom-variant data-unchecked {\n  &:where([data-state=\"unchecked\"]),\n  &:where([data-unchecked]:not([data-unchecked=\"false\"])) {\n    @slot;\n  }\n}\n\n@custom-variant data-selected {\n  &:where([data-selected=\"true\"]) {\n    @slot;\n  }\n}\n\n@custom-variant data-disabled {\n  &:where([data-disabled=\"true\"]),\n  &:where([data-disabled]:not([data-disabled=\"false\"])) {\n    @slot;\n  }\n}\n\n@custom-variant data-active {\n  &:where([data-state=\"active\"]),\n  &:where([data-active]:not([data-active=\"false\"])) {\n    @slot;\n  }\n}\n\n@custom-variant data-horizontal {\n  &:where([data-orientation=\"horizontal\"]) {\n    @slot;\n  }\n}\n\n@custom-variant data-vertical {\n  &:where([data-orientation=\"vertical\"]) {\n    @slot;\n  }\n}\n\n@utility no-scrollbar {\n  -ms-overflow-style: none;\n  scrollbar-width: none;\n\n  &::-webkit-scrollbar {\n    display: none;\n  }\n}\n"
+}

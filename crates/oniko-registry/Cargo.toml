@@ -1,0 +1,18 @@
+[package]
+name = "oniko-registry"
+description = "Registry schema, style compiler and builder for oniko-cn."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true
+anyhow.workspace = true
+
+[dev-dependencies]
+tempfile = "3"
+
+[lints]
+workspace = true

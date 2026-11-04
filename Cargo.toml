@@ -1,0 +1,37 @@
+[workspace]
+resolver = "3"
+members = ["crates/*", "apps/preview"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+repository = "https://github.com/SergeyGalaxyOrsik/oniko-cn"
+
+[workspace.dependencies]
+oniko-cn = { path = "crates/oniko-cn" }
+oniko-registry = { path = "crates/oniko-registry" }
+dioxus = "0.7.10"
+tailwind_fuse = "0.3.2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+anyhow = "1"
+clap = { version = "4.6", features = ["derive"] }
+toml_edit = "0.25"
+toml = "0.9"
+ureq = "3"
+
+[profile.release]
+opt-level = "z"
+lto = true
+codegen-units = 1
+strip = true
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+
+[workspace.lints.clippy]
+unwrap_used = "deny"
+expect_used = "deny"
+dbg_macro = "deny"
+todo = "deny"

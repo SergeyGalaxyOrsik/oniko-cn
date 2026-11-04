@@ -1,0 +1,13 @@
+# oniko-cn project configuration. See `oniko --help`.
+registry = "../../public/r"
+style = "vega"
+base_color = "neutral"
+
+[paths]
+css = "tailwind.css"
+ui = "src/components/ui"
+hooks = "src/hooks"
+lib = "src/utils"
+
+[dependency_overrides]
+oniko-cn = { path = "../../crates/oniko-cn" }

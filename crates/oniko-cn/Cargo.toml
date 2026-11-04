@@ -1,0 +1,18 @@
+[package]
+name = "oniko-cn"
+description = "Class-name merging for oniko-cn components: the Rust counterpart of shadcn's cn()."
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+tailwind_fuse.workspace = true
+dioxus-core = { version = "0.7.10", optional = true }
+
+[features]
+default = ["dioxus"]
+dioxus = ["dep:dioxus-core"]
+
+[lints]
+workspace = true
