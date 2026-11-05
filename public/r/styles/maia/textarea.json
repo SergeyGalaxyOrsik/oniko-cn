@@ -1,0 +1,17 @@
+{
+  "$schema": "https://oniko.dev/schema/registry-item.json",
+  "name": "textarea",
+  "type": "registry:ui",
+  "title": "Textarea",
+  "description": "A multi-line text field for forms and longer user input.",
+  "dependencies": [
+    "oniko-cn@0.1"
+  ],
+  "files": [
+    {
+      "path": "ui/textarea.rs",
+      "type": "registry:ui",
+      "content": "//! Textarea: a multi-line text field for forms and longer user input.\n//!\n//! Pass `value` and `oninput` to control it, or leave `value` out and let the browser keep the text.\n//! Set `placeholder`, `rows`, `disabled`, `aria-invalid` and other HTML attributes directly on the component.\n//!\n//! Installed by oniko-cn. This file is yours: edit it freely.\n\nuse dioxus::prelude::*;\nuse oniko_cn::{cn, take_class};\n\nconst TEXTAREA_BASE: &str = \"border-input bg-input/30 focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 resize-none rounded-xl border px-3 py-3 text-base transition-colors focus-visible:ring-[3px] aria-invalid:ring-[3px] md:text-sm flex field-sizing-content min-h-16 w-full min-w-0 outline-none disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50\";\n\n#[component]\npub fn Textarea(\n    onclick: Option<EventHandler<MouseEvent>>,\n    oninput: Option<EventHandler<FormEvent>>,\n    onchange: Option<EventHandler<FormEvent>>,\n    onfocus: Option<EventHandler<FocusEvent>>,\n    onblur: Option<EventHandler<FocusEvent>>,\n    onkeydown: Option<EventHandler<KeyboardEvent>>,\n    #[props(extends = GlobalAttributes, extends = textarea)] attributes: Vec<Attribute>,\n) -> Element {\n    let mut attributes = attributes;\n    let class = cn!(TEXTAREA_BASE, take_class(&mut attributes));\n\n    rsx! {\n        textarea {\n            \"data-slot\": \"textarea\",\n            class: class,\n            onclick: move |event| {\n                if let Some(handler) = onclick {\n                    handler.call(event);\n                }\n            },\n            oninput: move |event| {\n                if let Some(handler) = oninput {\n                    handler.call(event);\n                }\n            },\n            onchange: move |event| {\n                if let Some(handler) = onchange {\n                    handler.call(event);\n                }\n            },\n            onfocus: move |event| {\n                if let Some(handler) = onfocus {\n                    handler.call(event);\n                }\n            },\n            onblur: move |event| {\n                if let Some(handler) = onblur {\n                    handler.call(event);\n                }\n            },\n            onkeydown: move |event| {\n                if let Some(handler) = onkeydown {\n                    handler.call(event);\n                }\n            },\n            ..attributes,\n        }\n    }\n}\n"
+    }
+  ]
+}

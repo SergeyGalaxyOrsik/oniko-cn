@@ -1,0 +1,17 @@
+{
+  "$schema": "https://oniko.dev/schema/registry-item.json",
+  "name": "scroll-area",
+  "type": "registry:ui",
+  "title": "Scroll Area",
+  "description": "A scrollable region with a styled viewport and a choice of scroll axis.",
+  "dependencies": [
+    "oniko-cn@0.1"
+  ],
+  "files": [
+    {
+      "path": "ui/scroll_area.rs",
+      "type": "registry:ui",
+      "content": "//! ScrollArea: a scrollable region with a styled viewport.\n//!\n//! The viewport is a native scroll container, so it works the same in the browser and in the\n//! desktop webview without JavaScript. Choose the scrolling axis with `orientation`.\n//!\n//! Installed by oniko-cn. This file is yours: edit it freely.\n\nuse dioxus::prelude::*;\nuse oniko_cn::{cn, take_class};\n\n#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]\npub enum ScrollOrientation {\n    #[default]\n    Vertical,\n    Horizontal,\n    Both,\n}\n\nimpl ScrollOrientation {\n    pub fn class(self) -> &'static str {\n        match self {\n            Self::Vertical => \"overflow-y-auto overflow-x-hidden\",\n            Self::Horizontal => \"overflow-x-auto overflow-y-hidden\",\n            Self::Both => \"overflow-auto\",\n        }\n    }\n}\n\nconst SCROLL_AREA_BASE: &str = \"relative overflow-hidden\";\n\nconst SCROLL_AREA_VIEWPORT_BASE: &str = \"size-full rounded-[inherit] outline-none [scrollbar-width:thin] focus-visible:ring-[3px] focus-visible:outline-1\";\n\n#[component]\npub fn ScrollArea(\n    #[props(default)] orientation: ScrollOrientation,\n    #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,\n    children: Element,\n) -> Element {\n    let mut attributes = attributes;\n    let class = cn!(SCROLL_AREA_BASE, take_class(&mut attributes).as_deref());\n\n    rsx! {\n        div {\n            \"data-slot\": \"scroll-area\",\n            class: class,\n            ..attributes,\n            div {\n                \"data-slot\": \"scroll-area-viewport\",\n                class: cn!(SCROLL_AREA_VIEWPORT_BASE, orientation.class()),\n                tabindex: \"0\",\n                {children}\n            }\n        }\n    }\n}\n"
+    }
+  ]
+}

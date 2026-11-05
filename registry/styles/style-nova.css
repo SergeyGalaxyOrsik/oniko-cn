@@ -1011,6 +1011,10 @@
   }
 
   /* MARK: Resizable */
+  .cn-resizable-handle {
+    @apply bg-border focus-visible:ring-ring focus-visible:ring-1 focus-visible:outline-hidden;
+  }
+
   .cn-resizable-handle-icon {
     @apply bg-border h-6 w-1 rounded-lg;
   }
@@ -1681,7 +1685,7 @@
   }
 
   .cn-questionnaire-error {
-    @apply mt-2 text-sm;
+    @apply mt-2 text-sm text-destructive;
   }
 
   .cn-questionnaire-actions {
