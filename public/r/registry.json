@@ -189,6 +189,251 @@
       "name": "item",
       "type": "registry:ui",
       "description": "A flex row for media, text and actions, with optional header, footer and grouped lists."
+    },
+    {
+      "name": "chat",
+      "type": "registry:ui",
+      "description": "A full-height conversation layout: a scrolling message log above a composer."
+    },
+    {
+      "name": "checkpoint",
+      "type": "registry:ui",
+      "description": "A marker after a point in a conversation, with a restore button you can return to."
+    },
+    {
+      "name": "confirmation",
+      "type": "registry:ui",
+      "description": "An approval prompt for a tool call, with approve and deny actions and the answer once given."
+    },
+    {
+      "name": "chain-of-thought",
+      "type": "registry:ui",
+      "description": "A collapsible list of reasoning steps, with optional search results and images."
+    },
+    {
+      "name": "context",
+      "type": "registry:ui",
+      "description": "Shows how much of a model's context window is used, in a hover card with a token and cost breakdown."
+    },
+    {
+      "name": "file-tree",
+      "type": "registry:ui",
+      "description": "A nested tree of folders and files that expand and select, for showing the files an agent changed."
+    },
+    {
+      "name": "message",
+      "type": "registry:ui",
+      "description": "A chat message row with content, action buttons and navigation between alternative branches."
+    },
+    {
+      "name": "inline-citation",
+      "type": "registry:ui",
+      "description": "A source badge inside running text that opens a hover card, with a carousel for several sources."
+    },
+    {
+      "name": "model-selector",
+      "type": "registry:ui",
+      "description": "A button that opens a searchable dialog of AI models, with provider logos and a check mark on the current model."
+    },
+    {
+      "name": "plan",
+      "type": "registry:ui",
+      "description": "A collapsible card that shows an AI-generated plan, with a header, expandable content and a footer."
+    },
+    {
+      "name": "queue",
+      "type": "registry:ui",
+      "description": "A list of pending and completed tasks or messages, grouped into collapsible sections, with item indicators, actions and attachments."
+    },
+    {
+      "name": "prompt-input",
+      "type": "registry:ui",
+      "description": "A message box with a textarea that sends on Enter, header and footer rows, and a submit button that shows the request status."
+    },
+    {
+      "name": "sources",
+      "type": "registry:ui",
+      "description": "A collapsible list of the sources behind an AI answer, with a trigger that shows the source count and links that open in a new tab."
+    },
+    {
+      "name": "reasoning",
+      "type": "registry:ui",
+      "description": "A collapsible panel that shows a model's thinking: it opens while streaming, closes shortly after, and labels the trigger with the thinking time."
+    },
+    {
+      "name": "kbd",
+      "type": "registry:ui",
+      "description": "Displays textual keyboard input, such as a key or a shortcut."
+    },
+    {
+      "name": "label",
+      "type": "registry:ui",
+      "description": "A caption for a form control, linked to it through its id."
+    },
+    {
+      "name": "marker",
+      "type": "registry:ui",
+      "description": "A compact inline status, note or action row, with an optional icon, border or centered separator label."
+    },
+    {
+      "name": "menubar",
+      "type": "registry:ui",
+      "description": "A horizontal bar of menus with actions, toggles and choices that open from their triggers."
+    },
+    {
+      "name": "message-scroller",
+      "type": "registry:ui",
+      "description": "A chat transcript viewport that follows streamed output, anchors new turns and jumps to messages."
+    },
+    {
+      "name": "native-select",
+      "type": "registry:ui",
+      "description": "A styled wrapper around the browser's native select element, with option groups and sizes."
+    },
+    {
+      "name": "navigation-menu",
+      "type": "registry:ui",
+      "description": "A horizontal bar of links and disclosure panels for site navigation."
+    },
+    {
+      "name": "pagination",
+      "type": "registry:ui",
+      "description": "A row of page links with previous and next controls and an ellipsis for skipped pages."
+    },
+    {
+      "name": "progress",
+      "type": "registry:ui",
+      "description": "Displays the progress of a task as a bar with an optional label and value."
+    },
+    {
+      "name": "questionnaire",
+      "type": "registry:ui",
+      "description": "A step-by-step form that asks one question at a time, with choices, free text, progress and navigation."
+    },
+    {
+      "name": "radio-group",
+      "type": "registry:ui",
+      "description": "A set of options where exactly one can be checked."
+    },
+    {
+      "name": "resizable",
+      "type": "registry:ui",
+      "description": "Panels separated by handles that the user drags or moves with the arrow keys."
+    },
+    {
+      "name": "scroll-area",
+      "type": "registry:ui",
+      "description": "A scrollable region with a styled viewport and a choice of scroll axis."
+    },
+    {
+      "name": "select",
+      "type": "registry:ui",
+      "description": "A button that opens a list of options and picks one of them."
+    },
+    {
+      "name": "sheet",
+      "type": "registry:ui",
+      "description": "A panel that slides in from any edge of the screen to show content beside the page."
+    },
+    {
+      "name": "sidebar",
+      "type": "registry:ui",
+      "description": "A collapsible side panel with a header, scrollable content, footer and menus."
+    },
+    {
+      "name": "skeleton",
+      "type": "registry:ui",
+      "description": "Displays a pulsing placeholder while content loads."
+    },
+    {
+      "name": "slider",
+      "type": "registry:ui",
+      "description": "A control that picks a value, or a range of values, by dragging thumbs along a track."
+    },
+    {
+      "name": "spinner",
+      "type": "registry:ui",
+      "description": "A loading indicator: an icon that spins while work is pending."
+    },
+    {
+      "name": "switch",
+      "type": "registry:ui",
+      "description": "A control that toggles a setting on and off."
+    },
+    {
+      "name": "tabs",
+      "type": "registry:ui",
+      "description": "A set of layered sections of content, where one section is shown at a time."
+    },
+    {
+      "name": "textarea",
+      "type": "registry:ui",
+      "description": "A multi-line text field for forms and longer user input."
+    },
+    {
+      "name": "toast",
+      "type": "registry:ui",
+      "description": "Displays short messages that dismiss themselves, with an optional action."
+    },
+    {
+      "name": "toggle",
+      "type": "registry:ui",
+      "description": "A two-state button that is either on or off."
+    },
+    {
+      "name": "toggle-group",
+      "type": "registry:ui",
+      "description": "A row or column of toggles that share one pressed state, in single or multiple mode."
+    },
+    {
+      "name": "tooltip",
+      "type": "registry:ui",
+      "description": "A short label that opens when the pointer rests on, or focus lands on, a trigger."
+    },
+    {
+      "name": "trace",
+      "type": "registry:ui",
+      "description": "A compact list of AI steps, such as searches and commands, that can expand to show details."
+    },
+    {
+      "name": "typeset",
+      "type": "registry:ui",
+      "description": "Typography scale for prose: headings, paragraphs, lists, blockquotes and inline code."
+    },
+    {
+      "name": "suggestion",
+      "type": "registry:ui",
+      "description": "A horizontal row of pill buttons that offer follow-up prompts, scrolling sideways when they overflow."
+    },
+    {
+      "name": "subagent",
+      "type": "registry:ui",
+      "description": "A trace line for work handed to a subagent, which expands to show its task, steps, tools and result."
+    },
+    {
+      "name": "stack-trace",
+      "type": "registry:ui",
+      "description": "Displays an error and its call frames in a collapsible monospace panel, with copy and expand controls."
+    },
+    {
+      "name": "task",
+      "type": "registry:ui",
+      "description": "A collapsible step of an AI agent's work, with a title trigger, a list of items and file chips."
+    },
+    {
+      "name": "terminal",
+      "type": "registry:ui",
+      "description": "Displays command output in a monospace panel with copy and clear actions and a streaming indicator, with ANSI escape sequences stripped."
+    },
+    {
+      "name": "test-results",
+      "type": "registry:ui",
+      "description": "Summarizes a test run with counts, a progress bar and collapsible suites of tests, with error messages and stack traces for failures."
+    },
+    {
+      "name": "tool",
+      "type": "registry:ui",
+      "description": "Shows one tool call of an AI agent: its name, a status badge and a collapsible panel with the input and the output or error."
     }
   ]
 }

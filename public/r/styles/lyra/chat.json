@@ -1,0 +1,17 @@
+{
+  "$schema": "https://oniko.dev/schema/registry-item.json",
+  "name": "chat",
+  "type": "registry:ui",
+  "title": "Chat",
+  "description": "A full-height conversation layout: a scrolling message log above a composer.",
+  "dependencies": [
+    "oniko-cn@0.1"
+  ],
+  "files": [
+    {
+      "path": "ui/chat.rs",
+      "type": "registry:ui",
+      "content": "//! Chat: a conversation with an agent, laid out as a scrolling thread above a composer.\n//!\n//! Installed by oniko-cn. This file is yours: edit it freely.\n\nuse dioxus::prelude::*;\nuse oniko_cn::{cn, take_class};\n\n/// The full-height column that holds a conversation.\n#[component]\npub fn Chat(\n    #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,\n    children: Element,\n) -> Element {\n    let mut attributes = attributes;\n    let class = cn!(\n        \"flex h-full min-h-0 w-full flex-col\",\n        take_class(&mut attributes).as_deref()\n    );\n\n    rsx! {\n        div {\n            \"data-slot\": \"chat\",\n            class: class,\n            ..attributes,\n            {children}\n        }\n    }\n}\n\n/// The scrolling thread of turns. Announced to assistive tech as a log.\n#[component]\npub fn ChatMessages(\n    #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,\n    children: Element,\n) -> Element {\n    let mut attributes = attributes;\n    let class = cn!(\n        \"flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-4\",\n        take_class(&mut attributes).as_deref()\n    );\n\n    rsx! {\n        div {\n            \"data-slot\": \"chat-messages\",\n            role: \"log\",\n            aria_live: \"polite\",\n            class: class,\n            ..attributes,\n            {children}\n        }\n    }\n}\n\n/// The area under the thread where the person writes the next turn.\n#[component]\npub fn ChatComposer(\n    #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,\n    children: Element,\n) -> Element {\n    let mut attributes = attributes;\n    let class = cn!(\n        \"shrink-0 border-t bg-background p-4\",\n        take_class(&mut attributes).as_deref()\n    );\n\n    rsx! {\n        div {\n            \"data-slot\": \"chat-composer\",\n            class: class,\n            ..attributes,\n            {children}\n        }\n    }\n}\n"
+    }
+  ]
+}

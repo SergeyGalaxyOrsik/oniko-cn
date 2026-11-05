@@ -16,7 +16,7 @@
       "title": "Avatar",
       "description": "An image element with a fallback for representing the user.",
       "dependencies": ["oniko-cn@0.1"],
-      "files": [{"path": "ui/avatar.rs", "type": "registry:ui"}]
+      "files": [{ "path": "ui/avatar.rs", "type": "registry:ui" }]
     },
     {
       "name": "badge",
@@ -284,6 +284,426 @@
       "dependencies": ["oniko-cn@0.1"],
       "registryDependencies": ["separator"],
       "files": [{ "path": "ui/item.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "chat",
+      "type": "registry:ui",
+      "title": "Chat",
+      "description": "A full-height conversation layout: a scrolling message log above a composer.",
+      "dependencies": ["oniko-cn@0.1"],
+      "files": [{ "path": "ui/chat.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "checkpoint",
+      "type": "registry:ui",
+      "title": "Checkpoint",
+      "description": "A marker after a point in a conversation, with a restore button you can return to.",
+      "dependencies": ["oniko-cn@0.1"],
+      "registryDependencies": ["button", "separator"],
+      "files": [{ "path": "ui/checkpoint.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "confirmation",
+      "type": "registry:ui",
+      "title": "Confirmation",
+      "description": "An approval prompt for a tool call, with approve and deny actions and the answer once given.",
+      "dependencies": ["oniko-cn@0.1"],
+      "registryDependencies": ["item", "button"],
+      "files": [{ "path": "ui/confirmation.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "chain-of-thought",
+      "type": "registry:ui",
+      "title": "Chain of Thought",
+      "description": "A collapsible list of reasoning steps, with optional search results and images.",
+      "dependencies": ["oniko-cn@0.1"],
+      "registryDependencies": ["collapsible", "badge"],
+      "files": [{ "path": "ui/chain_of_thought.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "context",
+      "type": "registry:ui",
+      "title": "Context",
+      "description": "Shows how much of a model's context window is used, in a hover card with a token and cost breakdown.",
+      "dependencies": ["oniko-cn@0.1"],
+      "registryDependencies": ["button", "hover-card"],
+      "files": [{ "path": "ui/context.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "file-tree",
+      "type": "registry:ui",
+      "title": "File Tree",
+      "description": "A nested tree of folders and files that expand and select, for showing the files an agent changed.",
+      "dependencies": ["oniko-cn@0.1"],
+      "registryDependencies": ["collapsible"],
+      "files": [{ "path": "ui/file_tree.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "message",
+      "type": "registry:ui",
+      "title": "Message",
+      "description": "A chat message row with content, action buttons and navigation between alternative branches.",
+      "dependencies": ["oniko-cn@0.1"],
+      "registryDependencies": ["button"],
+      "files": [{ "path": "ui/message.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "inline-citation",
+      "type": "registry:ui",
+      "title": "Inline Citation",
+      "description": "A source badge inside running text that opens a hover card, with a carousel for several sources.",
+      "dependencies": ["oniko-cn@0.1"],
+      "registryDependencies": ["badge", "hover-card"],
+      "files": [{ "path": "ui/inline_citation.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "model-selector",
+      "type": "registry:ui",
+      "title": "Model Selector",
+      "description": "A button that opens a searchable dialog of AI models, with provider logos and a check mark on the current model.",
+      "dependencies": ["oniko-cn@0.1"],
+      "registryDependencies": ["button", "command", "dialog"],
+      "files": [{ "path": "ui/model_selector.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "plan",
+      "type": "registry:ui",
+      "title": "Plan",
+      "description": "A collapsible card that shows an AI-generated plan, with a header, expandable content and a footer.",
+      "dependencies": ["oniko-cn@0.1"],
+      "registryDependencies": ["button", "card", "collapsible"],
+      "files": [{ "path": "ui/plan.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "queue",
+      "type": "registry:ui",
+      "title": "Queue",
+      "description": "A list of pending and completed tasks or messages, grouped into collapsible sections, with item indicators, actions and attachments.",
+      "dependencies": ["oniko-cn@0.1"],
+      "registryDependencies": ["button", "collapsible"],
+      "files": [{ "path": "ui/queue.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "prompt-input",
+      "type": "registry:ui",
+      "title": "Prompt Input",
+      "description": "A message box with a textarea that sends on Enter, header and footer rows, and a submit button that shows the request status.",
+      "dependencies": ["oniko-cn@0.1"],
+      "registryDependencies": ["button", "input-group"],
+      "files": [{ "path": "ui/prompt_input.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "sources",
+      "type": "registry:ui",
+      "title": "Sources",
+      "description": "A collapsible list of the sources behind an AI answer, with a trigger that shows the source count and links that open in a new tab.",
+      "dependencies": ["oniko-cn@0.1"],
+      "registryDependencies": ["collapsible"],
+      "files": [{ "path": "ui/sources.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "reasoning",
+      "type": "registry:ui",
+      "title": "Reasoning",
+      "description": "A collapsible panel that shows a model's thinking: it opens while streaming, closes shortly after, and labels the trigger with the thinking time.",
+      "dependencies": ["oniko-cn@0.1"],
+      "registryDependencies": ["collapsible"],
+      "files": [{ "path": "ui/reasoning.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "kbd",
+      "type": "registry:ui",
+      "title": "Kbd",
+      "description": "Displays textual keyboard input, such as a key or a shortcut.",
+      "dependencies": ["oniko-cn@0.1"],
+      "files": [{ "path": "ui/kbd.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "label",
+      "type": "registry:ui",
+      "title": "Label",
+      "description": "A caption for a form control, linked to it through its id.",
+      "dependencies": ["oniko-cn@0.1"],
+      "files": [{ "path": "ui/label.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "marker",
+      "type": "registry:ui",
+      "title": "Marker",
+      "description": "A compact inline status, note or action row, with an optional icon, border or centered separator label.",
+      "dependencies": ["oniko-cn@0.1"],
+      "files": [{ "path": "ui/marker.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "menubar",
+      "type": "registry:ui",
+      "title": "Menubar",
+      "description": "A horizontal bar of menus with actions, toggles and choices that open from their triggers.",
+      "dependencies": ["oniko-cn@0.1"],
+      "files": [{ "path": "ui/menubar.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "message-scroller",
+      "type": "registry:ui",
+      "title": "Message Scroller",
+      "description": "A chat transcript viewport that follows streamed output, anchors new turns and jumps to messages.",
+      "dependencies": ["oniko-cn@0.1"],
+      "registryDependencies": ["button"],
+      "files": [{ "path": "ui/message_scroller.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "native-select",
+      "type": "registry:ui",
+      "title": "Native Select",
+      "description": "A styled wrapper around the browser's native select element, with option groups and sizes.",
+      "dependencies": ["oniko-cn@0.1"],
+      "files": [{ "path": "ui/native_select.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "navigation-menu",
+      "type": "registry:ui",
+      "title": "Navigation Menu",
+      "description": "A horizontal bar of links and disclosure panels for site navigation.",
+      "dependencies": ["oniko-cn@0.1"],
+      "files": [{ "path": "ui/navigation_menu.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "pagination",
+      "type": "registry:ui",
+      "title": "Pagination",
+      "description": "A row of page links with previous and next controls and an ellipsis for skipped pages.",
+      "dependencies": ["oniko-cn@0.1"],
+      "registryDependencies": ["button"],
+      "files": [{ "path": "ui/pagination.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "progress",
+      "type": "registry:ui",
+      "title": "Progress",
+      "description": "Displays the progress of a task as a bar with an optional label and value.",
+      "dependencies": ["oniko-cn@0.1"],
+      "files": [{ "path": "ui/progress.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "questionnaire",
+      "type": "registry:ui",
+      "title": "Questionnaire",
+      "description": "A step-by-step form that asks one question at a time, with choices, free text, progress and navigation.",
+      "dependencies": ["oniko-cn@0.1"],
+      "registryDependencies": ["button"],
+      "files": [{ "path": "ui/questionnaire.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "radio-group",
+      "type": "registry:ui",
+      "title": "Radio Group",
+      "description": "A set of options where exactly one can be checked.",
+      "dependencies": ["oniko-cn@0.1"],
+      "files": [{ "path": "ui/radio_group.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "resizable",
+      "type": "registry:ui",
+      "title": "Resizable",
+      "description": "Panels separated by handles that the user drags or moves with the arrow keys.",
+      "dependencies": ["oniko-cn@0.1"],
+      "files": [{ "path": "ui/resizable.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "scroll-area",
+      "type": "registry:ui",
+      "title": "Scroll Area",
+      "description": "A scrollable region with a styled viewport and a choice of scroll axis.",
+      "dependencies": ["oniko-cn@0.1"],
+      "files": [{ "path": "ui/scroll_area.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "select",
+      "type": "registry:ui",
+      "title": "Select",
+      "description": "A button that opens a list of options and picks one of them.",
+      "dependencies": ["oniko-cn@0.1"],
+      "files": [{ "path": "ui/select.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "sheet",
+      "type": "registry:ui",
+      "title": "Sheet",
+      "description": "A panel that slides in from any edge of the screen to show content beside the page.",
+      "dependencies": ["oniko-cn@0.1"],
+      "registryDependencies": ["button"],
+      "files": [{ "path": "ui/sheet.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "sidebar",
+      "type": "registry:ui",
+      "title": "Sidebar",
+      "description": "A collapsible side panel with a header, scrollable content, footer and menus.",
+      "dependencies": ["oniko-cn@0.1"],
+      "registryDependencies": ["button"],
+      "files": [{ "path": "ui/sidebar.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "skeleton",
+      "type": "registry:ui",
+      "title": "Skeleton",
+      "description": "Displays a pulsing placeholder while content loads.",
+      "dependencies": ["oniko-cn@0.1"],
+      "files": [{ "path": "ui/skeleton.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "slider",
+      "type": "registry:ui",
+      "title": "Slider",
+      "description": "A control that picks a value, or a range of values, by dragging thumbs along a track.",
+      "dependencies": ["oniko-cn@0.1"],
+      "files": [{ "path": "ui/slider.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "spinner",
+      "type": "registry:ui",
+      "title": "Spinner",
+      "description": "A loading indicator: an icon that spins while work is pending.",
+      "dependencies": ["oniko-cn@0.1"],
+      "files": [{ "path": "ui/spinner.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "switch",
+      "type": "registry:ui",
+      "title": "Switch",
+      "description": "A control that toggles a setting on and off.",
+      "dependencies": ["oniko-cn@0.1"],
+      "files": [{ "path": "ui/switch.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "tabs",
+      "type": "registry:ui",
+      "title": "Tabs",
+      "description": "A set of layered sections of content, where one section is shown at a time.",
+      "dependencies": ["oniko-cn@0.1"],
+      "files": [{ "path": "ui/tabs.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "textarea",
+      "type": "registry:ui",
+      "title": "Textarea",
+      "description": "A multi-line text field for forms and longer user input.",
+      "dependencies": ["oniko-cn@0.1"],
+      "files": [{ "path": "ui/textarea.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "toast",
+      "type": "registry:ui",
+      "title": "Toast",
+      "description": "Displays short messages that dismiss themselves, with an optional action.",
+      "dependencies": ["oniko-cn@0.1"],
+      "registryDependencies": ["button"],
+      "files": [{ "path": "ui/toast.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "toggle",
+      "type": "registry:ui",
+      "title": "Toggle",
+      "description": "A two-state button that is either on or off.",
+      "dependencies": ["oniko-cn@0.1"],
+      "files": [{ "path": "ui/toggle.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "toggle-group",
+      "type": "registry:ui",
+      "title": "Toggle Group",
+      "description": "A row or column of toggles that share one pressed state, in single or multiple mode.",
+      "dependencies": ["oniko-cn@0.1"],
+      "registryDependencies": ["toggle"],
+      "files": [{ "path": "ui/toggle_group.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "tooltip",
+      "type": "registry:ui",
+      "title": "Tooltip",
+      "description": "A short label that opens when the pointer rests on, or focus lands on, a trigger.",
+      "dependencies": ["oniko-cn@0.1"],
+      "files": [{ "path": "ui/tooltip.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "trace",
+      "type": "registry:ui",
+      "title": "Trace",
+      "description": "A compact list of AI steps, such as searches and commands, that can expand to show details.",
+      "dependencies": ["oniko-cn@0.1"],
+      "registryDependencies": ["collapsible"],
+      "files": [{ "path": "ui/trace.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "typeset",
+      "type": "registry:ui",
+      "title": "Typeset",
+      "description": "Typography scale for prose: headings, paragraphs, lists, blockquotes and inline code.",
+      "dependencies": ["oniko-cn@0.1"],
+      "files": [{ "path": "ui/typeset.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "suggestion",
+      "type": "registry:ui",
+      "title": "Suggestion",
+      "description": "A horizontal row of pill buttons that offer follow-up prompts, scrolling sideways when they overflow.",
+      "dependencies": ["oniko-cn@0.1"],
+      "registryDependencies": ["button"],
+      "files": [{ "path": "ui/suggestion.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "subagent",
+      "type": "registry:ui",
+      "title": "Subagent",
+      "description": "A trace line for work handed to a subagent, which expands to show its task, steps, tools and result.",
+      "dependencies": ["oniko-cn@0.1"],
+      "registryDependencies": ["trace", "badge"],
+      "files": [{ "path": "ui/subagent.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "stack-trace",
+      "type": "registry:ui",
+      "title": "Stack Trace",
+      "description": "Displays an error and its call frames in a collapsible monospace panel, with copy and expand controls.",
+      "dependencies": ["oniko-cn@0.1"],
+      "registryDependencies": ["button", "collapsible"],
+      "files": [{ "path": "ui/stack_trace.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "task",
+      "type": "registry:ui",
+      "title": "Task",
+      "description": "A collapsible step of an AI agent's work, with a title trigger, a list of items and file chips.",
+      "dependencies": ["oniko-cn@0.1"],
+      "registryDependencies": ["collapsible"],
+      "files": [{ "path": "ui/task.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "terminal",
+      "type": "registry:ui",
+      "title": "Terminal",
+      "description": "Displays command output in a monospace panel with copy and clear actions and a streaming indicator, with ANSI escape sequences stripped.",
+      "dependencies": ["oniko-cn@0.1"],
+      "registryDependencies": ["button"],
+      "files": [{ "path": "ui/terminal.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "test-results",
+      "type": "registry:ui",
+      "title": "Test Results",
+      "description": "Summarizes a test run with counts, a progress bar and collapsible suites of tests, with error messages and stack traces for failures.",
+      "dependencies": ["oniko-cn@0.1"],
+      "registryDependencies": ["collapsible", "badge"],
+      "files": [{ "path": "ui/test_results.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "tool",
+      "type": "registry:ui",
+      "title": "Tool",
+      "description": "Shows one tool call of an AI agent: its name, a status badge and a collapsible panel with the input and the output or error.",
+      "dependencies": ["oniko-cn@0.1"],
+      "registryDependencies": ["collapsible", "badge"],
+      "files": [{ "path": "ui/tool.rs", "type": "registry:ui" }]
     }
   ]
 }

@@ -1,4 +1,6 @@
 mod components;
+mod demos;
+mod demos_ai;
 
 use components::ui::accordion::{Accordion, AccordionContent, AccordionItem, AccordionTrigger};
 use components::ui::alert::{Alert, AlertAction, AlertDescription, AlertTitle, AlertVariant};
@@ -129,6 +131,9 @@ fn App() -> Element {
                             if dark() { SunIcon {} } else { MoonIcon {} }
                         }
                     }
+
+                    demos::MoreDemos {}
+                    demos_ai::AiDemos {}
 
                     div { class: "flex flex-col gap-3",
                         h2 { class: "text-sm font-medium text-muted-foreground", "Badge" }

@@ -38,6 +38,55 @@
 | Field | `registry/ui/field.rs` | `oniko add field` | web, desktop |
 | Input OTP | `registry/ui/input_otp.rs` | `oniko add input-otp` | web, desktop |
 | Input | `registry/ui/input.rs` | `oniko add input` | web, desktop |
+| Checkpoint | `registry/ui/checkpoint.rs` | `oniko add checkpoint` | web, desktop |
+| File Tree | `registry/ui/file_tree.rs` | `oniko add file-tree` | web, desktop |
+| Message | `registry/ui/message.rs` | `oniko add message` | web, desktop |
+| Context | `registry/ui/context.rs` | `oniko add context` | web, desktop |
+| Plan | `registry/ui/plan.rs` | `oniko add plan` | web, desktop |
+| Reasoning | `registry/ui/reasoning.rs` | `oniko add reasoning` | web, desktop |
+| Queue | `registry/ui/queue.rs` | `oniko add queue` | web, desktop |
+| Prompt Input | `registry/ui/prompt_input.rs` | `oniko add prompt-input` | web, desktop |
+| Sources | `registry/ui/sources.rs` | `oniko add sources` | web, desktop |
+| Chat | `registry/ui/chat.rs` | `oniko add chat` | web, desktop |
+| Confirmation | `registry/ui/confirmation.rs` | `oniko add confirmation` | web, desktop |
+| Chain of Thought | `registry/ui/chain_of_thought.rs` | `oniko add chain-of-thought` | web, desktop |
+| Inline Citation | `registry/ui/inline_citation.rs` | `oniko add inline-citation` | web, desktop |
+| Model Selector | `registry/ui/model_selector.rs` | `oniko add model-selector` | web, desktop |
+| Subagent | `registry/ui/subagent.rs` | `oniko add subagent` | web, desktop |
+| Suggestion | `registry/ui/suggestion.rs` | `oniko add suggestion` | web, desktop |
+| Stack Trace | `registry/ui/stack_trace.rs` | `oniko add stack-trace` | web, desktop |
+| Task | `registry/ui/task.rs` | `oniko add task` | web, desktop |
+| Test Results | `registry/ui/test_results.rs` | `oniko add test-results` | web, desktop |
+| Terminal | `registry/ui/terminal.rs` | `oniko add terminal` | web, desktop |
+| Tool | `registry/ui/tool.rs` | `oniko add tool` | web, desktop |
+| Kbd | `registry/ui/kbd.rs` | `oniko add kbd` | web, desktop |
+| Label | `registry/ui/label.rs` | `oniko add label` | web, desktop |
+| Marker | `registry/ui/marker.rs` | `oniko add marker` | web, desktop |
+| Menubar | `registry/ui/menubar.rs` | `oniko add menubar` | web, desktop |
+| Message Scroller | `registry/ui/message_scroller.rs` | `oniko add message-scroller` | web, desktop |
+| Native Select | `registry/ui/native_select.rs` | `oniko add native-select` | web, desktop |
+| Navigation Menu | `registry/ui/navigation_menu.rs` | `oniko add navigation-menu` | web, desktop |
+| Pagination | `registry/ui/pagination.rs` | `oniko add pagination` | web, desktop |
+| Progress | `registry/ui/progress.rs` | `oniko add progress` | web, desktop |
+| Questionnaire | `registry/ui/questionnaire.rs` | `oniko add questionnaire` | web, desktop |
+| Radio Group | `registry/ui/radio_group.rs` | `oniko add radio-group` | web, desktop |
+| Resizable | `registry/ui/resizable.rs` | `oniko add resizable` | web, desktop |
+| Scroll Area | `registry/ui/scroll_area.rs` | `oniko add scroll-area` | web, desktop |
+| Select | `registry/ui/select.rs` | `oniko add select` | web, desktop |
+| Sheet | `registry/ui/sheet.rs` | `oniko add sheet` | web, desktop |
+| Sidebar | `registry/ui/sidebar.rs` | `oniko add sidebar` | web, desktop |
+| Skeleton | `registry/ui/skeleton.rs` | `oniko add skeleton` | web, desktop |
+| Slider | `registry/ui/slider.rs` | `oniko add slider` | web, desktop |
+| Spinner | `registry/ui/spinner.rs` | `oniko add spinner` | web, desktop |
+| Switch | `registry/ui/switch.rs` | `oniko add switch` | web, desktop |
+| Tabs | `registry/ui/tabs.rs` | `oniko add tabs` | web, desktop |
+| Textarea | `registry/ui/textarea.rs` | `oniko add textarea` | web, desktop |
+| Toast | `registry/ui/toast.rs` | `oniko add toast` | web, desktop |
+| Toggle | `registry/ui/toggle.rs` | `oniko add toggle` | web, desktop |
+| Toggle Group | `registry/ui/toggle_group.rs` | `oniko add toggle-group` | web, desktop |
+| Tooltip | `registry/ui/tooltip.rs` | `oniko add tooltip` | web, desktop |
+| Trace | `registry/ui/trace.rs` | `oniko add trace` | web, desktop |
+| Typeset | `registry/ui/typeset.rs` | `oniko add typeset` | web, desktop |
 
 ### Button
 
@@ -314,4 +363,168 @@
 - Курсор показывается в первом пустом слоте, а при полном поле — в последнем
 - Редактирование в середине значения не поддерживается: Backspace удаляет последний символ
 - Не зависит от других компонентов
+- Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
+
+### Chat
+
+- Части: `Chat` (колонка на всю высоту), `ChatMessages` (прокручиваемая лента с `role="log"`), `ChatComposer` (нижняя область для ввода)
+- Это каркас разметки, а не готовый чат: полный вариант из shadcn AI Elements собирается из `Message Scroller`, `Message`, `Bubble`, `Input Group` и `Prompt Input`, которых в реестре пока нет
+- Не зависит от других компонентов
+- Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
+
+### Checkpoint
+
+- Части: `Checkpoint` (строка с линией-разделителем), `CheckpointIcon` (иконка-закладка по умолчанию, при передаче детей заменяется ими), `CheckpointTrigger` (кнопка `Restore`-типа; варианты и размеры берутся из `Button`, по умолчанию `Ghost` и `Sm`)
+- `CheckpointTrigger`: `tooltip` выводится как `title`, так как `Tooltip` в реестре пока нет
+- Зависит от `button` и `separator`, которые ставятся автоматически
+- Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
+
+### Confirmation
+
+- Части: `Confirmation` (строка `Item` с рамкой и размером `Sm`; принимает `approval` (`ConfirmationApproval`: `id`, `approved`) и `state` (`ConfirmationState`)), `ConfirmationTitle`, `ConfirmationRequest` (виден только в состоянии `ApprovalRequested`), `ConfirmationAccepted` и `ConfirmationRejected` (виден при `approved` = `Some(true)` / `Some(false)`), `ConfirmationActions` (виден только при запросе), `ConfirmationAction` (кнопка; по умолчанию `Default` и `Sm`, обработчик `onclick`)
+- Иконки не входят в компонент: их передаёт приложение, например в `ItemMedia` или через свой элемент внутри `ConfirmationTitle`
+- Зависит от `item` и `button`, которые ставятся автоматически
+- Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
+
+### Chain of Thought
+
+- Части: `ChainOfThought` (корень; `default_open` по умолчанию `true`, `open: Option<bool>` с `on_open_change`), `ChainOfThoughtHeader` (заголовок по умолчанию «Chain of Thought», с иконкой мозга и поворотной стрелкой), `ChainOfThoughtStep` (шаг; `status` (`ChainOfThoughtStepStatus`: `Complete`, `Active`, `Pending`) попадает в `data-status`; `icon: Option<Element>` по умолчанию точка; `label`, `description`), `ChainOfThoughtSearchResults` и `ChainOfThoughtSearchResult` (бейджи результатов поиска), `ChainOfThoughtContent` (скрываемая часть), `ChainOfThoughtImage` (изображение с подписью `caption`)
+- Зависит от `collapsible` и `badge`, которые ставятся автоматически
+- Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
+
+### File Tree
+
+- Части: `FileTree` (корень, `role="tree"`), `FileTreeFolder` (`path`, `name`; строка раскрывается через `Collapsible`), `FileTreeFile` (`path`, `name`; строка выбирается кликом, Enter или Space), `FileTreeIcon`, `FileTreeName`, `FileTreeActions`
+- `FileTree`: `expanded: Option<Vec<String>>` и `selected: Option<String>` делают состояние управляемым (`None` значит «без управления»), `default_expanded`, `on_expanded_change`, `on_select: EventHandler<String>` получает путь
+- `FileTreeActions` внутри строки файла не выбирает её; у папок действий нет, потому что строка папки целиком — кнопка
+- Дерево собирает приложение: рекурсивным вызовом `FileTreeFolder` и `FileTreeFile`; стрелочной навигации с клавиатуры по дереву нет
+- Зависит от `collapsible` (ставится автоматически)
+- Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
+
+### Context
+
+- Части: `Context` (корень; `used_tokens`, `max_tokens`, `usage: Option<ContextUsage>`, `open_delay` (10 мс по умолчанию), `close_delay` (100 мс)), `ContextTrigger` (кнопка с процентом и кольцом-индикатором), `ContextContent` (карточка по наведению), `ContextContentHeader` (процент, `used / max` и полоса прогресса; `children` заменяют разметку), `ContextContentBody` (свободная область), `ContextContentFooter` (общая стоимость; `children` заменяют разметку), `ContextInputUsage`, `ContextOutputUsage`, `ContextReasoningUsage`, `ContextCacheUsage` (строки с токенами и стоимостью, скрыты при нулевых токенах)
+- `ContextUsage`: токены по частям и стоимость по частям (`Option<f64>` в USD); сама стоимость не считается, её передаёт приложение из своей таблицы цен
+- Зависит от `button` и `hover-card`, которые ставятся автоматически; полосу прогресса собирает внутри себя, отдельного `progress` в реестре нет
+- Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
+
+### Inline Citation
+
+- Части: `InlineCitation` (обёртка в строке текста), `InlineCitationText` (процитированный фрагмент, подсвечивается при наведении), `InlineCitationCard` (карточка по наведению без задержки; `open` с `on_open_change` или `default_open`), `InlineCitationCardTrigger` (бейдж с именем хоста первого источника и `+N` для остальных; `sources: Vec<String>`), `InlineCitationCardBody` (содержимое карточки)
+- `InlineCitationCarousel` (`Header`, `Content`, `Item`, `Index`, `Prev`, `Next`) листает несколько источников внутри карточки; индекс `текущий/всего` и кнопки ведут себя как у `Carousel`
+- Карусель хранит свой индекс: `Carousel` из реестра не отдаёт своё состояние наружу, поэтому здесь он не используется
+- `InlineCitationSource` (`title`, `url`, `description`; `children` идут после них), `InlineCitationQuote` (цитата с левой линией)
+- Зависит от `badge` и `hover-card`, которые ставятся автоматически
+- Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
+
+### Message
+
+- Части: `Message` (`from`: `MessageFrom`: `User`, `Assistant` (по умолчанию), `System`; попадает в `data-from`, пользовательские сообщения выравниваются вправо), `MessageContent` (пузырь для пользователя, текст без обводки для ассистента), `MessageResponse` (выводит детей как есть, без markdown), `MessageActions`, `MessageAction`, `MessageToolbar`
+- `MessageAction`: `variant` и `size` берутся из `Button` (по умолчанию `Ghost` и `IconSm`), `tooltip` выводится как `title`, так как `Tooltip` в реестре пока нет, `label` читают только программы (`sr-only`)
+- Ветки ответа: `MessageBranch` (`default_branch`, `on_branch_change`), `MessageBranchContent` (принимает `branches: Vec<Element>`, показывает одну ветку), `MessageBranchSelector` (скрыт при одной ветке), `MessageBranchPrevious`, `MessageBranchNext`, `MessageBranchPage` (строка «2 of 3»)
+- Зависит от `button`, который ставится автоматически
+- Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
+
+### Model Selector
+
+- Части: `ModelSelector` (корень; `open`, `default_open`, `on_open_change`), `ModelSelectorTrigger` (кнопка, открывающая окно; `variant`, `size`, `onclick`), `ModelSelectorContent` (окно с поиском и списком; `title` читают только программы, `sr-only`), `ModelSelectorInput` (поле поиска; `placeholder`), `ModelSelectorList`, `ModelSelectorEmpty`, `ModelSelectorGroup` (`heading`), `ModelSelectorItem` (`value`, `keywords`, `disabled`, `selected` с галочкой, `on_select`), `ModelSelectorSeparator`, `ModelSelectorShortcut`, `ModelSelectorLogo` (`src`, `alt`), `ModelSelectorLogoGroup`, `ModelSelectorName`
+- Выбор пункта закрывает окно и вызывает `on_select` с его `value`; поиск и стрелки работают как в `Command`
+- `ModelSelectorTrigger` не принимает произвольные атрибуты: у `DialogTrigger` их нельзя передать через `..attributes`
+- Логотипы не загружаются самим компонентом: приложение передаёт URL в `src`
+- Зависит от `button`, `command` и `dialog`, которые ставятся автоматически
+- Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
+
+### Plan
+
+- Части: `Plan` (корень; `is_streaming`, `open`, `default_open`, `on_open_change`; собирает `Collapsible` и `Card`), `PlanHeader`, `PlanTitle`, `PlanDescription` (пульсируют, пока `is_streaming` включён), `PlanAction` (правый верхний угол заголовка), `PlanTrigger` (кнопка-шеврон, раскрывает и сворачивает план), `PlanContent` (виден только в раскрытом состоянии), `PlanFooter`
+- `PlanTrigger` не принимает произвольные атрибуты: `CollapsibleTrigger` не принимает `..attributes`
+- Шиммер-эффект из оригинала не перенесён: пульсация через `animate-pulse`
+- Зависит от `button`, `card` и `collapsible`, которые ставятся автоматически
+- Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
+
+### Reasoning
+
+- Части: `Reasoning` (корень; `is_streaming`, `open`, `default_open`, `on_open_change`, `duration: Option<u32>`; собирает `Collapsible`), `ReasoningTrigger` (заголовок с иконкой мозга, подписью и шевроном; `children` заменяют содержимое), `ReasoningContent` (текст тела, виден только в раскрытом состоянии)
+- Пока `is_streaming` включён, панель раскрывается сама (если `default_open` не задан как `false`); через секунду после окончания стрима закрывается, один раз
+- Подпись: «Thinking...» во время стрима или при `duration == 0`, «Thought for N seconds» по `duration`, «Thought for a few seconds» без него
+- Содержимое выводится как текст, без markdown
+- `ReasoningTrigger` и `ReasoningContent` принимают атрибуты на обёртку, а не на `CollapsibleTrigger` и `CollapsibleContent`, которые не принимают `..attributes`
+- Таймер закрытия работает через `document::eval` с `setTimeout`, одинаково в web и desktop
+- Зависит от `collapsible`, который ставится автоматически
+- Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
+
+### Prompt Input
+
+- Части: `PromptInput` (корень, `form`; `onsubmit: Option<EventHandler<PromptInputMessage>>` получает текст и очищает поле), `PromptInputBody`, `PromptInputHeader`, `PromptInputFooter`, `PromptInputTools`, `PromptInputTextarea` (Enter отправляет, Shift+Enter переносит строку), `PromptInputButton` (кнопка в строке инструментов, форму не отправляет), `PromptInputSubmit` (`status`: `PromptInputStatus` с вариантами `Ready`, `Submitted`, `Streaming`, `Error`; иконка и `data-status` следуют за статусом; `onstop` срабатывает по нажатию во время `Submitted` и `Streaming`)
+- Пустой или пробельный текст не отправляется
+- Вложения, голосовой ввод, перетаскивание файлов, вставка файлов из буфера и скриншоты не перенесены: для них нужны браузерные API или собственный конвейер файлов
+- Поле ввода и кнопки рендерятся напрямую, а не через `InputGroupTextarea` и `InputGroupButton`: те не принимают HTML-атрибуты от вызывающего кода. Классы и поведение фокуса по клику на шапку и подвал сохранены
+- Зависит от `button` и `input-group`, которые ставятся автоматически. `Tooltip` в реестре нет, поэтому подсказок у кнопок нет
+- Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
+
+### Sources
+
+- Части: `Sources` (корень; `open`, `default_open`, `on_open_change`; собирает `Collapsible`), `SourcesTrigger` (кнопка с подписью «Used N sources» и шевроном; `count`; `children` заменяют подпись), `SourcesContent` (список источников, виден только в раскрытом состоянии), `Source` (ссылка с `href`, иконкой книги и `title`; открывается в новой вкладке с `rel="noreferrer"`; `children` заменяют содержимое)
+- `SourcesTrigger` и `SourcesContent` принимают атрибуты на обёртку `div`, потому что `CollapsibleTrigger` и `CollapsibleContent` не принимают `..attributes`; `Source` принимает их на саму ссылку
+- Зависит от `collapsible`, который ставится автоматически
+- Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
+
+### Queue
+
+- Части: `Queue` (корень), `QueueSection` (`open`, `default_open`, `on_open_change`; собирает `Collapsible`), `QueueSectionTrigger` (кнопка заголовка секции), `QueueSectionLabel` (`count`, `label`, `icon`; шеврон поворачивается при свёрнутой секции), `QueueSectionContent` (виден только в раскрытой секции), `QueueList` (прокручиваемый список, не выше 10rem), `QueueItem` (`li`), `QueueItemIndicator`, `QueueItemContent`, `QueueItemDescription` (все три принимают `completed` и зачёркивают текст), `QueueItemActions`, `QueueItemAction` (кнопка-иконка, появляется при наведении на строку; принимает `onclick`), `QueueItemAttachment`, `QueueItemImage` (миниатюра, `alt` пустой по умолчанию), `QueueItemFile` (чип с иконкой скрепки)
+- `QueueSectionTrigger` не принимает произвольные атрибуты: `CollapsibleTrigger` не принимает `..attributes`. Атрибуты `QueueSection` и `QueueSectionContent` попадают на обёртку вокруг `Collapsible` и на `div` внутри содержимого соответственно
+- Вместо `ScrollArea` в списке стоит обычный контейнер с `overflow-y-auto`
+- Зависит от `button` и `collapsible`, которые ставятся автоматически
+- Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
+
+### Suggestion
+
+- Части: `Suggestions` (горизонтальная строка, прокручивается по горизонтали при переполнении), `Suggestion` (pill-кнопка с `suggestion: String`; `on_click: Option<EventHandler<String>>` получает текст подсказки; `children` заменяют текст)
+- Кнопка собрана через `button_variants` из `button` с вариантом `Outline` и размером `Sm`; полоса прокрутки скрыта
+- Зависит от `button`, который ставится автоматически
+- Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
+
+### Subagent
+
+- Части: `Subagent` (корень; `open`, `default_open`, `on_open_change`; собирает `TraceCollapsible`), `SubagentHeader` (строка-триггер; `status`: `TraceStatus`, `icon` по умолчанию робот, `title`, `description` необязательно, например длительность), `SubagentContent` (детали, пусты при свёрнутом состоянии), `SubagentTask` (задача, которую получил субагент; ставится сверху содержимого), `SubagentTool` (бейдж инструмента или модели)
+- `SubagentHeader` и `SubagentContent` принимают атрибуты на обёртку `div`, потому что `TraceCollapsibleTrigger` и `TraceCollapsibleContent` не принимают `..attributes`; `SubagentTask` принимает их на свой `div`, `SubagentTool` на обёртку `span`
+- Зависит от `trace` и `badge`, которые ставятся автоматически
+- Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
+
+### Stack Trace
+
+- Части: `StackTrace` (корень; `trace: String` с сырым текстом ошибки, `open`, `default_open`, `on_open_change`; собирает `Collapsible`), `StackTraceHeader`, `StackTraceError` (строка ошибки), `StackTraceErrorType` (тип, например `TypeError`; пусто, если типа нет), `StackTraceErrorMessage` (текст ошибки), `StackTraceActions`, `StackTraceCopyButton` (копирует весь сырой текст в буфер обмена), `StackTraceExpandButton` (раскрывает и сворачивает кадры), `StackTraceContent` (виден только в раскрытом состоянии), `StackTraceFrames` (`show_internal`, `on_file_path_click: Option<EventHandler<StackFileLocation>>`)
+- Разбор без регулярных выражений: первая строка трассировки — ошибка (`Тип: сообщение`), остальные непустые строки — кадры (`at fn (path:line:col)` или `at path:line:col`); доступны функция `parse_stack_trace` и типы `ParsedStackTrace`, `StackFrame`, `StackFileLocation`
+- Кадры из `node_modules`, `node:` и `internal/` помечаются как внутренние (`data-internal`) и скрываются при `show_internal: false`
+- Зависит от `button` и `collapsible`, которые ставятся автоматически
+- Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
+
+### Task
+
+- Части: `Task` (корень; `open`, `default_open` (по умолчанию открыта), `on_open_change`; собирает `Collapsible`), `TaskTrigger` (`title`: заголовок с иконкой поиска и шевроном; `children` заменяют строку целиком), `TaskContent` (шаги задачи, видны только в раскрытом состоянии), `TaskItem` (строка текста внутри шагов), `TaskItemFile` (чип файла внутри строки)
+- `TaskTrigger` не принимает `..attributes` на кнопку, поэтому его атрибуты попадают на обёртку `div`; атрибуты `Task` и `TaskContent` тоже попадают на обёртки вокруг `Collapsible` и `CollapsibleContent`
+- Анимации появления не добавлены: закрытое содержимое размонтируется, поэтому выход анимировать нечем
+- Зависит от `collapsible`, который ставится автоматически
+- Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
+
+### Terminal
+
+- Части: `Terminal` (корень; `output: String`, `is_streaming`, `auto_scroll` (по умолчанию включён), `on_clear: Option<EventHandler<()>>`; без `children` собирает стандартный вид: заголовок, статус, кнопки и вывод), `TerminalHeader`, `TerminalTitle` (значок и текст «Terminal», `children` заменяют текст), `TerminalStatus` (пульсирующая точка, виден только при `is_streaming`), `TerminalActions`, `TerminalCopyButton` (копирует вывод без escape-последовательностей; принимает `onclick`), `TerminalClearButton` (виден только если задан `on_clear`), `TerminalContent` (вывод; прокручивается вниз при изменении, мигающий курсор виден при `is_streaming`)
+- ANSI-последовательности удаляются из вывода, цвета не выводятся
+- Зависит от `button`, который ставится автоматически
+- Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
+
+### Test Results
+
+- Части: `TestResults` (корень; `summary: Option<TestRunSummary>` с полями `passed`, `failed`, `skipped`, `total`, `duration_ms`), `TestResultsHeader`, `TestResultsSummary` (значки с числами прошедших, упавших и пропущенных), `TestResultsDuration` (длительность, ничего не выводит без `duration_ms`), `TestResultsProgress` (полоса прошедших и упавших долей с подписью `passed/total`), `TestResultsContent`, `TestSuite` (`name`, `status`, `open`, `default_open`, `on_open_change`; собирает `Collapsible`), `TestSuiteName` (триггер с шевроном, статусом и именем; `children` ставятся справа, например `TestSuiteStats`), `TestSuiteStats` (`passed`, `failed`, `skipped` как `Option<u32>`), `TestSuiteContent` (виден только в раскрытом состоянии), `Test` (`name`, `status`, `duration_ms`; `children` ставятся под строкой, например `TestError`), `TestStatusIcon` (значок статуса; перечисление `TestStatus` с вариантами `Passed`, `Failed`, `Skipped`, `Running`), `TestName`, `TestDuration`, `TestError`, `TestErrorMessage`, `TestErrorStack`
+- `TestSuiteName` не принимает `..attributes`, потому что `CollapsibleTrigger` не принимает атрибуты, как и `QueueSectionTrigger`
+- Зависит от `collapsible` и `badge`, которые ставятся автоматически
+- Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
+
+### Tool
+
+- Части: `Tool` (корень; `open`, `default_open`, `on_open_change`; собирает `Collapsible`), `ToolHeader` (`state: ToolState`, `title`, `tool_name`; строка с именем, бейджем статуса и шевроном, по умолчанию имя «Tool»), `ToolContent` (виден только в раскрытом состоянии), `ToolInput` (`input: String`, выводится в моноширинном блоке; сериализацию делает вызывающий код), `ToolOutput` (`output: Option<String>`, `error_text: Option<String>`; ничего не выводит, если оба пусты)
+- `ToolState` (перечисление): `InputStreaming` (по умолчанию), `InputAvailable`, `ApprovalRequested`, `ApprovalResponded`, `OutputAvailable`, `OutputError`, `OutputDenied`; каждому состоянию соответствуют свой значок и подпись бейджа
+- `ToolHeader` не передаёт `..attributes` на кнопку, поэтому его атрибуты попадают на обёртку `div`
+- Зависит от `collapsible` и `badge`, которые ставятся автоматически
 - Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
