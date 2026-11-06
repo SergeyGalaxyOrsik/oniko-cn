@@ -1,4 +1,26 @@
 .style-mira {
+  /* MARK: Placeholders upstream leaves without a rule */
+  .cn-accordion-trigger-icon {
+  }
+
+  .cn-resizable-panel-group {
+  }
+
+  .cn-rtl-flip {
+  }
+
+  .cn-scroll-area {
+  }
+
+  .cn-scroll-area-viewport {
+  }
+
+  .cn-tabs-list-variant-default {
+  }
+
+  .cn-tabs-list-variant-line {
+  }
+
   /* MARK: Accordion */
   .cn-accordion {
     @apply overflow-hidden rounded-md border;

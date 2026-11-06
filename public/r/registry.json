@@ -73,7 +73,7 @@
     {
       "name": "collapsible",
       "type": "registry:ui",
-      "description": "An interactive region that shows and hides a block of content."
+      "description": "An interactive component which expands and collapses a panel."
     },
     {
       "name": "calendar",
@@ -88,7 +88,7 @@
     {
       "name": "carousel",
       "type": "registry:ui",
-      "description": "A horizontal or vertical slideshow with previous and next controls."
+      "description": "A carousel with motion and swipe built using native scroll snapping."
     },
     {
       "name": "button-group",
@@ -318,12 +318,12 @@
     {
       "name": "resizable",
       "type": "registry:ui",
-      "description": "Panels separated by handles that the user drags or moves with the arrow keys."
+      "description": "Accessible resizable panel groups and layouts with keyboard support."
     },
     {
       "name": "scroll-area",
       "type": "registry:ui",
-      "description": "A scrollable region with a styled viewport and a choice of scroll axis."
+      "description": "Augments native scroll functionality for custom, cross-browser styling."
     },
     {
       "name": "select",
@@ -363,7 +363,7 @@
     {
       "name": "tabs",
       "type": "registry:ui",
-      "description": "A set of layered sections of content, where one section is shown at a time."
+      "description": "A set of layered sections of content, known as tab panels, that are displayed one at a time."
     },
     {
       "name": "textarea",

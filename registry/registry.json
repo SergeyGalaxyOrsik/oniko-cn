@@ -65,6 +65,7 @@
       "title": "Accordion",
       "description": "A vertically stacked set of interactive headings that each reveal a section of content.",
       "dependencies": ["oniko-cn@0.1"],
+      "registryDependencies": ["collapsible"],
       "files": [{ "path": "ui/accordion.rs", "type": "registry:ui" }]
     },
     {
@@ -87,8 +88,9 @@
       "name": "collapsible",
       "type": "registry:ui",
       "title": "Collapsible",
-      "description": "An interactive region that shows and hides a block of content.",
+      "description": "An interactive component which expands and collapses a panel.",
       "dependencies": ["oniko-cn@0.1"],
+      "registryDependencies": ["button"],
       "files": [{ "path": "ui/collapsible.rs", "type": "registry:ui" }]
     },
     {
@@ -112,7 +114,7 @@
       "name": "carousel",
       "type": "registry:ui",
       "title": "Carousel",
-      "description": "A horizontal or vertical slideshow with previous and next controls.",
+      "description": "A carousel with motion and swipe built using native scroll snapping.",
       "dependencies": ["oniko-cn@0.1"],
       "registryDependencies": ["button"],
       "files": [{ "path": "ui/carousel.rs", "type": "registry:ui" }]
@@ -507,7 +509,7 @@
       "name": "resizable",
       "type": "registry:ui",
       "title": "Resizable",
-      "description": "Panels separated by handles that the user drags or moves with the arrow keys.",
+      "description": "Accessible resizable panel groups and layouts with keyboard support.",
       "dependencies": ["oniko-cn@0.1"],
       "files": [{ "path": "ui/resizable.rs", "type": "registry:ui" }]
     },
@@ -515,7 +517,7 @@
       "name": "scroll-area",
       "type": "registry:ui",
       "title": "Scroll Area",
-      "description": "A scrollable region with a styled viewport and a choice of scroll axis.",
+      "description": "Augments native scroll functionality for custom, cross-browser styling.",
       "dependencies": ["oniko-cn@0.1"],
       "files": [{ "path": "ui/scroll_area.rs", "type": "registry:ui" }]
     },
@@ -581,7 +583,7 @@
       "name": "tabs",
       "type": "registry:ui",
       "title": "Tabs",
-      "description": "A set of layered sections of content, where one section is shown at a time.",
+      "description": "A set of layered sections of content, known as tab panels, that are displayed one at a time.",
       "dependencies": ["oniko-cn@0.1"],
       "files": [{ "path": "ui/tabs.rs", "type": "registry:ui" }]
     },

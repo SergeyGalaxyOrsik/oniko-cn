@@ -1,4 +1,26 @@
 .style-rhea {
+  /* MARK: Placeholders upstream leaves without a rule */
+  .cn-accordion-trigger-icon {
+  }
+
+  .cn-resizable-panel-group {
+  }
+
+  .cn-rtl-flip {
+  }
+
+  .cn-scroll-area {
+  }
+
+  .cn-scroll-area-viewport {
+  }
+
+  .cn-tabs-list-variant-default {
+  }
+
+  .cn-tabs-list-variant-line {
+  }
+
   /* MARK: Slider */
   .cn-slider {
     @apply data-vertical:min-h-40;
