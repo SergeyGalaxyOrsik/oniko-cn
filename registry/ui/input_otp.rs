@@ -3,18 +3,20 @@
 //! Compose an `InputOTP` with one or more `InputOTPGroup`s of `InputOTPSlot`s, optionally split by `InputOTPSeparator`.
 //! The slots only draw the value; a single transparent `input` covers the whole component and receives the typing,
 //! so the keyboard, IME, paste and one-time-code autofill work the same on web and desktop.
+//! As in shadcn/ui, HTML attributes and `class` go to that `input`; use `container_class` for the wrapping element.
 //!
 //! Installed by oniko-cn. This file is yours: edit it freely.
 
 use dioxus::prelude::*;
 use oniko_cn::{cn, take_class};
 
-/// Which characters the input accepts.
+/// Which characters the input accepts. Stands in for the `REGEXP_ONLY_*` patterns of `input-otp`.
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum OtpPattern {
     #[default]
     Any,
     Digits,
+    Chars,
     DigitsAndChars,
 }
 
@@ -23,6 +25,7 @@ impl OtpPattern {
         match self {
             Self::Any => true,
             Self::Digits => c.is_ascii_digit(),
+            Self::Chars => c.is_ascii_alphabetic(),
             Self::DigitsAndChars => c.is_ascii_alphanumeric(),
         }
     }
@@ -50,33 +53,38 @@ fn active_index(len: usize, max_length: usize) -> usize {
     len.min(max_length.saturating_sub(1))
 }
 
-/// The one-time-code field. Pass `value` to control it, or leave it out and use `default_value`.
+/// The one-time-code field. Pass `value` to control it, or leave it out to let the field keep the text.
 #[component]
 pub fn InputOTP(
     /// Number of characters the field holds.
     #[props(default = 6)]
     max_length: usize,
     #[props(default)] pattern: OtpPattern,
-    /// Controlled value. Update it from `on_value_change`.
+    /// Controlled value. Update it from `onchange`.
     value: Option<String>,
     /// Initial value of an uncontrolled field.
     #[props(default)]
     default_value: String,
     #[props(default)] disabled: bool,
-    /// Name of the underlying input, so the code is included in a form submission.
-    name: Option<String>,
-    /// Accessible name of the input. Defaults to "One-time code".
-    aria_label: Option<String>,
-    on_value_change: Option<EventHandler<String>>,
+    /// Value of the `inputmode` attribute. Defaults to "numeric", like `input-otp`.
+    #[props(default = "numeric".to_string())]
+    inputmode: String,
+    /// Classes for the wrapping element. `class` goes to the `input`.
+    container_class: Option<String>,
+    onchange: Option<EventHandler<String>>,
     /// Called once when the value reaches `max_length` characters.
-    on_complete: Option<EventHandler<String>>,
-    #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,
+    oncomplete: Option<EventHandler<String>>,
+    #[props(extends = GlobalAttributes, extends = input)] attributes: Vec<Attribute>,
     children: Element,
 ) -> Element {
     let mut attributes = attributes;
-    let class = cn!(
+    let input_class = cn!(
+        "cn-input-otp-input disabled:cursor-not-allowed",
+        take_class(&mut attributes).as_deref()
+    );
+    let container_class = cn!(
         "cn-input-otp relative flex items-center has-disabled:opacity-50",
-        take_class(&mut attributes)
+        container_class.as_deref()
     );
 
     let mut current = use_signal(|| value.clone().unwrap_or(default_value));
@@ -96,29 +104,21 @@ pub fn InputOTP(
         disabled: disabled_signal,
     });
 
-    let inputmode = if pattern == OtpPattern::Digits {
-        "numeric"
-    } else {
-        "text"
-    };
-
     rsx! {
-        div {
-            "data-slot": "input-otp",
-            "data-disabled": disabled.then_some("true"),
-            class: class,
-            ..attributes,
+        div { class: container_class,
             {children}
             // Last in the DOM so it paints above the slots. It is transparent: the slots draw the characters.
             input {
-                "data-slot": "input-otp-input",
-                class: "absolute inset-0 size-full cursor-text opacity-0 outline-none disabled:cursor-not-allowed",
+                "data-slot": "input-otp",
+                class: cn!(
+                    "absolute inset-0 size-full cursor-text opacity-0 outline-none",
+                    input_class.as_str()
+                ),
                 r#type: "text",
-                name: name,
                 inputmode: inputmode,
                 autocomplete: "one-time-code",
+                spellcheck: false,
                 maxlength: "{max_length}",
-                "aria-label": aria_label.unwrap_or_else(|| "One-time code".to_string()),
                 value: current(),
                 disabled: disabled,
                 onfocus: move |_| focused.set(true),
@@ -146,16 +146,17 @@ pub fn InputOTP(
                     if !controlled {
                         current.set(next.clone());
                     }
-                    if let Some(handler) = on_value_change {
+                    if let Some(handler) = onchange {
                         handler.call(next.clone());
                     }
                     if is_full
                         && !was_full
-                        && let Some(handler) = on_complete
+                        && let Some(handler) = oncomplete
                     {
                         handler.call(next);
                     }
                 },
+                ..attributes,
             }
         }
     }
@@ -169,7 +170,7 @@ pub fn InputOTPGroup(
     let mut attributes = attributes;
     let class = cn!(
         "cn-input-otp-group flex items-center",
-        take_class(&mut attributes)
+        take_class(&mut attributes).as_deref()
     );
 
     rsx! {
@@ -183,39 +184,37 @@ pub fn InputOTPGroup(
 }
 
 /// One character cell. `index` is its position in the whole field, starting at 0.
+/// Set `"aria-invalid": "true"` to draw it in the destructive color.
 #[component]
 pub fn InputOTPSlot(
     index: usize,
-    /// Marks the slot as invalid (`aria-invalid`), which the styles draw in the destructive color.
-    #[props(default)]
-    invalid: bool,
     #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,
 ) -> Element {
     let ctx = use_context::<OtpContext>();
     let mut attributes = attributes;
     let class = cn!(
-        "cn-input-otp-slot flex items-center justify-center",
-        take_class(&mut attributes)
+        "cn-input-otp-slot relative flex items-center justify-center data-[active=true]:z-10",
+        take_class(&mut attributes).as_deref()
     );
 
     let text = (ctx.value)();
     let character = text.chars().nth(index);
-    let disabled = (ctx.disabled)();
     let active = (ctx.focused)()
-        && !disabled
+        && !(ctx.disabled)()
         && index == active_index(text.chars().count(), (ctx.max_length)());
+    let has_fake_caret = active && character.is_none();
 
     rsx! {
         div {
             "data-slot": "input-otp-slot",
-            "data-active": active.then_some("true"),
-            "data-disabled": disabled.then_some("true"),
-            "aria-invalid": invalid.then_some("true"),
+            "data-active": if active { "true" } else { "false" },
             class: class,
             ..attributes,
             {character.map(|c| c.to_string())}
-            if active && character.is_none() {
-                div { "data-slot": "input-otp-caret", class: "cn-input-otp-caret-line" }
+            if has_fake_caret {
+                div { class: "cn-input-otp-caret pointer-events-none absolute inset-0 flex items-center justify-center",
+                    div { class: "cn-input-otp-caret-line" }
+                }
             }
         }
     }
@@ -229,14 +228,14 @@ pub fn InputOTPSeparator(
     let mut attributes = attributes;
     let class = cn!(
         "cn-input-otp-separator flex items-center",
-        take_class(&mut attributes)
+        take_class(&mut attributes).as_deref()
     );
 
     rsx! {
         div {
             "data-slot": "input-otp-separator",
-            role: "separator",
             class: class,
+            role: "separator",
             ..attributes,
             svg {
                 view_box: "0 0 24 24",

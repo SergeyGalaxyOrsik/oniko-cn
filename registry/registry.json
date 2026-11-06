@@ -131,7 +131,7 @@
       "title": "Input Group",
       "description": "Adds addons, buttons and helper text to an input or a textarea.",
       "dependencies": ["oniko-cn@0.1"],
-      "registryDependencies": ["button"],
+      "registryDependencies": ["button", "input", "textarea"],
       "files": [{ "path": "ui/input_group.rs", "type": "registry:ui" }]
     },
     {
@@ -233,6 +233,7 @@
       "title": "Field",
       "description": "Combines a label, a control, helper text and a validation message into one accessible form field.",
       "dependencies": ["oniko-cn@0.1"],
+      "registryDependencies": ["label", "separator"],
       "files": [{ "path": "ui/field.rs", "type": "registry:ui" }]
     },
     {

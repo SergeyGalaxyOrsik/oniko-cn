@@ -8,7 +8,12 @@
 use dioxus::prelude::*;
 use oniko_cn::{cn, take_class};
 
-const TEXTAREA_BASE: &str = "border-input dark:bg-input/30 focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 rounded-md border bg-transparent px-2.5 py-2 text-base shadow-xs transition-[color,box-shadow] focus-visible:ring-3 aria-invalid:ring-3 md:text-sm flex field-sizing-content min-h-16 w-full min-w-0 outline-none disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50";
+const TEXTAREA_BASE: &str = "border-input dark:bg-input/30 focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 rounded-md border bg-transparent px-2.5 py-2 text-base shadow-xs transition-[color,box-shadow] focus-visible:ring-3 aria-invalid:ring-3 md:text-sm flex field-sizing-content min-h-16 w-full outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50";
+
+/// Textarea classes for any element, e.g. the control inside an input group.
+pub fn textarea_variants(class: Option<&str>) -> String {
+    cn!(TEXTAREA_BASE, class)
+}
 
 #[component]
 pub fn Textarea(
@@ -21,7 +26,7 @@ pub fn Textarea(
     #[props(extends = GlobalAttributes, extends = textarea)] attributes: Vec<Attribute>,
 ) -> Element {
     let mut attributes = attributes;
-    let class = cn!(TEXTAREA_BASE, take_class(&mut attributes));
+    let class = textarea_variants(take_class(&mut attributes).as_deref());
 
     rsx! {
         textarea {

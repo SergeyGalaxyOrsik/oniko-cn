@@ -3,6 +3,7 @@
 //!
 //! Use it where the platform picker is what you want, for example in long forms or on mobile.
 //! Pass `value`, `onchange`, `disabled` and `aria-invalid` directly on the component.
+//! As in shadcn/ui, a `class` you pass lands on the wrapper, not on the `select`.
 //!
 //! Installed by oniko-cn. This file is yours: edit it freely.
 
@@ -25,7 +26,7 @@ impl NativeSelectSize {
     }
 }
 
-const NATIVE_SELECT_WRAPPER: &str = "relative w-full has-[select:disabled]:opacity-50";
+const NATIVE_SELECT_WRAPPER: &str = "cn-native-select-wrapper group/native-select relative w-fit has-[select:disabled]:opacity-50";
 
 const NATIVE_SELECT_BASE: &str =
     "cn-native-select outline-none disabled:pointer-events-none disabled:cursor-not-allowed";
@@ -41,16 +42,20 @@ pub fn NativeSelect(
     children: Element,
 ) -> Element {
     let mut attributes = attributes;
-    let class = cn!(NATIVE_SELECT_BASE, take_class(&mut attributes).as_deref());
+    let wrapper_class = cn!(
+        NATIVE_SELECT_WRAPPER,
+        take_class(&mut attributes).as_deref()
+    );
 
     rsx! {
         div {
             "data-slot": "native-select-wrapper",
-            class: NATIVE_SELECT_WRAPPER,
+            "data-size": size.data_size(),
+            class: wrapper_class,
             select {
                 "data-slot": "native-select",
                 "data-size": size.data_size(),
-                class: class,
+                class: NATIVE_SELECT_BASE,
                 onchange: move |event| {
                     if let Some(handler) = onchange {
                         handler.call(event);
@@ -76,7 +81,7 @@ pub fn NativeSelect(
             }
             svg {
                 "data-slot": "native-select-icon",
-                class: "cn-native-select-icon pointer-events-none absolute",
+                class: "cn-native-select-icon pointer-events-none absolute select-none",
                 "aria-hidden": "true",
                 view_box: "0 0 24 24",
                 fill: "none",
@@ -92,16 +97,19 @@ pub fn NativeSelect(
 
 #[component]
 pub fn NativeSelectOption(
-    value: Option<String>,
-    #[props(default)] disabled: bool,
     #[props(extends = GlobalAttributes, extends = option)] attributes: Vec<Attribute>,
     children: Element,
 ) -> Element {
+    let mut attributes = attributes;
+    let class = cn!(
+        "bg-[Canvas] text-[CanvasText]",
+        take_class(&mut attributes).as_deref()
+    );
+
     rsx! {
         option {
             "data-slot": "native-select-option",
-            value: value,
-            disabled: disabled,
+            class: class,
             ..attributes,
             {children}
         }
@@ -110,16 +118,19 @@ pub fn NativeSelectOption(
 
 #[component]
 pub fn NativeSelectOptGroup(
-    label: String,
-    #[props(default)] disabled: bool,
     #[props(extends = GlobalAttributes, extends = optgroup)] attributes: Vec<Attribute>,
     children: Element,
 ) -> Element {
+    let mut attributes = attributes;
+    let class = cn!(
+        "bg-[Canvas] text-[CanvasText]",
+        take_class(&mut attributes).as_deref()
+    );
+
     rsx! {
         optgroup {
             "data-slot": "native-select-optgroup",
-            label: label,
-            disabled: disabled,
+            class: class,
             ..attributes,
             {children}
         }
