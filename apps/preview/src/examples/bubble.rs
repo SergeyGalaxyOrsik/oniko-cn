@@ -13,7 +13,7 @@ use crate::components::ui::collapsible::{Collapsible, CollapsibleTrigger};
 use crate::components::ui::popover::{
     Popover, PopoverContent, PopoverDescription, PopoverHeader, PopoverTitle, PopoverTrigger,
 };
-use crate::components::ui::toast::{ToastOptions, ToastProvider, ToastVariant, Toaster, use_toast};
+use crate::components::ui::toast::{ToastOptions, ToastProvider, ToastType, Toaster, toast};
 use crate::components::ui::tooltip::{Tooltip, TooltipContent, TooltipTrigger};
 
 #[component]
@@ -194,7 +194,7 @@ fn BubbleLinkButtonDemo() -> Element {
 
 #[component]
 fn LinkButtonBubbles() -> Element {
-    let toast = use_toast();
+    let toast = toast();
     let messages = [
         ("I forgot my password", "You clicked forgot password"),
         (
@@ -220,7 +220,7 @@ fn LinkButtonBubbles() -> Element {
                         align: BubbleAlign::End,
                         BubbleContentButton {
                             onclick: move |_| {
-                                toast.show(ToastOptions::new(message));
+                                toast.add(ToastOptions::new(message));
                             },
                             "{label}"
                         }
@@ -245,7 +245,7 @@ fn BubbleReactionsDemo() -> Element {
 
 #[component]
 fn ReactionBubbles() -> Element {
-    let toast = use_toast();
+    let toast = toast();
 
     rsx! {
         div { class: "flex w-full max-w-sm flex-col gap-12 py-12",
@@ -286,8 +286,8 @@ fn ReactionBubbles() -> Element {
                         size: ButtonSize::Xs,
                         onclick: move |_| {
                             let mut options = ToastOptions::new("You clicked yes, running command...");
-                            options.variant = ToastVariant::Success;
-                            toast.show(options);
+                            options.kind = Some(ToastType::Success);
+                            toast.add(options);
                         },
                         "Yes, run it"
                     }

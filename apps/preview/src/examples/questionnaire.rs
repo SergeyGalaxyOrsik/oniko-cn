@@ -23,7 +23,7 @@ use crate::components::ui::questionnaire::{
     QuestionnaireRenderProps, QuestionnaireShortcuts, QuestionnaireSkip, QuestionnaireSubmit,
     QuestionnaireTitle,
 };
-use crate::components::ui::toast::{ToastHandle, ToastOptions, ToastProvider, Toaster, use_toast};
+use crate::components::ui::toast::{ToastManager, ToastOptions, ToastProvider, Toaster, toast};
 
 #[component]
 pub fn Examples() -> Element {
@@ -77,8 +77,8 @@ fn joined_or_none(values: Vec<String>) -> String {
     }
 }
 
-fn show_toast(toast: ToastHandle, title: &str, description: String) {
-    toast.show(ToastOptions {
+fn show_toast(toast: ToastManager, title: &str, description: String) {
+    toast.add(ToastOptions {
         description: Some(description),
         ..ToastOptions::new(title)
     });
@@ -207,13 +207,13 @@ fn demo_items() -> Vec<QuestionnaireItemDefinition> {
 
 #[component]
 fn QuestionnaireDemo() -> Element {
-    let toast = use_toast();
+    let toast = toast();
     let handle_submit = move |event: FormEvent| {
         event.prevent_default();
         let direction = form_get(&event, "direction");
         let signals = form_get_all(&event, "signals");
         let timing = form_get(&event, "timing");
-        toast.show(ToastOptions {
+        toast.add(ToastOptions {
             description: Some(format!(
                 "Direction: {} · Progress signals: {} · Timing: {}",
                 or_none(direction),
@@ -273,7 +273,7 @@ fn QuestionnaireDemo() -> Element {
 
 #[component]
 fn QuestionnaireMultiple() -> Element {
-    let toast = use_toast();
+    let toast = toast();
     let handle_submit = move |event: FormEvent| {
         event.prevent_default();
         let context = form_get_all(&event, "context");
@@ -316,7 +316,7 @@ fn QuestionnaireMultiple() -> Element {
 
 #[component]
 fn QuestionnaireFreeform() -> Element {
-    let toast = use_toast();
+    let toast = toast();
     let handle_submit = move |event: FormEvent| {
         event.prevent_default();
         let approach = form_get(&event, "approach");
@@ -362,7 +362,7 @@ fn QuestionnaireFreeform() -> Element {
 
 #[component]
 fn QuestionnaireSkipExample() -> Element {
-    let toast = use_toast();
+    let toast = toast();
     let mut constraint_status = use_signal(|| QuestionnaireItemStatus::Unanswered);
     let handle_submit = move |event: FormEvent| {
         event.prevent_default();
@@ -447,7 +447,7 @@ fn QuestionnaireSkipExample() -> Element {
 
 #[component]
 fn QuestionnaireShortcutsExample() -> Element {
-    let toast = use_toast();
+    let toast = toast();
     let mut shortcuts = use_signal(|| Some(QuestionnaireShortcuts::Letters));
     let handle_submit = move |event: FormEvent| {
         event.prevent_default();
@@ -573,7 +573,7 @@ fn ValidationError(name: &'static str, errors: Signal<BTreeMap<&'static str, Str
 
 #[component]
 fn QuestionnaireValidation() -> Element {
-    let toast = use_toast();
+    let toast = toast();
     let mut item = use_signal(|| "detail".to_string());
     let mut errors = use_signal(BTreeMap::<&'static str, String>::new);
     let mut clear_error = move |name: &'static str| {
@@ -697,7 +697,7 @@ fn checkpoint_label(item: &str) -> &'static str {
 
 #[component]
 fn QuestionnaireControlled() -> Element {
-    let toast = use_toast();
+    let toast = toast();
     let mut item = use_signal(|| "scope".to_string());
     let handle_submit = move |event: FormEvent| {
         event.prevent_default();
@@ -778,11 +778,11 @@ fn QuestionnaireControlled() -> Element {
 
 #[component]
 fn QuestionnaireResume() -> Element {
-    let toast = use_toast();
+    let toast = toast();
     let handle_submit = move |event: FormEvent| {
         event.prevent_default();
         let notes = form_get(&event, "notes").filter(|notes| !notes.is_empty());
-        toast.show(ToastOptions {
+        toast.add(ToastOptions {
             description: Some(format!(
                 "Migration: {} · Verification: {} · Notes: {}",
                 or_none(form_get(&event, "change")),
@@ -804,7 +804,7 @@ fn QuestionnaireResume() -> Element {
                     QuestionnaireItemDefinition::new("notes"),
                 ],
                 onreset: move |_| {
-                    toast.show(ToastOptions::new("Saved answers restored"));
+                    toast.add(ToastOptions::new("Saved answers restored"));
                 },
                 onsubmit: handle_submit,
                 QuestionnaireProgress {}
@@ -852,7 +852,7 @@ fn QuestionnaireResume() -> Element {
 
 #[component]
 fn QuestionnaireConditional() -> Element {
-    let toast = use_toast();
+    let toast = toast();
     let mut runtime = use_signal(|| "local".to_string());
     let items = use_memo(move || {
         vec![
@@ -938,7 +938,7 @@ fn QuestionnaireConditional() -> Element {
 
 #[component]
 fn QuestionnaireNavigationState() -> Element {
-    let toast = use_toast();
+    let toast = toast();
     let mut item = use_signal(|| "permission".to_string());
     let mut statuses = use_signal(|| {
         BTreeMap::from([
@@ -1022,7 +1022,7 @@ fn QuestionnaireNavigationState() -> Element {
 
 #[component]
 fn QuestionnaireProgressExample() -> Element {
-    let toast = use_toast();
+    let toast = toast();
     let handle_submit = move |event: FormEvent| {
         event.prevent_default();
         show_toast(
@@ -1119,7 +1119,7 @@ const ANIMATED_ITEM_CLASS: &str = "data-active:animate-in data-active:fade-in-0 
 
 #[component]
 fn QuestionnaireAnimated() -> Element {
-    let toast = use_toast();
+    let toast = toast();
     let handle_submit = move |event: FormEvent| {
         event.prevent_default();
         show_toast(
@@ -1204,7 +1204,7 @@ fn card_description(props: QuestionnaireRenderProps) -> Element {
 
 #[component]
 fn QuestionnaireCard() -> Element {
-    let toast = use_toast();
+    let toast = toast();
     let task_title_id = "questionnaire-card-task-title";
     let output_title_id = "questionnaire-card-output-title";
     let handle_submit = move |event: FormEvent| {
@@ -1307,12 +1307,12 @@ fn dialog_description(props: QuestionnaireRenderProps) -> Element {
 
 #[component]
 fn QuestionnaireDialog() -> Element {
-    let toast = use_toast();
+    let toast = toast();
     let mut open = use_signal(|| false);
     let handle_submit = move |event: FormEvent| {
         event.prevent_default();
         open.set(false);
-        toast.show(ToastOptions {
+        toast.add(ToastOptions {
             description: Some(format!(
                 "Scope: {} · Verification: {}",
                 or_none(form_get(&event, "scope")),

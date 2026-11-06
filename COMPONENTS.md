@@ -83,6 +83,7 @@
 | Switch | `registry/ui/switch.rs` | `oniko add switch` | web, desktop |
 | Tabs | `registry/ui/tabs.rs` | `oniko add tabs` | web, desktop |
 | Textarea | `registry/ui/textarea.rs` | `oniko add textarea` | web, desktop |
+| Sonner | `registry/ui/sonner.rs` | `oniko add sonner` | web, desktop |
 | Toast | `registry/ui/toast.rs` | `oniko add toast` | web, desktop |
 | Toggle | `registry/ui/toggle.rs` | `oniko add toggle` | web, desktop |
 | Toggle Group | `registry/ui/toggle_group.rs` | `oniko add toggle-group` | web, desktop |
@@ -343,10 +344,12 @@
 
 ### Popover
 
-- Части: `Popover`, `PopoverTrigger`, `PopoverContent`
-- `Popover`: `default_open`, либо управляемое через `open` и `on_open_change`
-- Панель закрывается по клику вне её (прозрачный слой на весь экран), по `Escape`
-- Позиция: под триггером, CSS; переворота у края окна и `dioxus-primitives` нет
+- Части: `Popover`, `PopoverTrigger`, `PopoverContent`, `PopoverHeader`, `PopoverTitle`, `PopoverDescription`
+- `Popover`: `default_open`, либо управляемое через `open` и `on_open_change`; как в Base UI, сам не рендерит элемент, поэтому триггер лежит прямо в родителе (например, в `ButtonGroup`)
+- `PopoverTrigger` рендерит `<button>`; внешний вид задаёт `class` (например, `button_variants(...)`), другой элемент задаёт `render` (получает атрибуты триггера и `children`, атрибуты нужно передать элементу через `..attributes`)
+- `PopoverContent`: `side` (`Top`, `Right`, `Bottom` по умолчанию, `Left`, `InlineStart`, `InlineEnd`), `align` (`Start`, `Center` по умолчанию, `End`), `side_offset` (4), `align_offset` (0); позиционирует `position: fixed` по `MountedData::get_client_rect` триггера, переворачивается на противоположную сторону и сдвигается вдоль оси у края окна; `data-side`, `data-align`, `data-open`/`data-closed`, `data-ending-style` ставятся на позиционер и на панель
+- Закрывается по клику вне панели, по `Escape` (только самый вложенный; фокус возвращается на триггер); при открытии фокус получает первый доступный для Tab элемент панели
+- Панель не выносится в конец `<body>`: предок с `transform` становится её контейнером; `open_on_hover`, `modal` и `data-starting-style` не реализованы
 - Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
 
 ### Date Picker
@@ -376,10 +379,11 @@
 ### Hover Card
 
 - Части: `HoverCard`, `HoverCardTrigger`, `HoverCardContent`
-- `HoverCard`: `open_delay` (700 мс по умолчанию), `close_delay` (300 мс), `default_open`, либо управляемое через `open` и `on_open_change`
-- `HoverCardContent`: `side` (`Top`, `Right`, `Bottom` по умолчанию, `Left`) и `align` (`Start`, `Center` по умолчанию, `End`)
-- Открывается при наведении указателя и фокусе на триггер, закрывается по уходу указателя с триггера и карточки, по `Escape`
-- Задержки работают через `setTimeout` в `document::eval`; переворота у края окна и `dioxus-primitives` нет
+- `HoverCard`: `default_open`, либо управляемое через `open` и `on_open_change`; сам не рендерит элемент; `open_delay` и `close_delay` остались как значения по умолчанию для триггера
+- `HoverCardTrigger` рендерит `<a>` (как `PreviewCard.Trigger`, с `tabindex="0"`); `delay` (600 мс) и `close_delay` (300 мс) задаются на триггере; другой элемент задаёт `render`
+- `HoverCardContent`: `side` (включая `InlineStart`, `InlineEnd`), `align`, `side_offset` (4), `align_offset` (4); позиционирование, переворот и сдвиг как у `Popover`
+- Открывается при наведении и фокусе на триггер, закрывается после ухода указателя с триггера и карточки, по `Escape`
+- Задержки работают через `setTimeout` в `document::eval`; карточка не выносится в конец `<body>`
 - Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
 
 ### Empty
@@ -690,6 +694,24 @@
 - Для RTL задайте `dir: "rtl"` на самом слайдере: направление от родителей не читается
 - Перетаскивание отслеживается только пока указатель над слайдером; скрытого `<input>` нет
 
+### Toast
+
+- Как в shadcn/ui на Base UI: `Toaster` (провайдер, портал, область и список), `ToastProvider` (`limit` 3, `timeout` 5000 мс), `ToastPortal`, `ToastViewport`, `Toast`, `ToastContent`, `ToastTitle`, `ToastDescription`, `ToastAction`, `ToastClose`, `ToastIcon`
+- Менеджер глобальный: `toast().add(ToastOptions { title, description, kind, priority, timeout, action, .. })` возвращает id; `toast().close(id)`, `close_all()`, `update(id, options)`, `promise(future, loading, success, error)`
+- `ToastType`: `Success`, `Info`, `Warning`, `Error`, `Loading` (значок слева; `Loading` не закрывается сам); `ToastPriority::High` объявляется как `assertive`
+- Стопка: новый тост спереди, старые выглядывают сзади, при наведении или фокусе область раскрывается и таймеры приостанавливаются; свайп вниз или вправо закрывает
+- `Toaster` нужно положить один раз в корень приложения; `F6` и скрытый анонсер Base UI не реализованы, тосты не выносятся в конец `<body>`
+- Зависит от `button` (ставится автоматически)
+- Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
+
+### Sonner
+
+- Один `Toaster` и функции `toast`, `toast_success`, `toast_info`, `toast_warning`, `toast_error`, `toast_loading`, `toast_promise`, `dismiss`; вторым аргументом идёт `ToastOptions { description, action, position, duration_ms, id }`
+- `Toaster`: `position` (`Position`, по умолчанию `BottomRight`), `expand`, `visible_toasts` (3), `duration` (4000 мс), `gap`, `close_button`
+- Стопка, раскрытие при наведении, свайп и шесть позиций написаны классами Tailwind по таблице стилей Sonner и тем же `data-*` и CSS-переменным; значки и `cn-toast` как в shadcn/ui
+- Не реализованы: `richColors`, `invert`, произвольный JSX в тосте, горячая клавиша `alt+T`
+- Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
+
 ### Toggle
 
 - Проп `pressed` делает компонент управляемым, `default_pressed` задаёт начальное значение, `on_pressed_change` получает новое; варианты `ToggleVariant` (`Default`, `Outline`), размеры `ToggleSize` (`Default`, `Sm`, `Lg`)
@@ -701,6 +723,15 @@
 - `value`/`default_value` хранят `Vec<String>`; `variant` и `size` группы перекрывают значения пунктов; `spacing` (по умолчанию 2) задаёт зазор, `0` склеивает пункты; `orientation`, `disabled`, `loop_focus`
 - Стрелки по оси группы, Home и End переносят фокус без изменения состояния; в Tab-порядке один пункт: тот, где был фокус, или первый доступный
 - Зависит от `toggle`, который ставится автоматически
+
+### Tooltip
+
+- Части: `TooltipProvider`, `Tooltip`, `TooltipTrigger`, `TooltipContent`
+- `TooltipProvider`: `delay` (0), `close_delay` (0), `timeout` (400 мс: следующая подсказка после закрытия предыдущей открывается без задержки); `Tooltip`: `default_open`, `open` с `on_open_change`, `disabled`; сам не рендерит элемент
+- `TooltipTrigger` рендерит `<button>`; `delay` и `close_delay` переопределяют значения провайдера; другой элемент (например, `span` вокруг отключённой кнопки) задаёт `render`
+- `TooltipContent`: `side` (по умолчанию `Top`, также `InlineStart`, `InlineEnd`), `side_offset` (4), `align`, `align_offset` (0); стрелка, `data-side`, переворот и сдвиг у края окна; `bg-foreground text-background` на содержимом и стрелке, как в shadcn/ui
+- Открывается при наведении (кроме касания) и фокусе, закрывается по уходу, потере фокуса, нажатию и `Escape`; подсказка не «наводимая»: она закрывается сразу, как уходит указатель с триггера
+- Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
 
 ### Progress
 

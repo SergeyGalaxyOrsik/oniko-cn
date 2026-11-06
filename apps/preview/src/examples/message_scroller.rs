@@ -39,7 +39,7 @@ use crate::components::ui::select::{
 };
 use crate::components::ui::slider::Slider;
 use crate::components::ui::tabs::{Tabs, TabsList, TabsTrigger};
-use crate::components::ui::toast::{ToastOptions, ToastProvider, Toaster, use_toast};
+use crate::components::ui::toast::{ToastOptions, ToastProvider, Toaster, toast};
 use crate::components::ui::toggle_group::{ToggleGroup, ToggleGroupItem};
 use crate::components::ui::tooltip::{Tooltip, TooltipContent, TooltipTrigger};
 
@@ -1257,7 +1257,7 @@ fn MessageScrollerLoadHistory() -> Element {
 
 #[component]
 fn LoadHistory() -> Element {
-    let toast = use_toast();
+    let toast = toast();
     let history = use_hook(|| script_messages("history", HISTORY_SCRIPT, usize::MAX));
     let mut demo_key = use_signal(|| 0u32);
     let mut visible_count = use_signal(|| INITIAL_VISIBLE_COUNT);
@@ -1312,7 +1312,7 @@ fn LoadHistory() -> Element {
                             disabled: !can_load_history,
                             onclick: move |_| {
                                 visible_count.set(total);
-                                toast.show(ToastOptions {
+                                toast.add(ToastOptions {
                                     description: Some("Scroll up to see earlier messages.".into()),
                                     ..ToastOptions::new("History loaded")
                                 });

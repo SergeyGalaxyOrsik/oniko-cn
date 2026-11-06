@@ -18,7 +18,7 @@ use crate::components::ui::field::{
 use crate::components::ui::input::Input;
 use crate::components::ui::label::Label;
 use crate::components::ui::radio_group::{RadioGroup, RadioGroupItem};
-use crate::components::ui::toast::{ToastOptions, ToastProvider, Toaster, use_toast};
+use crate::components::ui::toast::{ToastOptions, ToastProvider, Toaster, toast};
 
 struct DeliveryTime {
     value: &'static str,
@@ -118,7 +118,7 @@ fn DrawerDemoInner() -> Element {
     let mut open = use_signal(|| false);
     let mut delivery_time = use_signal(|| "asap".to_string());
     let is_mobile = use_is_mobile();
-    let toast = use_toast();
+    let toast = toast();
 
     let handle_confirm = move |_| {
         let selected = delivery_time();
@@ -128,7 +128,7 @@ fn DrawerDemoInner() -> Element {
         open.set(false);
         let mut options = ToastOptions::new("Delivery time confirmed");
         options.description = Some(time.label.to_string());
-        toast.show(options);
+        toast.add(options);
     };
 
     rsx! {

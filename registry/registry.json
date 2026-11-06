@@ -201,7 +201,7 @@
       "name": "popover",
       "type": "registry:ui",
       "title": "Popover",
-      "description": "A floating panel that opens from a trigger and closes on outside click or Escape.",
+      "description": "Displays rich content in a portal, triggered by a button.",
       "dependencies": ["oniko-cn@0.1"],
       "files": [{ "path": "ui/popover.rs", "type": "registry:ui" }]
     },
@@ -226,7 +226,7 @@
       "name": "hover-card",
       "type": "registry:ui",
       "title": "Hover Card",
-      "description": "A floating card that opens when the pointer rests on, or focus lands on, a trigger.",
+      "description": "For sighted users to preview content available behind a link.",
       "dependencies": ["oniko-cn@0.1"],
       "files": [{ "path": "ui/hover_card.rs", "type": "registry:ui" }]
     },
@@ -615,10 +615,18 @@
       "name": "toast",
       "type": "registry:ui",
       "title": "Toast",
-      "description": "Displays short messages that dismiss themselves, with an optional action.",
+      "description": "A succinct message that is displayed temporarily.",
       "dependencies": ["oniko-cn@0.1"],
       "registryDependencies": ["button"],
       "files": [{ "path": "ui/toast.rs", "type": "registry:ui" }]
+    },
+    {
+      "name": "sonner",
+      "type": "registry:ui",
+      "title": "Sonner",
+      "description": "An opinionated toast component.",
+      "dependencies": ["oniko-cn@0.1"],
+      "files": [{ "path": "ui/sonner.rs", "type": "registry:ui" }]
     },
     {
       "name": "toggle",
@@ -641,7 +649,7 @@
       "name": "tooltip",
       "type": "registry:ui",
       "title": "Tooltip",
-      "description": "A short label that opens when the pointer rests on, or focus lands on, a trigger.",
+      "description": "A popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it.",
       "dependencies": ["oniko-cn@0.1"],
       "files": [{ "path": "ui/tooltip.rs", "type": "registry:ui" }]
     },

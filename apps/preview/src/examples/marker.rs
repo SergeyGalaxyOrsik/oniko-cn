@@ -8,7 +8,7 @@ use crate::components::ui::marker::{
     Marker, MarkerContent, MarkerIcon, MarkerVariant, marker_variants,
 };
 use crate::components::ui::spinner::Spinner;
-use crate::components::ui::toast::{ToastOptions, ToastProvider, Toaster, use_toast};
+use crate::components::ui::toast::{ToastOptions, ToastProvider, Toaster, toast};
 
 const PREVIEW: &str = "h-auto theme-blue";
 
@@ -205,7 +205,7 @@ fn MarkerLinkButtonDemo() -> Element {
 
 #[component]
 fn LinkButtonMarkers() -> Element {
-    let toast = use_toast();
+    let toast = toast();
 
     rsx! {
         div { class: "flex w-full max-w-sm flex-col gap-8 py-12",
@@ -225,7 +225,7 @@ fn LinkButtonMarkers() -> Element {
                 r#type: "button",
                 class: marker_variants(MarkerVariant::Default, Some("transition-colors hover:text-foreground")),
                 onclick: move |_| {
-                    toast.show(ToastOptions::new("You clicked the revert button"));
+                    toast.add(ToastOptions::new("You clicked the revert button"));
                 },
                 MarkerIcon {
                     RotateCcw {}
