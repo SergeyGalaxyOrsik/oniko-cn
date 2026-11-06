@@ -1,263 +1,173 @@
-//! Test Results: summarizes a test run with counts, a progress bar and collapsible suites of tests.
+//! Test results: a test run by the agent, built from `Trace` and `CodeBlock`. The summary line
+//! counts what passed and failed. Open it to see each suite, its tests and the error of each
+//! failure.
 //!
 //! Installed by oniko-cn. This file is yours: edit it freely.
 
 use dioxus::prelude::*;
-use oniko_cn::{cn, take_class};
 
-use super::badge::{Badge, BadgeVariant};
-use super::collapsible::{Collapsible, CollapsibleContent, CollapsibleTrigger};
+use super::code_block::{CodeBlock, CodeBlockContent, CodeBlockSize};
+use super::trace::{
+    Trace, TraceCollapsible, TraceCollapsibleContent, TraceCollapsibleTrigger, TraceIcon,
+    TraceLine, TraceStatus, TraceTitle,
+};
 
-#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+#[derive(Clone, Copy, PartialEq, Eq)]
 pub enum TestStatus {
-    #[default]
     Passed,
     Failed,
     Skipped,
-    Running,
 }
 
-impl TestStatus {
-    /// Value of the `data-status` attribute.
-    pub fn as_str(self) -> &'static str {
-        match self {
-            Self::Passed => "passed",
-            Self::Failed => "failed",
-            Self::Skipped => "skipped",
-            Self::Running => "running",
-        }
+#[derive(Clone, PartialEq)]
+pub struct Test {
+    pub name: String,
+    pub status: TestStatus,
+    pub error: Option<String>,
+}
+
+#[derive(Clone, PartialEq)]
+pub struct TestSuite {
+    pub name: String,
+    pub tests: Vec<Test>,
+}
+
+fn count(tests: &[&Test], status: TestStatus) -> usize {
+    tests.iter().filter(|test| test.status == status).count()
+}
+
+/// "5 tests, 1 failed, 1 skipped"
+fn format_counts(tests: &[&Test]) -> String {
+    let mut parts = vec![format!("{} tests", tests.len())];
+    let failed = count(tests, TestStatus::Failed);
+    let skipped = count(tests, TestStatus::Skipped);
+    if failed > 0 {
+        parts.push(format!("{failed} failed"));
     }
-
-    fn text_class(self) -> &'static str {
-        match self {
-            Self::Passed => "text-emerald-600 dark:text-emerald-400",
-            Self::Failed => "text-destructive",
-            Self::Skipped => "text-muted-foreground",
-            Self::Running => "text-blue-600 dark:text-blue-400",
-        }
+    if skipped > 0 {
+        parts.push(format!("{skipped} skipped"));
     }
+    parts.join(", ")
 }
 
-#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
-pub struct TestRunSummary {
-    pub passed: u32,
-    pub failed: u32,
-    pub skipped: u32,
-    pub total: u32,
-    pub duration_ms: Option<u64>,
-}
-
-#[derive(Clone, Copy)]
-struct TestResultsContext {
-    summary: Signal<Option<TestRunSummary>>,
-}
-
-#[derive(Clone, Copy)]
-struct TestSuiteContext {
-    name: Signal<String>,
-    status: Signal<TestStatus>,
-}
-
-/// A signal that follows a prop, so context shared with children never goes stale.
-fn use_prop<T: Clone + PartialEq + 'static>(value: T) -> Signal<T> {
-    let mut signal = use_signal(|| value.clone());
-    if *signal.peek() != value {
-        signal.set(value);
-    }
-    signal
-}
-
-fn read_summary() -> Option<TestRunSummary> {
-    try_use_context::<TestResultsContext>().and_then(|context| (context.summary)())
-}
-
-fn format_duration(ms: u64) -> String {
-    if ms < 1000 {
-        format!("{ms}ms")
+fn error_status(failed: bool) -> TraceStatus {
+    if failed {
+        TraceStatus::Error
     } else {
-        format!("{:.2}s", ms as f64 / 1000.0)
+        TraceStatus::Complete
     }
 }
 
-fn percent(part: u32, total: u32) -> f64 {
-    if total == 0 {
-        0.0
-    } else {
-        f64::from(part) * 100.0 / f64::from(total)
-    }
-}
-
-fn status_icon(status: TestStatus, class: &str) -> Element {
-    let class = cn!(class, status.text_class());
+#[component]
+fn Icon(paths: &'static [&'static str]) -> Element {
     rsx! {
-        svg {
-            view_box: "0 0 24 24",
-            fill: "none",
-            stroke: "currentColor",
-            stroke_width: "2",
-            stroke_linecap: "round",
-            stroke_linejoin: "round",
-            class: class,
-            "aria-hidden": "true",
-            circle { cx: "12", cy: "12", r: "10" }
-            {match status {
-                TestStatus::Passed => rsx! { path { d: "m9 12 2 2 4-4" } },
-                TestStatus::Failed => rsx! {
-                    path { d: "m15 9-6 6" }
-                    path { d: "m9 9 6 6" }
-                },
-                TestStatus::Skipped => rsx! { path { d: "M8 12h8" } },
-                TestStatus::Running => rsx! { path { d: "M12 6v6l4 2" } },
-            }}
+        TraceIcon {
+            svg {
+                width: "24",
+                height: "24",
+                view_box: "0 0 24 24",
+                fill: "none",
+                stroke: "currentColor",
+                stroke_width: "2",
+                stroke_linecap: "round",
+                stroke_linejoin: "round",
+                for d in paths {
+                    path { d: *d }
+                }
+            }
         }
     }
 }
 
+const CHECK: &[&str] = &["M20 6 9 17l-5-5"];
+const X: &[&str] = &["M18 6 6 18", "m6 6 12 12"];
+const SKIPPED: &[&str] = &[
+    "M10.1 2.182a10 10 0 0 1 3.8 0",
+    "M13.9 21.818a10 10 0 0 1-3.8 0",
+    "M17.609 3.721a10 10 0 0 1 2.69 2.7",
+    "M2.182 13.9a10 10 0 0 1 0-3.8",
+    "M20.279 17.609a10 10 0 0 1-2.7 2.69",
+    "M21.818 10.1a10 10 0 0 1 0 3.8",
+    "M3.721 6.391a10 10 0 0 1 2.7-2.69",
+    "M6.391 20.279a10 10 0 0 1-2.69-2.7",
+];
+const FILE_CODE: &[&str] = &[
+    "M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z",
+    "M14 2v5a1 1 0 0 0 1 1h5",
+    "M10 12.5 8 15l2 2.5",
+    "m14 12.5 2 2.5-2 2.5",
+];
+const FLASK: &[&str] = &[
+    "M14 2v6a2 2 0 0 0 .245.96l5.51 10.08A2 2 0 0 1 18 22H6a2 2 0 0 1-1.755-2.96l5.51-10.08A2 2 0 0 0 10 8V2",
+    "M6.453 15h11.094",
+    "M8.5 2h7",
+];
+
+/// One test as a line of a `Trace`. A failed test expands to show its error.
+#[component]
+pub fn TestRow(test: Test, #[props(default)] default_open: bool) -> Element {
+    if test.status == TestStatus::Failed {
+        return rsx! {
+            TraceCollapsible { default_open,
+                TraceCollapsibleTrigger {
+                    TraceLine { status: TraceStatus::Error,
+                        Icon { paths: X }
+                        TraceTitle { "{test.name}" }
+                    }
+                }
+                TraceCollapsibleContent {
+                    CodeBlock { size: CodeBlockSize::Sm,
+                        CodeBlockContent {
+                            wrap: true,
+                            class: "max-h-64",
+                            code: test.error.unwrap_or_default(),
+                        }
+                    }
+                }
+            }
+        };
+    }
+
+    let skipped = test.status == TestStatus::Skipped;
+    rsx! {
+        TraceLine {
+            Icon { paths: if skipped { SKIPPED } else { CHECK } }
+            TraceTitle {
+                if skipped {
+                    "Skipped {test.name}"
+                } else {
+                    "{test.name}"
+                }
+            }
+        }
+    }
+}
+
+/// A test run as one line of a `Trace`, with a collapsible line for each suite.
+/// `default_open` opens the run, `open_failures` opens the error of each failed test.
+/// Suites with a failure start open.
 #[component]
 pub fn TestResults(
-    summary: Option<TestRunSummary>,
-    #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,
-    children: Element,
+    suites: Vec<TestSuite>,
+    #[props(default)] default_open: bool,
+    #[props(default)] open_failures: bool,
 ) -> Element {
-    let mut attributes = attributes;
-    let class = cn!(
-        "flex flex-col overflow-hidden rounded-xl border border-border bg-background",
-        take_class(&mut attributes).as_deref()
-    );
-    let summary = use_prop(summary);
-    use_context_provider(|| TestResultsContext { summary });
+    let tests: Vec<&Test> = suites.iter().flat_map(|suite| &suite.tests).collect();
+    let failed = count(&tests, TestStatus::Failed) > 0;
 
     rsx! {
-        div {
-            "data-slot": "test-results",
-            class: class,
-            ..attributes,
-            {children}
-        }
-    }
-}
-
-#[component]
-pub fn TestResultsHeader(
-    #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,
-    children: Element,
-) -> Element {
-    let mut attributes = attributes;
-    let class = cn!(
-        "flex flex-wrap items-center justify-between gap-4 border-b border-border px-4 py-3",
-        take_class(&mut attributes).as_deref()
-    );
-
-    rsx! {
-        div {
-            "data-slot": "test-results-header",
-            class: class,
-            ..attributes,
-            {children}
-        }
-    }
-}
-
-/// Passed, failed and skipped counts from the enclosing `TestResults` summary.
-#[component]
-pub fn TestResultsSummary(
-    #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,
-) -> Element {
-    let mut attributes = attributes;
-    let class = cn!(
-        "flex flex-wrap items-center gap-2",
-        take_class(&mut attributes).as_deref()
-    );
-    let summary = read_summary().unwrap_or_default();
-
-    rsx! {
-        div {
-            "data-slot": "test-results-summary",
-            class: class,
-            ..attributes,
-            Badge {
-                variant: BadgeVariant::Secondary,
-                class: "tabular-nums text-emerald-600 dark:text-emerald-400",
-                {format!("{} passed", summary.passed)}
-            }
-            Badge {
-                variant: BadgeVariant::Destructive,
-                class: "tabular-nums",
-                {format!("{} failed", summary.failed)}
-            }
-            Badge {
-                variant: BadgeVariant::Outline,
-                class: "tabular-nums text-muted-foreground",
-                {format!("{} skipped", summary.skipped)}
-            }
-        }
-    }
-}
-
-/// Run duration from the enclosing `TestResults` summary. Renders nothing when no duration is set.
-#[component]
-pub fn TestResultsDuration(
-    #[props(extends = GlobalAttributes, extends = span)] attributes: Vec<Attribute>,
-) -> Element {
-    let mut attributes = attributes;
-    let class = cn!(
-        "text-sm tabular-nums text-muted-foreground",
-        take_class(&mut attributes).as_deref()
-    );
-    let Some(duration_ms) = read_summary().and_then(|summary| summary.duration_ms) else {
-        return rsx! {};
-    };
-
-    rsx! {
-        span {
-            "data-slot": "test-results-duration",
-            class: class,
-            ..attributes,
-            {format_duration(duration_ms)}
-        }
-    }
-}
-
-/// Bar of passed and failed shares of the run, with a `passed/total` label.
-#[component]
-pub fn TestResultsProgress(
-    #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,
-) -> Element {
-    let mut attributes = attributes;
-    let class = cn!(
-        "flex flex-col gap-1.5 px-4 py-3",
-        take_class(&mut attributes).as_deref()
-    );
-    let summary = read_summary().unwrap_or_default();
-    let passed = percent(summary.passed, summary.total);
-    let failed = percent(summary.failed, summary.total);
-
-    rsx! {
-        div {
-            "data-slot": "test-results-progress",
-            class: class,
-            ..attributes,
-            span {
-                "data-slot": "test-results-progress-label",
-                class: "text-xs tabular-nums text-muted-foreground",
-                {format!("{}/{}", summary.passed, summary.total)}
-            }
-            div {
-                role: "progressbar",
-                "aria-valuemin": "0",
-                "aria-valuemax": "{summary.total}",
-                "aria-valuenow": "{summary.passed}",
-                "data-slot": "test-results-progress-track",
-                class: "flex h-2 w-full overflow-hidden rounded-full bg-muted",
-                div {
-                    "data-slot": "test-results-progress-passed",
-                    class: "h-full bg-emerald-500 transition-all",
-                    style: "width: {passed}%",
+        TraceCollapsible { default_open,
+            TraceCollapsibleTrigger {
+                TraceLine { status: error_status(failed),
+                    Icon { paths: FLASK }
+                    TraceTitle { "Ran {format_counts(&tests)}" }
                 }
-                div {
-                    "data-slot": "test-results-progress-failed",
-                    class: "h-full bg-destructive transition-all",
-                    style: "width: {failed}%",
+            }
+            TraceCollapsibleContent {
+                Trace {
+                    for suite in suites.iter() {
+                        TestSuiteLine { key: "{suite.name}", suite: suite.clone(), open_failures }
+                    }
                 }
             }
         }
@@ -265,321 +175,29 @@ pub fn TestResultsProgress(
 }
 
 #[component]
-pub fn TestResultsContent(
-    #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,
-    children: Element,
-) -> Element {
-    let mut attributes = attributes;
-    let class = cn!(
-        "flex flex-col gap-2 p-4",
-        take_class(&mut attributes).as_deref()
-    );
+fn TestSuiteLine(suite: TestSuite, open_failures: bool) -> Element {
+    let tests: Vec<&Test> = suite.tests.iter().collect();
+    let failed = count(&tests, TestStatus::Failed) > 0;
 
     rsx! {
-        div {
-            "data-slot": "test-results-content",
-            class: class,
-            ..attributes,
-            {children}
-        }
-    }
-}
-
-/// A named group of tests that collapses under its `TestSuiteName` trigger.
-#[component]
-pub fn TestSuite(
-    name: String,
-    #[props(default)] status: TestStatus,
-    /// Controlled open state. When set, `on_open_change` is the only way to change it.
-    open: Option<bool>,
-    /// Open state at first render when `open` is not controlled.
-    #[props(default = true)]
-    default_open: bool,
-    on_open_change: Option<EventHandler<bool>>,
-    #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,
-    children: Element,
-) -> Element {
-    let mut attributes = attributes;
-    let class = cn!(
-        "flex flex-col overflow-hidden rounded-md border border-border",
-        take_class(&mut attributes).as_deref()
-    );
-    let name = use_prop(name);
-    let status = use_prop(status);
-    use_context_provider(|| TestSuiteContext { name, status });
-
-    rsx! {
-        div {
-            "data-slot": "test-suite",
-            "data-status": status().as_str(),
-            class: class,
-            ..attributes,
-            Collapsible {
-                open: open,
-                default_open: default_open,
-                on_open_change: on_open_change,
-                class: "flex flex-col",
-                {children}
-            }
-        }
-    }
-}
-
-/// Trigger of a `TestSuite`: a chevron, the suite status and name, then `children` (e.g. `TestSuiteStats`).
-/// It takes no extra attributes, because `CollapsibleTrigger` cannot receive them.
-#[component]
-pub fn TestSuiteName(children: Element) -> Element {
-    let context = use_context::<TestSuiteContext>();
-    let name = (context.name)();
-    let status = (context.status)();
-
-    rsx! {
-        CollapsibleTrigger {
-            "data-slot": "test-suite-name",
-            class: "group flex w-full items-center justify-between gap-3 px-3 py-2 text-left text-sm font-medium transition-colors hover:bg-muted/50",
-            span {
-                "data-slot": "test-suite-name-label",
-                class: "flex min-w-0 items-center gap-2",
-                svg {
-                    view_box: "0 0 24 24",
-                    fill: "none",
-                    stroke: "currentColor",
-                    stroke_width: "2",
-                    stroke_linecap: "round",
-                    stroke_linejoin: "round",
-                    class: "size-4 shrink-0 transition-transform group-data-[state=closed]:-rotate-90",
-                    "aria-hidden": "true",
-                    path { d: "m6 9 6 6 6-6" }
+        TraceCollapsible { default_open: failed,
+            TraceCollapsibleTrigger {
+                TraceLine { status: error_status(failed),
+                    Icon { paths: FILE_CODE }
+                    TraceTitle { "{suite.name}, {format_counts(&tests)}" }
                 }
-                {status_icon(status, "size-4 shrink-0")}
-                span { class: "truncate", {name} }
             }
-            {children}
-        }
-    }
-}
-
-/// Inline passed, failed and skipped counts of a suite. Each count is shown only when given.
-#[component]
-pub fn TestSuiteStats(
-    passed: Option<u32>,
-    failed: Option<u32>,
-    skipped: Option<u32>,
-    #[props(extends = GlobalAttributes, extends = span)] attributes: Vec<Attribute>,
-) -> Element {
-    let mut attributes = attributes;
-    let class = cn!(
-        "flex shrink-0 items-center gap-2 text-xs tabular-nums text-muted-foreground",
-        take_class(&mut attributes).as_deref()
-    );
-
-    rsx! {
-        span {
-            "data-slot": "test-suite-stats",
-            class: class,
-            ..attributes,
-            {passed.map(|count| rsx! {
-                span { "data-slot": "test-suite-stat-passed", class: "text-emerald-600 dark:text-emerald-400", {format!("{count} passed")} }
-            })}
-            {failed.map(|count| rsx! {
-                span { "data-slot": "test-suite-stat-failed", class: "text-destructive", {format!("{count} failed")} }
-            })}
-            {skipped.map(|count| rsx! {
-                span { "data-slot": "test-suite-stat-skipped", {format!("{count} skipped")} }
-            })}
-        }
-    }
-}
-
-/// Content of a `TestSuite`, shown only while the suite is open.
-#[component]
-pub fn TestSuiteContent(
-    #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,
-    children: Element,
-) -> Element {
-    let mut attributes = attributes;
-    let class = cn!(
-        "flex flex-col gap-1 border-t border-border py-1",
-        take_class(&mut attributes).as_deref()
-    );
-
-    rsx! {
-        CollapsibleContent {
-            class: "flex flex-col",
-            div {
-                "data-slot": "test-suite-content",
-                class: class,
-                ..attributes,
-                {children}
+            TraceCollapsibleContent {
+                Trace {
+                    for test in suite.tests.iter() {
+                        TestRow {
+                            key: "{test.name}",
+                            test: test.clone(),
+                            default_open: open_failures,
+                        }
+                    }
+                }
             }
-        }
-    }
-}
-
-/// A single test row with its status, name and duration. Put a `TestError` inside for a failure.
-#[component]
-pub fn Test(
-    name: String,
-    #[props(default)] status: TestStatus,
-    duration_ms: Option<u64>,
-    #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,
-    children: Element,
-) -> Element {
-    let mut attributes = attributes;
-    let class = cn!(
-        "flex flex-col gap-2 px-3 py-1.5",
-        take_class(&mut attributes).as_deref()
-    );
-
-    rsx! {
-        div {
-            "data-slot": "test",
-            "data-status": status.as_str(),
-            class: class,
-            ..attributes,
-            div {
-                "data-slot": "test-row",
-                class: "flex items-center gap-2 text-sm",
-                TestStatusIcon { status: status }
-                TestName { name: name }
-                TestDuration { duration_ms: duration_ms }
-            }
-            {children}
-        }
-    }
-}
-
-#[component]
-pub fn TestStatusIcon(
-    #[props(default)] status: TestStatus,
-    #[props(extends = GlobalAttributes, extends = span)] attributes: Vec<Attribute>,
-) -> Element {
-    let mut attributes = attributes;
-    let class = cn!(
-        "inline-flex shrink-0 items-center",
-        take_class(&mut attributes).as_deref()
-    );
-    let icon_class = if status == TestStatus::Running {
-        "size-4 animate-pulse"
-    } else {
-        "size-4"
-    };
-
-    rsx! {
-        span {
-            "data-slot": "test-status",
-            "data-status": status.as_str(),
-            class: class,
-            ..attributes,
-            {status_icon(status, icon_class)}
-        }
-    }
-}
-
-#[component]
-pub fn TestName(
-    name: String,
-    #[props(extends = GlobalAttributes, extends = span)] attributes: Vec<Attribute>,
-) -> Element {
-    let mut attributes = attributes;
-    let class = cn!(
-        "min-w-0 flex-1 truncate",
-        take_class(&mut attributes).as_deref()
-    );
-
-    rsx! {
-        span {
-            "data-slot": "test-name",
-            class: class,
-            ..attributes,
-            {name}
-        }
-    }
-}
-
-/// Duration of a test. Renders nothing when `duration_ms` is `None`.
-#[component]
-pub fn TestDuration(
-    duration_ms: Option<u64>,
-    #[props(extends = GlobalAttributes, extends = span)] attributes: Vec<Attribute>,
-) -> Element {
-    let mut attributes = attributes;
-    let class = cn!(
-        "shrink-0 text-xs tabular-nums text-muted-foreground",
-        take_class(&mut attributes).as_deref()
-    );
-    let Some(duration_ms) = duration_ms else {
-        return rsx! {};
-    };
-
-    rsx! {
-        span {
-            "data-slot": "test-duration",
-            class: class,
-            ..attributes,
-            {format_duration(duration_ms)}
-        }
-    }
-}
-
-/// Red box that holds the message and stack of a failed test.
-#[component]
-pub fn TestError(
-    #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,
-    children: Element,
-) -> Element {
-    let mut attributes = attributes;
-    let class = cn!(
-        "flex flex-col gap-2 rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-xs text-destructive",
-        take_class(&mut attributes).as_deref()
-    );
-
-    rsx! {
-        div {
-            "data-slot": "test-error",
-            class: class,
-            ..attributes,
-            {children}
-        }
-    }
-}
-
-#[component]
-pub fn TestErrorMessage(
-    #[props(extends = GlobalAttributes, extends = p)] attributes: Vec<Attribute>,
-    children: Element,
-) -> Element {
-    let mut attributes = attributes;
-    let class = cn!("font-medium", take_class(&mut attributes).as_deref());
-
-    rsx! {
-        p {
-            "data-slot": "test-error-message",
-            class: class,
-            ..attributes,
-            {children}
-        }
-    }
-}
-
-/// Preformatted stack trace of a failed test.
-#[component]
-pub fn TestErrorStack(
-    #[props(extends = GlobalAttributes, extends = pre)] attributes: Vec<Attribute>,
-    children: Element,
-) -> Element {
-    let mut attributes = attributes;
-    let class = cn!(
-        "overflow-x-auto font-mono whitespace-pre-wrap text-muted-foreground",
-        take_class(&mut attributes).as_deref()
-    );
-
-    rsx! {
-        pre {
-            "data-slot": "test-error-stack",
-            class: class,
-            ..attributes,
-            {children}
         }
     }
 }
