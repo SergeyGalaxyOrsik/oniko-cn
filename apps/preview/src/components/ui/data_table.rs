@@ -1,4 +1,9 @@
-//! DataTable: a table with sorting, filtering, pagination and row selection.
+//! DataTable: the shadcn/ui data table guide as one component. It composes `Table`, `Checkbox`,
+//! `DropdownMenu`, `Button` and `Input`, with sorting, filtering, column visibility, row selection and
+//! pagination kept in plain Rust state instead of TanStack Table.
+//!
+//! Describe each column with [`DataColumn`] and pass the rows as `data`. Selection is kept by row
+//! position in `data`.
 //!
 //! Installed by oniko-cn. This file is yours: edit it freely.
 
@@ -11,30 +16,51 @@ use oniko_cn::{cn, take_class};
 
 use super::button::{Button, ButtonSize, ButtonVariant};
 use super::checkbox::Checkbox;
+use super::dropdown_menu::{
+    DropdownMenu, DropdownMenuAlign, DropdownMenuCheckboxItem, DropdownMenuContent,
+    DropdownMenuGroup, DropdownMenuTrigger,
+};
+use super::input::Input;
 use super::table::{Table, TableBody, TableCell, TableHead, TableHeader, TableRow};
+
+type ValueFn<T> = Rc<dyn Fn(&T) -> String>;
+type CellFn<T> = Rc<dyn Fn(&T) -> Element>;
+type HeaderFn = Rc<dyn Fn() -> Element>;
 
 /// One column of a [`DataTable`].
 ///
-/// `new` takes the text used for sorting and filtering. `cell` replaces how the
-/// cell is drawn; it does not change what is sorted or filtered.
-type ValueFn<T> = Rc<dyn Fn(&T) -> String>;
-type CellFn<T> = Rc<dyn Fn(&T) -> Element>;
-
+/// `value` gives the text that is sorted and filtered; numbers sort as numbers. `cell` only changes how
+/// the cell is drawn.
 pub struct DataColumn<T> {
-    header: &'static str,
+    id: &'static str,
+    header: Option<HeaderFn>,
     value: ValueFn<T>,
     cell: Option<CellFn<T>>,
     sortable: bool,
+    hideable: bool,
 }
 
 impl<T: 'static> DataColumn<T> {
-    pub fn new(header: &'static str, value: impl Fn(&T) -> String + 'static) -> Self {
+    /// `id` names the column in the visibility menu and in `filter_column`.
+    pub fn new(id: &'static str, value: impl Fn(&T) -> String + 'static) -> Self {
         Self {
-            header,
+            id,
+            header: None,
             value: Rc::new(value),
             cell: None,
             sortable: false,
+            hideable: true,
         }
+    }
+
+    /// Plain text header.
+    pub fn title(self, title: &'static str) -> Self {
+        self.header(move || rsx! { {title} })
+    }
+
+    pub fn header(mut self, render: impl Fn() -> Element + 'static) -> Self {
+        self.header = Some(Rc::new(render));
+        self
     }
 
     pub fn cell(mut self, render: impl Fn(&T) -> Element + 'static) -> Self {
@@ -42,8 +68,15 @@ impl<T: 'static> DataColumn<T> {
         self
     }
 
+    /// The header becomes a ghost button that sorts by this column.
     pub fn sortable(mut self) -> Self {
         self.sortable = true;
+        self
+    }
+
+    /// Whether the "Columns" menu can hide this column. On by default.
+    pub fn hideable(mut self, hideable: bool) -> Self {
+        self.hideable = hideable;
         self
     }
 }
@@ -51,52 +84,76 @@ impl<T: 'static> DataColumn<T> {
 impl<T> Clone for DataColumn<T> {
     fn clone(&self) -> Self {
         Self {
-            header: self.header,
+            id: self.id,
+            header: self.header.clone(),
             value: self.value.clone(),
             cell: self.cell.clone(),
             sortable: self.sortable,
+            hideable: self.hideable,
         }
     }
 }
 
 impl<T> PartialEq for DataColumn<T> {
     fn eq(&self, other: &Self) -> bool {
-        let cells_match = match (&self.cell, &other.cell) {
-            (Some(a), Some(b)) => Rc::ptr_eq(a, b),
-            (None, None) => true,
-            _ => false,
-        };
-        self.header == other.header
+        fn same<F: ?Sized>(a: &Option<Rc<F>>, b: &Option<Rc<F>>) -> bool {
+            match (a, b) {
+                (Some(a), Some(b)) => Rc::ptr_eq(a, b),
+                (None, None) => true,
+                _ => false,
+            }
+        }
+        self.id == other.id
             && self.sortable == other.sortable
+            && self.hideable == other.hideable
             && Rc::ptr_eq(&self.value, &other.value)
-            && cells_match
+            && same(&self.header, &other.header)
+            && same(&self.cell, &other.cell)
+    }
+}
+
+/// The texts of the table, so it can be translated.
+#[derive(Clone, Debug, PartialEq)]
+pub struct DataTableLabels {
+    pub columns: String,
+    pub no_results: String,
+    pub previous: String,
+    pub next: String,
+    pub select_all: String,
+    pub select_row: String,
+    /// Between the selected count and the row count: "1 of 5".
+    pub of: String,
+    pub rows_selected: String,
+}
+
+impl Default for DataTableLabels {
+    fn default() -> Self {
+        Self {
+            columns: "Columns".into(),
+            no_results: "No results.".into(),
+            previous: "Previous".into(),
+            next: "Next".into(),
+            select_all: "Select all".into(),
+            select_row: "Select row".into(),
+            of: "of".into(),
+            rows_selected: "row(s) selected.".into(),
+        }
     }
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 struct Sort {
-    column: usize,
+    column: &'static str,
     descending: bool,
 }
 
-/// Sorting cycles through ascending, descending and unsorted for the same column.
-fn next_sort(current: Option<Sort>, column: usize) -> Option<Sort> {
-    match current {
-        Some(Sort {
-            column: c,
-            descending: false,
-        }) if c == column => Some(Sort {
-            column,
-            descending: true,
-        }),
-        Some(Sort {
-            column: c,
-            descending: true,
-        }) if c == column => None,
-        _ => Some(Sort {
-            column,
-            descending: false,
-        }),
+/// Like the guide's header button: a click sorts ascending, and a click on an ascending column
+/// flips it to descending.
+fn toggle_sort(current: Option<Sort>, column: &'static str) -> Sort {
+    let ascending_now = matches!(current, Some(s) if s.column == column && !s.descending);
+    Sort {
+        column,
+        descending: ascending_now,
     }
 }
 
@@ -107,28 +164,27 @@ fn compare_values(a: &str, b: &str) -> Ordering {
     }
 }
 
-/// Indices into `data` in display order, after filtering and sorting.
-fn visible_rows<T>(
+/// Indices into `data` that match the filter, in sorted order.
+fn filtered_rows<T>(
     data: &[T],
     columns: &[DataColumn<T>],
-    filter: &str,
+    filter: Option<(&'static str, &str)>,
     sort: Option<Sort>,
 ) -> Vec<usize> {
-    let needle = filter.trim().to_lowercase();
+    let column_of = |id: &str| columns.iter().find(|c| c.id == id);
+    let needle = filter.and_then(|(id, text)| Some((column_of(id)?, text.to_lowercase())));
     let mut rows: Vec<usize> = (0..data.len())
-        .filter(|&i| {
-            needle.is_empty()
-                || columns
-                    .iter()
-                    .any(|c| (c.value)(&data[i]).to_lowercase().contains(&needle))
+        .filter(|&i| match &needle {
+            Some((column, text)) => (column.value)(&data[i]).to_lowercase().contains(text),
+            None => true,
         })
         .collect();
 
     if let Some(Sort { column, descending }) = sort
-        && let Some(col) = columns.get(column)
+        && let Some(column) = column_of(column)
     {
         rows.sort_by(|&a, &b| {
-            let ord = compare_values(&(col.value)(&data[a]), &(col.value)(&data[b]));
+            let ord = compare_values(&(column.value)(&data[a]), &(column.value)(&data[b]));
             if descending { ord.reverse() } else { ord }
         });
     }
@@ -146,61 +202,76 @@ fn cell_content<T>(column: &DataColumn<T>, row: &T) -> Element {
 }
 
 #[component]
-fn SortIcon(sort: Option<bool>) -> Element {
-    let path = match sort {
-        None => "m21 16-4 4-4-4M17 20V4M3 8l4-4 4 4M7 4v16",
-        Some(false) => "m5 12 7-7 7 7M12 19V5",
-        Some(true) => "M12 5v14m7-7-7 7-7-7",
-    };
+fn ArrowUpDown() -> Element {
     rsx! {
         svg {
-            "data-slot": "data-table-sort-icon",
-            class: "ml-2 size-4 shrink-0",
             view_box: "0 0 24 24",
             fill: "none",
             stroke: "currentColor",
             stroke_width: "2",
             stroke_linecap: "round",
             stroke_linejoin: "round",
-            path { d: path }
+            path { d: "m21 16-4 4-4-4" }
+            path { d: "M17 20V4" }
+            path { d: "m3 8 4-4 4 4" }
+            path { d: "M7 4v16" }
         }
     }
 }
 
-/// A table over `data`, described by `columns`. Rows are shown `page_size` at a time.
+#[component]
+fn ChevronDown() -> Element {
+    rsx! {
+        svg {
+            view_box: "0 0 24 24",
+            fill: "none",
+            stroke: "currentColor",
+            stroke_width: "2",
+            stroke_linecap: "round",
+            stroke_linejoin: "round",
+            path { d: "m6 9 6 6 6-6" }
+        }
+    }
+}
+
+/// A table over `data`, described by `columns`. Extra attributes, such as `class` and `dir`, go to the root.
 #[component]
 pub fn DataTable<T: Clone + PartialEq + 'static>(
     columns: Vec<DataColumn<T>>,
     data: Vec<T>,
+    /// Adds a leading column of checkboxes, with "select all" for the rows on the page.
+    #[props(default)]
+    selectable: bool,
+    /// Id of the column the filter input searches. Without it, there is no filter input.
+    filter_column: Option<&'static str>,
+    #[props(default = String::from("Filter..."))] filter_placeholder: String,
     /// Rows per page.
     #[props(default = 10)]
     page_size: usize,
-    /// Adds a checkbox column. Selection is kept by row position in `data`.
-    #[props(default)]
-    selectable: bool,
-    /// Placeholder of the filter box. The filter matches text in any column.
-    filter_placeholder: Option<String>,
+    #[props(default)] labels: DataTableLabels,
     #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,
 ) -> Element {
     let mut attributes = attributes;
-    let class = cn!(
-        "flex w-full flex-col",
-        take_class(&mut attributes).as_deref()
-    );
+    let class = cn!("w-full", take_class(&mut attributes).as_deref());
 
-    let mut filter = use_signal(String::new);
     let mut sort = use_signal(|| None::<Sort>);
-    let mut page = use_signal(|| 0usize);
+    let mut filter = use_signal(String::new);
+    let mut hidden = use_signal(BTreeSet::<&'static str>::new);
     let mut selected = use_signal(BTreeSet::<usize>::new);
+    let mut page = use_signal(|| 0usize);
 
-    let query = filter();
-    let sort_state = sort();
+    let filter_text = filter();
+    let hidden_now = hidden();
     let picked = selected();
     let page_size = page_size.max(1);
 
-    let rows = visible_rows(&data, &columns, &query, sort_state);
-    let total = rows.len();
-    let page_count = total.div_ceil(page_size).max(1);
+    let rows = filtered_rows(
+        &data,
+        &columns,
+        filter_column.map(|id| (id, filter_text.as_str())),
+        sort(),
+    );
+    let page_count = rows.len().div_ceil(page_size).max(1);
     let current = page().min(page_count - 1);
     let page_rows: Vec<usize> = rows
         .iter()
@@ -209,30 +280,62 @@ pub fn DataTable<T: Clone + PartialEq + 'static>(
         .take(page_size)
         .collect();
 
-    let selected_visible = rows.iter().filter(|i| picked.contains(i)).count();
-    let all_page_selected = !page_rows.is_empty() && page_rows.iter().all(|i| picked.contains(i));
-    let span = columns.len() + usize::from(selectable);
-    let placeholder = filter_placeholder.unwrap_or_else(|| "Filter...".to_string());
-    let page_label = format!("Page {} of {}", current + 1, page_count);
-    let selection_label = format!("{selected_visible} of {total} row(s) selected.");
-    let header_rows = page_rows.clone();
+    let selected_count = rows.iter().filter(|i| picked.contains(i)).count();
+    let page_selected = page_rows.iter().filter(|i| picked.contains(i)).count();
+    let all_page_selected = !page_rows.is_empty() && page_selected == page_rows.len();
+    let visible: Vec<&DataColumn<T>> = columns
+        .iter()
+        .filter(|c| !hidden_now.contains(c.id))
+        .collect();
+    let span = visible.len() + usize::from(selectable);
+    let toggled_rows = page_rows.clone();
 
     rsx! {
         div { "data-slot": "data-table", class: class, ..attributes,
-            div { "data-slot": "data-table-toolbar", class: "flex items-center py-4",
-                input {
-                    "data-slot": "data-table-filter",
-                    class: "dark:bg-input/30 border-input focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 h-9 rounded-md border bg-transparent px-2.5 py-1 text-base shadow-xs transition-[color,box-shadow] file:h-7 file:text-sm file:font-medium focus-visible:ring-3 aria-invalid:ring-3 md:text-sm max-w-sm",
-                    r#type: "text",
-                    placeholder: placeholder,
-                    value: query,
-                    oninput: move |event| {
-                        filter.set(event.value());
-                        page.set(0);
-                    },
+            div { class: "flex items-center gap-2 py-4",
+                if filter_column.is_some() {
+                    Input {
+                        placeholder: filter_placeholder,
+                        value: filter_text,
+                        oninput: move |event: FormEvent| {
+                            filter.set(event.value());
+                            page.set(0);
+                        },
+                        class: "max-w-sm",
+                    }
+                }
+                DropdownMenu {
+                    DropdownMenuTrigger { variant: ButtonVariant::Outline, class: "ms-auto",
+                        "{labels.columns} "
+                        ChevronDown {}
+                    }
+                    DropdownMenuContent { align: DropdownMenuAlign::End, class: "w-44",
+                        DropdownMenuGroup {
+                            for column in columns.iter().filter(|c| c.hideable) {
+                                DropdownMenuCheckboxItem {
+                                    key: "{column.id}",
+                                    class: "capitalize",
+                                    checked: !hidden_now.contains(column.id),
+                                    on_checked_change: {
+                                        let id = column.id;
+                                        move |shown: bool| {
+                                            hidden
+                                                .with_mut(|set| {
+                                                    if shown {
+                                                        set.remove(id);
+                                                    } else {
+                                                        set.insert(id);
+                                                    }
+                                                });
+                                        }
+                                    },
+                                    "{column.id}"
+                                }
+                            }
+                        }
+                    }
                 }
             }
-
             div { class: "overflow-hidden rounded-md border",
                 Table {
                     TableHeader {
@@ -241,38 +344,39 @@ pub fn DataTable<T: Clone + PartialEq + 'static>(
                                 TableHead {
                                     Checkbox {
                                         checked: all_page_selected,
-                                        aria_label: "Select all",
-                                        on_checked_change: move |next: bool| {
-                                            selected.with_mut(|set| {
-                                                for index in &header_rows {
-                                                    if next {
-                                                        set.insert(*index);
-                                                    } else {
-                                                        set.remove(index);
+                                        indeterminate: page_selected > 0 && !all_page_selected,
+                                        on_checked_change: move |checked: bool| {
+                                            selected
+                                                .with_mut(|set| {
+                                                    for index in &toggled_rows {
+                                                        if checked {
+                                                            set.insert(*index);
+                                                        } else {
+                                                            set.remove(index);
+                                                        }
                                                     }
-                                                }
-                                            });
+                                                });
                                         },
+                                        aria_label: "{labels.select_all}",
                                     }
                                 }
                             }
-                            for (position, column) in columns.iter().enumerate() {
-                                TableHead { key: "{position}",
+                            for column in visible.iter().copied() {
+                                TableHead { key: "{column.id}",
                                     if column.sortable {
                                         Button {
                                             variant: ButtonVariant::Ghost,
-                                            size: ButtonSize::Sm,
-                                            onclick: move |_| sort.set(next_sort(sort(), position)),
-                                            {column.header}
-                                            SortIcon {
-                                                sort: match sort_state {
-                                                    Some(s) if s.column == position => Some(s.descending),
-                                                    _ => None,
-                                                },
+                                            onclick: {
+                                                let id = column.id;
+                                                move |_| sort.set(Some(toggle_sort(sort(), id)))
+                                            },
+                                            if let Some(header) = &column.header {
+                                                {header()}
                                             }
+                                            ArrowUpDown {}
                                         }
-                                    } else {
-                                        {column.header}
+                                    } else if let Some(header) = &column.header {
+                                        {header()}
                                     }
                                 }
                             }
@@ -281,60 +385,58 @@ pub fn DataTable<T: Clone + PartialEq + 'static>(
                     TableBody {
                         if page_rows.is_empty() {
                             TableRow {
-                                TableCell { colspan: "{span}", class: "h-24 text-center", "No results." }
+                                TableCell { colspan: "{span}", class: "h-24 text-center", "{labels.no_results}" }
                             }
                         }
                         for index in page_rows.iter().copied() {
-                            TableRow { key: "{index}",
+                            TableRow {
+                                key: "{index}",
                                 "data-state": picked.contains(&index).then_some("selected"),
                                 if selectable {
                                     TableCell {
                                         Checkbox {
                                             checked: picked.contains(&index),
-                                            aria_label: "Select row",
-                                            on_checked_change: move |next: bool| {
-                                                selected.with_mut(|set| {
-                                                    if next {
-                                                        set.insert(index);
-                                                    } else {
-                                                        set.remove(&index);
-                                                    }
-                                                });
+                                            on_checked_change: move |checked: bool| {
+                                                selected
+                                                    .with_mut(|set| {
+                                                        if checked {
+                                                            set.insert(index);
+                                                        } else {
+                                                            set.remove(&index);
+                                                        }
+                                                    });
                                             },
+                                            aria_label: "{labels.select_row}",
                                         }
                                     }
                                 }
-                                for (position, column) in columns.iter().enumerate() {
-                                    TableCell { key: "{position}",
-                                        {cell_content(column, &data[index])}
-                                    }
+                                for column in visible.iter().copied() {
+                                    TableCell { key: "{column.id}", {cell_content(column, &data[index])} }
                                 }
                             }
                         }
                     }
                 }
             }
-
-            div { "data-slot": "data-table-footer", class: "flex items-center justify-end gap-2 py-4",
+            div { class: "flex items-center justify-end gap-2 py-4",
                 div { class: "flex-1 text-sm text-muted-foreground",
-                    if selectable {
-                        "{selection_label}"
+                    "{selected_count} {labels.of} {rows.len()} {labels.rows_selected}"
+                }
+                div { class: "flex gap-2",
+                    Button {
+                        variant: ButtonVariant::Outline,
+                        size: ButtonSize::Sm,
+                        disabled: current == 0,
+                        onclick: move |_| page.set(current.saturating_sub(1)),
+                        "{labels.previous}"
                     }
-                }
-                span { class: "text-sm text-muted-foreground", "{page_label}" }
-                Button {
-                    variant: ButtonVariant::Outline,
-                    size: ButtonSize::Sm,
-                    disabled: current == 0,
-                    onclick: move |_| page.set(current.saturating_sub(1)),
-                    "Previous"
-                }
-                Button {
-                    variant: ButtonVariant::Outline,
-                    size: ButtonSize::Sm,
-                    disabled: current + 1 >= page_count,
-                    onclick: move |_| page.set(current + 1),
-                    "Next"
+                    Button {
+                        variant: ButtonVariant::Outline,
+                        size: ButtonSize::Sm,
+                        disabled: current + 1 >= page_count,
+                        onclick: move |_| page.set(current + 1),
+                        "{labels.next}"
+                    }
                 }
             }
         }

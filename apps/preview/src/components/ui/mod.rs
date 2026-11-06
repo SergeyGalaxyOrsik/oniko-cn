@@ -83,4 +83,4 @@ pub mod toggle_group;
 pub mod tool;
 pub mod tooltip;
 pub mod trace;
-pub mod typeset;
+pub mod typography;

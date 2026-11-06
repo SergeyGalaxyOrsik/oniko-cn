@@ -21,7 +21,7 @@
 | Collapsible | `registry/ui/collapsible.rs` | `oniko add collapsible` | web, desktop |
 | Command | `registry/ui/command.rs` | `oniko add command` | web, desktop |
 | Table | `registry/ui/table.rs` | `oniko add table` | web, desktop |
-| Data Table | `registry/ui/data_table.rs` | `oniko add data-table` | web, desktop |
+| Data Table | `registry/blocks/data_table.rs` | `oniko add data-table` | web, desktop |
 | Drawer | `registry/ui/drawer.rs` | `oniko add drawer` | web, desktop |
 | Dialog | `registry/ui/dialog.rs` | `oniko add dialog` | web, desktop |
 | Dropdown Menu | `registry/ui/dropdown_menu.rs` | `oniko add dropdown-menu` | web, desktop |
@@ -31,7 +31,7 @@
 | Popover | `registry/ui/popover.rs` | `oniko add popover` | web, desktop |
 | Item | `registry/ui/item.rs` | `oniko add item` | web, desktop |
 | Separator | `registry/ui/separator.rs` | `oniko add separator` | web, desktop |
-| Date Picker | `registry/ui/date_picker.rs` | `oniko add date-picker` | web, desktop |
+| Date Picker | `registry/blocks/date_picker.rs` | `oniko add date-picker` | web, desktop |
 | Context Menu | `registry/ui/context_menu.rs` | `oniko add context-menu` | web, desktop |
 | Empty | `registry/ui/empty.rs` | `oniko add empty` | web, desktop |
 | Hover Card | `registry/ui/hover_card.rs` | `oniko add hover-card` | web, desktop |
@@ -89,7 +89,7 @@
 | Toggle Group | `registry/ui/toggle_group.rs` | `oniko add toggle-group` | web, desktop |
 | Tooltip | `registry/ui/tooltip.rs` | `oniko add tooltip` | web, desktop |
 | Trace | `registry/ui/trace.rs` | `oniko add trace` | web, desktop |
-| Typeset | `registry/ui/typeset.rs` | `oniko add typeset` | web, desktop |
+| Typography | `registry/blocks/typography.rs` | `oniko add typography` | web, desktop |
 
 ### Button
 
@@ -248,14 +248,14 @@
 
 ### Data Table
 
-- Компонент `DataTable<T>`: `columns: Vec<DataColumn<T>>`, `data: Vec<T>`, `page_size` (по умолчанию 10), `selectable`, `filter_placeholder`
-- `DataColumn::new(заголовок, |row| текст)`: текст используется для сортировки и фильтра; `.cell(|row| Element)` меняет только отрисовку ячейки; `.sortable()` включает сортировку по клику на заголовок (ascending, descending, без сортировки)
-- Фильтр ищет подстроку во всех колонках без учёта регистра; числа сортируются как числа
-- `selectable`: колонка с чекбоксами; выбор хранится по позиции строки в `data`, «выбрать всё» относится к строкам текущей страницы
-- Пагинация: «Previous» и «Next»; номер страницы сбрасывается при изменении фильтра
-- Нет скрытия колонок, отдельного select размера страницы и неопределённого состояния у чекбокса «выбрать всё» (в `Checkbox` его нет)
-- Зависит от `button`, `checkbox`, `table` (ставятся автоматически)
-- Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
+- Блок (`registry:block`) по странице Data Table из shadcn/ui: таблица из `Table`, `Checkbox`, `DropdownMenu`, `Button` и `Input`; TanStack Table нет, состояние (сортировка, фильтр, видимость колонок, выбор строк, страница) лежит в самом блоке на обычном Rust
+- `DataTable<T>`: `columns: Vec<DataColumn<T>>`, `data: Vec<T>`, `selectable` (колонка чекбоксов с «Select all» для строк страницы и промежуточным состоянием), `filter_column` (id колонки, по которой ищет поле ввода; без него поля нет), `filter_placeholder`, `page_size` (по умолчанию 10), `labels` (`DataTableLabels`, тексты для перевода)
+- `DataColumn::new(id, |row| текст)`: текст нужен сортировке и фильтру (числа сортируются как числа); `.title("Status")` или `.header(|| Element)` задают заголовок, `.cell(|row| Element)` меняет только отрисовку ячейки, `.sortable()` делает заголовок кнопкой `ghost` со значком `ArrowUpDown` (клик: по возрастанию, затем по убыванию, как в примере upstream), `.hideable(false)` убирает колонку из меню «Columns»
+- Меню «Columns»: `DropdownMenuCheckboxItem` на каждую колонку, которую можно скрыть, с `capitalize`
+- Нижняя строка: «N of M row(s) selected.» и кнопки «Previous» / «Next»; номер страницы сбрасывается при смене фильтра
+- Выбор хранится по позиции строки в `data`
+- Отличия от upstream: расстояние между кнопками `gap-2` вместо `space-x-2`, `ms-auto` вместо `ml-auto` (оба из RTL-примера), чтобы один блок подходил и для LTR, и для RTL; колонка действий и ячейки пишутся в самом примере через `DataColumn`
+- Зависит от `button`, `checkbox`, `dropdown-menu`, `input`, `table` (ставятся автоматически)
 - Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
 
 ### Card
@@ -367,11 +367,10 @@
 
 ### Date Picker
 
-- Один компонент `DatePicker`: кнопка-триггер, по клику открывает `Calendar` во `Popover`
-- Пропы: `selected` (управляемое значение) или `default_selected`, `on_select`, `default_month`, `today`, `min`, `max`, `disabled_dates`, `placeholder` (по умолчанию `Pick a date`), `disabled`
-- Атрибуты (например, `class`) уходят на кнопку-триггер
-- Выбор дня закрывает панель
-- Только одиночный выбор: диапазон, поле ввода и выбор времени не реализованы
+- Блок (`registry:block`): в shadcn/ui нет компонента Date Picker, страница показывает композицию `Popover` + `Calendar`; блок даёт готовый `DatePicker` как в главном примере страницы (кнопка `outline` шириной 212px со значком `ChevronDown`, `Calendar` в `PopoverContent` с `w-auto p-0` и `align: Start`)
+- Пропы: `selected` (управляемое значение) или `default_selected`, `on_select` (`Option<CalendarDate>`), `placeholder` (по умолчанию `Pick a date`)
+- `format_date(date)` форматирует как `PPP` из date-fns: `June 5th, 2026`
+- Остальные примеры страницы (диапазон, дата рождения, поле ввода, естественный язык, время, RTL) собираются из `Popover`, `Calendar`, `Field` и `InputGroup` прямо в превью
 - Зависит от `button`, `calendar`, `popover` (ставятся автоматически)
 - Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
 
@@ -779,3 +778,11 @@
 ### Skeleton
 
 - Один компонент `Skeleton`: `div` с `animate-pulse`; размеры и скругление задаются через `class`
+
+### Typography
+
+- Блок (`registry:block`): в shadcn/ui нет стилей typography, страница показывает утилитные классы на обычных элементах; блок оборачивает каждый из них в маленький компонент с теми же классами
+- Компоненты: `TypographyH1`..`TypographyH4`, `TypographyP`, `TypographyBlockquote`, `TypographyTable` (обёртка `my-6 w-full overflow-y-auto` и `table`) с частями `TypographyTableRow`, `TypographyTableHead`, `TypographyTableCell` (`thead` и `tbody` пишутся обычными элементами), `TypographyList` (`ul`), `TypographyInlineCode`, `TypographyLead`, `TypographyLarge`, `TypographySmall`, `TypographyMuted`
+- Каждый элемент несёт `data-slot` вида `typography-h1`; `class` вызывающего перекрывает классы блока
+- Отступы между блоками задают сами классы (`[&:not(:first-child)]:mt-6`), как на странице upstream; RTL-пример upstream пишет те же классы с логическими свойствами (`border-s-2`, `ps-6`, `ms-6`, `text-start`) на обычных элементах
+- Без `cn-*` классов: стилей upstream для typography нет
