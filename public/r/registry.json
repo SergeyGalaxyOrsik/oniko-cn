@@ -222,8 +222,8 @@
     },
     {
       "name": "context",
-      "type": "registry:ui",
-      "description": "Shows how much of a model's context window is used, in a hover card with a token and cost breakdown."
+      "type": "registry:block",
+      "description": "How much of the context window the conversation has used."
     },
     {
       "name": "file-tree",
@@ -242,13 +242,13 @@
     },
     {
       "name": "inline-citation",
-      "type": "registry:ui",
-      "description": "A source badge inside running text that opens a hover card, with a carousel for several sources."
+      "type": "registry:block",
+      "description": "A source in the sentence that opens on hover."
     },
     {
       "name": "model-selector",
-      "type": "registry:ui",
-      "description": "A button that opens a searchable dialog of AI models, with provider logos and a check mark on the current model."
+      "type": "registry:block",
+      "description": "Two menus. One picks the model the agent runs, the other picks how hard it thinks."
     },
     {
       "name": "plan",
@@ -257,8 +257,8 @@
     },
     {
       "name": "queue",
-      "type": "registry:ui",
-      "description": "A list of pending and completed tasks or messages, grouped into collapsible sections, with item indicators, actions and attachments."
+      "type": "registry:block",
+      "description": "Displays the agent's todo list, split into what is left and what is done."
     },
     {
       "name": "prompt-input",
@@ -267,8 +267,8 @@
     },
     {
       "name": "sources",
-      "type": "registry:ui",
-      "description": "A collapsible list of the sources behind an AI answer, with a trigger that shows the source count and links that open in a new tab."
+      "type": "registry:block",
+      "description": "Displays the links the agent used for a reply."
     },
     {
       "name": "reasoning",

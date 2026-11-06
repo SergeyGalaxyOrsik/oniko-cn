@@ -43,17 +43,17 @@
 | File Tree | `registry/blocks/file_tree.rs` | `oniko add file-tree` | web, desktop |
 | Message | `registry/ui/message.rs` | `oniko add message` | web, desktop |
 | Attachment | `registry/ui/attachment.rs` | `oniko add attachment` | web, desktop |
-| Context | `registry/ui/context.rs` | `oniko add context` | web, desktop |
+| Context | `registry/blocks/context.rs` | `oniko add context` | web, desktop |
 | Plan | `registry/blocks/plan.rs` | `oniko add plan` | web, desktop |
 | Reasoning | `registry/blocks/reasoning.rs` | `oniko add reasoning` | web, desktop |
-| Queue | `registry/ui/queue.rs` | `oniko add queue` | web, desktop |
+| Queue | `registry/blocks/queue.rs` | `oniko add queue` | web, desktop |
 | Prompt Input | `registry/blocks/prompt_input.rs` | `oniko add prompt-input` | web, desktop |
-| Sources | `registry/ui/sources.rs` | `oniko add sources` | web, desktop |
+| Sources | `registry/blocks/sources.rs` | `oniko add sources` | web, desktop |
 | Chat | `registry/blocks/chat.rs` | `oniko add chat` | web, desktop |
 | Confirmation | `registry/blocks/confirmation.rs` | `oniko add confirmation` | web, desktop |
 | Chain of Thought | `registry/blocks/chain_of_thought.rs` | `oniko add chain-of-thought` | web, desktop |
-| Inline Citation | `registry/ui/inline_citation.rs` | `oniko add inline-citation` | web, desktop |
-| Model Selector | `registry/ui/model_selector.rs` | `oniko add model-selector` | web, desktop |
+| Inline Citation | `registry/blocks/inline_citation.rs` | `oniko add inline-citation` | web, desktop |
+| Model Selector | `registry/blocks/model_selector.rs` | `oniko add model-selector` | web, desktop |
 | Subagent | `registry/blocks/subagent.rs` | `oniko add subagent` | web, desktop |
 | Suggestion | `registry/blocks/suggestion.rs` | `oniko add suggestion` | web, desktop |
 | Stack Trace | `registry/blocks/stack_trace.rs` | `oniko add stack-trace` | web, desktop |
@@ -582,18 +582,18 @@
 
 ### Context
 
-- Части: `Context` (корень; `used_tokens`, `max_tokens`, `usage: Option<ContextUsage>`, `open_delay` (10 мс по умолчанию), `close_delay` (100 мс)), `ContextTrigger` (кнопка с процентом и кольцом-индикатором), `ContextContent` (карточка по наведению), `ContextContentHeader` (процент, `used / max` и полоса прогресса; `children` заменяют разметку), `ContextContentBody` (свободная область), `ContextContentFooter` (общая стоимость; `children` заменяют разметку), `ContextInputUsage`, `ContextOutputUsage`, `ContextReasoningUsage`, `ContextCacheUsage` (строки с токенами и стоимостью, скрыты при нулевых токенах)
-- `ContextUsage`: токены по частям и стоимость по частям (`Option<f64>` в USD); сама стоимость не считается, её передаёт приложение из своей таблицы цен
-- Зависит от `button` и `hover-card`, которые ставятся автоматически; полосу прогресса собирает внутри себя, отдельного `progress` в реестре нет
+- Блок (`registry:block`), а не компонент: паттерн из страницы AI Elements, собранный из `hover-card`, `progress` и `button`; собственного вида нет
+- `Context` (`used`, `limit`, `rows: Vec<(String, u32)>`): кнопка `Button` (outline, sm) с «N% context» открывает `HoverCard` с задержками 10 и 100 мс; в карточке `used / limit`, `Progress` с `aria-label="Context used"` и строки разбивки (ввод, вывод, рассуждения), если они переданы
+- `format_tokens(value)` сокращает число токенов: `8420` становится `8.4k`; процент и сами токены считает приложение из метаданных ответа
+- Зависит от `button`, `hover-card` и `progress`, которые ставятся автоматически
 - Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
 
 ### Inline Citation
 
-- Части: `InlineCitation` (обёртка в строке текста), `InlineCitationText` (процитированный фрагмент, подсвечивается при наведении), `InlineCitationCard` (карточка по наведению без задержки; `open` с `on_open_change` или `default_open`), `InlineCitationCardTrigger` (бейдж с именем хоста первого источника и `+N` для остальных; `sources: Vec<String>`), `InlineCitationCardBody` (содержимое карточки)
-- `InlineCitationCarousel` (`Header`, `Content`, `Item`, `Index`, `Prev`, `Next`) листает несколько источников внутри карточки; индекс `текущий/всего` и кнопки ведут себя как у `Carousel`
-- Карусель хранит свой индекс: `Carousel` из реестра не отдаёт своё состояние наружу, поэтому здесь он не используется
-- `InlineCitationSource` (`title`, `url`, `description`; `children` идут после них), `InlineCitationQuote` (цитата с левой линией)
-- Зависит от `badge` и `hover-card`, которые ставятся автоматически
+- Блок (`registry:block`): `HoverCard` на кнопке `Button` (secondary, xs), собирается из `hover-card` и `button`; собственного вида нет
+- `InlineCitation` (`url`, `title`, `description: Option<String>`): на кнопке имя хоста без `www.`; по наведению или фокусу открывается карточка с заголовком, описанием и ссылкой, которая открывается в новой вкладке (`rel="noreferrer"`, `sr-only` «(opens in a new tab)»)
+- Карусели из нескольких источников и `InlineCitationText`/`Quote` в блоке нет: их нет и на странице upstream
+- Зависит от `button` и `hover-card`, которые ставятся автоматически
 - Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
 
 ### Message
@@ -628,11 +628,11 @@
 
 ### Model Selector
 
-- Части: `ModelSelector` (корень; `open`, `default_open`, `on_open_change`), `ModelSelectorTrigger` (кнопка, открывающая окно; `variant`, `size`, `onclick`), `ModelSelectorContent` (окно с поиском и списком; `title` читают только программы, `sr-only`), `ModelSelectorInput` (поле поиска; `placeholder`), `ModelSelectorList`, `ModelSelectorEmpty`, `ModelSelectorGroup` (`heading`), `ModelSelectorItem` (`value`, `keywords`, `disabled`, `selected` с галочкой, `on_select`), `ModelSelectorSeparator`, `ModelSelectorShortcut`, `ModelSelectorLogo` (`src`, `alt`), `ModelSelectorLogoGroup`, `ModelSelectorName`
-- Выбор пункта закрывает окно и вызывает `on_select` с его `value`; поиск и стрелки работают как в `Command`
-- `ModelSelectorTrigger` не принимает произвольные атрибуты: у `DialogTrigger` их нельзя передать через `..attributes`
-- Логотипы не загружаются самим компонентом: приложение передаёт URL в `src`
-- Зависит от `button`, `command` и `dialog`, которые ставятся автоматически
+- Блок (`registry:block`): два выпадающих меню для `InputGroupAddon`, собираются из `dropdown-menu`, `input-group` и `button`; собственного вида нет
+- `ModelSelector` (`providers: Vec<ModelProvider>`, `value`, `on_value_change`, `class`): радио-меню моделей по провайдерам, пункты закрывают меню; `EffortSelector` (`efforts: Vec<ModelOption>`, `value`, `on_value_change`): радио-меню усилия рассуждения. `ModelOption` (`id`, `name`) и `ModelProvider` (`name`, `models`) описывают данные
+- Кнопки-триггеры получают вид `InputGroupButton` через `input_group_button_variants`, потому что `DropdownMenuTrigger` не принимает `render`; у них `data-slot="dropdown-menu-trigger"`, а не `input-group-button`
+- Поиска в меню нет, как и в upstream
+- Зависит от `button`, `dropdown-menu` и `input-group`, которые ставятся автоматически
 - Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
 
 ### Plan
@@ -665,17 +665,18 @@
 
 ### Sources
 
-- Части: `Sources` (корень; `open`, `default_open`, `on_open_change`; собирает `Collapsible`), `SourcesTrigger` (кнопка с подписью «Used N sources» и шевроном; `count`; `children` заменяют подпись), `SourcesContent` (список источников, виден только в раскрытом состоянии), `Source` (ссылка с `href`, иконкой книги и `title`; открывается в новой вкладке с `rel="noreferrer"`; `children` заменяют содержимое)
-- `SourcesTrigger` и `SourcesContent` принимают атрибуты на обёртку `div`, потому что `CollapsibleTrigger` и `CollapsibleContent` не принимают `..attributes`; `Source` принимает их на саму ссылку
-- Зависит от `collapsible`, который ставится автоматически
+- Блок (`registry:block`): `Trace` с `TraceCollapsible` для списка, собирается из `trace`; собственного вида нет
+- `Sources` (`sources: Vec<Source>`, `default_open`): строка «Used N sources» раскрывается в ссылку на каждый источник; `Source` (`url`, `title: Option<String>` с запасным именем хоста) открывается в новой вкладке, в `TraceTitle` есть `sr-only` «(opens in a new tab)»
+- Одинаковые URL приложение убирает само до вызова, как в разделе AI SDK upstream
+- Зависит от `trace`, который ставится автоматически
 - Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
 
 ### Queue
 
-- Части: `Queue` (корень), `QueueSection` (`open`, `default_open`, `on_open_change`; собирает `Collapsible`), `QueueSectionTrigger` (кнопка заголовка секции), `QueueSectionLabel` (`count`, `label`, `icon`; шеврон поворачивается при свёрнутой секции), `QueueSectionContent` (виден только в раскрытой секции), `QueueList` (прокручиваемый список, не выше 10rem), `QueueItem` (`li`), `QueueItemIndicator`, `QueueItemContent`, `QueueItemDescription` (все три принимают `completed` и зачёркивают текст), `QueueItemActions`, `QueueItemAction` (кнопка-иконка, появляется при наведении на строку; принимает `onclick`), `QueueItemAttachment`, `QueueItemImage` (миниатюра, `alt` пустой по умолчанию), `QueueItemFile` (чип с иконкой скрепки)
-- `QueueSectionTrigger` не принимает произвольные атрибуты: `CollapsibleTrigger` не принимает `..attributes`. Атрибуты `QueueSection` и `QueueSectionContent` попадают на обёртку вокруг `Collapsible` и на `div` внутри содержимого соответственно
-- Вместо `ScrollArea` в списке стоит обычный контейнер с `overflow-y-auto`
-- Зависит от `button` и `collapsible`, которые ставятся автоматически
+- Блок (`registry:block`): список дел агента в двух секциях «to do» и «completed», собирается из `trace`; собственного вида нет
+- `Queue` (`todos: Vec<Todo>`, `streaming`): `Todo` (`title`, `description: Option<String>`, `status: TodoStatus` с `Pending`, `InProgress`, `Completed`); иконка следует статусу, дело в работе мерцает при `streaming`, дело с описанием раскрывается; пустая секция не показывается
+- Содержимое секций с описаниями не держится смонтированным (`keepMounted` в `TraceCollapsibleContent` нет)
+- Зависит от `trace`, который ставится автоматически
 - Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
 
 ### Suggestion
