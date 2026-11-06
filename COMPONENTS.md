@@ -113,11 +113,11 @@
 ### Accordion
 
 - Части: `Accordion`, `AccordionItem`, `AccordionTrigger`, `AccordionContent`
-- `Accordion`: `multiple` (несколько открытых пунктов), `disabled`, `default_value: Vec<String>`, `on_value_change`
-- `AccordionItem`: обязательный `value`, `disabled`
-- Анимация высоты: `AccordionTrigger` перед переключением измеряет контент через `MountedData::get_scroll_size` и кладёт результат в `--accordion-panel-height`
-- Закрытый контент получает `inert`, поэтому не попадает в порядок табуляции
-- Без `dioxus-primitives` (на crates.io лежит пустышка 0.0.0), стрелки вверх/вниз между заголовками не реализованы: работают Tab, Enter, Space
+- `Accordion`: `value`/`default_value: Vec<String>`, `on_value_change`, `multiple`, `disabled`, `orientation`, `loop_focus`, `keep_mounted`, `hidden_until_found`
+- `AccordionItem`: `value` (необязательный, иначе генерируется), `disabled`
+- Анимация как у Base UI: панель несёт `--accordion-panel-height`, `data-starting-style`, `data-ending-style`, `data-open`/`data-closed`; закрытая панель получает `hidden` после окончания анимации
+- Стрелки, Home и End переходят между заголовками (через `document::eval`)
+- Зависит от `collapsible` (общая логика анимации панели), ставится автоматически
 - Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
 
 ### Alert Dialog
@@ -157,10 +157,11 @@
 ### Collapsible
 
 - Части: `Collapsible`, `CollapsibleTrigger`, `CollapsibleContent`
-- `Collapsible`: `default_open` (без управления извне), `open: Option<bool>` с `on_open_change` (управляемое состояние), `disabled`
-- Закрытый `CollapsibleContent` не рендерится, поэтому не попадает в порядок табуляции
+- `Collapsible`: `open` с `on_open_change`, `default_open`, `disabled`; атрибуты `data-open`/`data-closed` (и `data-state`)
+- `CollapsibleTrigger`: `variant`/`size` придают вид `Button` (аналог `render={<Button />}` у shadcn); ставит `data-panel-open` и `aria-expanded`
+- `CollapsibleContent`: `keep_mounted`, `hidden_until_found`; панель несёт `--collapsible-panel-height`, `data-starting-style` и `data-ending-style`, как у Base UI, и остаётся в DOM до конца анимации выхода
+- Зависит от `button` (ставится автоматически)
 - Стилей нет: компонент одинаков во всех 8 стилях
-- Без `dioxus-primitives` (на crates.io лежит пустышка 0.0.0), состояние и `aria-expanded` ведутся самим компонентом
 
 ### Command
 
@@ -258,10 +259,33 @@
 ### Carousel
 
 - Ориентация (`CarouselOrientation`): `Horizontal` (по умолчанию), `Vertical`
-- Части: `Carousel`, `CarouselContent`, `CarouselItem`, `CarouselPrevious`, `CarouselNext`
-- Состояние текущего слайда в контексте `Carousel`, прокрутка через `transform`; стрелки клавиатуры работают внутри карусели
-- Без зацикливания: кнопки отключаются на первом и последнем слайде
-- Для вертикальной карусели задайте высоту на `CarouselContent` (например, `h-[200px]`)
+- Части: `Carousel`, `CarouselContent`, `CarouselItem`, `CarouselPrevious`, `CarouselNext`, хук `use_carousel`
+- Вместо Embla используется нативный `scroll-snap`: свайп и трекпад работают сами, кнопки и стрелки клавиатуры идут через `document::eval`
+- `opts: CarouselOptions` (`align`, `loop`, `start_index`), `set_api` отдаёт `CarouselApi` (`selected_scroll_snap`, `scroll_snap_count`, `can_scroll_prev/next`, `scroll_prev/next/to`)
+- Вместо плагина Autoplay есть проп `autoplay: CarouselAutoplay` (`delay_ms`, `stop_on_interaction`, `stop_on_mouse_enter`)
+- Для RTL задайте `dir: "rtl"` на `Carousel`; для вертикальной карусели задайте высоту на `CarouselContent`
+- Зависит от `button` (ставится автоматически)
+- Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
+
+### Tabs
+
+- Части: `Tabs`, `TabsList`, `TabsTrigger`, `TabsContent`; хелпер `tabs_list_variants(variant, class)`
+- `Tabs`: `value`/`default_value`, `on_value_change`, `orientation`; `TabsList`: `variant` (`Default`, `Line`)
+- Активная вкладка помечается `data-active`; индикатор линии рисуется псевдоэлементом `after:`, как у shadcn
+- Стрелки, Home и End перемещают фокус, активирует Enter или Space (`activateOnFocus` у Base UI выключен); `TabsContent` не рендерится у неактивной вкладки, пока не задан `keep_mounted`
+- Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
+
+### Scroll Area
+
+- Части: `ScrollArea`, `ScrollBar` (`orientation`, `keep_mounted`)
+- Вьюпорт нативный, полоса прокрутки и ползунок рисуются компонентом; их размер и положение держит небольшой скрипт (`ResizeObserver`), он же ставит `data-has-overflow-x/y`, `data-scrolling`, `data-hovering`
+- Ползунок можно тянуть, клик по треку прокручивает
+- Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
+
+### Resizable
+
+- Части: `ResizablePanelGroup` (`orientation`), `ResizablePanel` (`default_size: "50%"`, `min_size`, `max_size`), `ResizableHandle` (`with_handle`)
+- Размеры только в процентах; перетаскивание и стрелки клавиатуры на разделителе
 - Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
 
 ### Dialog

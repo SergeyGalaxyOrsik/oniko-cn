@@ -10,21 +10,27 @@ use oniko_cn::{cn, take_class};
 
 static NEXT_ID: AtomicUsize = AtomicUsize::new(0);
 
-/// Moves focus to the next, previous, first or last enabled tab in a list, then activates it.
-/// `LIST_ID` and `STEP` are replaced before the script runs.
+/// Moves focus between the enabled tabs of a list without selecting them, as Base UI does.
+/// `LIST_ID`, `KEY` and `LOOP` are replaced before the script runs.
 const MOVE_FOCUS_SCRIPT: &str = r#"(() => {
   const list = document.getElementById("LIST_ID");
   if (!list) return;
-  const tabs = Array.from(list.querySelectorAll('[role="tab"]')).filter((tab) => !tab.disabled);
+  const tabs = Array.from(list.querySelectorAll('[role="tab"]')).filter(
+    (tab) => tab.closest('[role="tablist"]') === list && tab.getAttribute("aria-disabled") !== "true"
+  );
   if (tabs.length === 0) return;
+  const rtl = getComputedStyle(list).direction === "rtl";
   const from = tabs.indexOf(document.activeElement);
-  const step = "STEP";
-  const next = step === "first" ? 0
-    : step === "last" ? tabs.length - 1
-    : step === "next" ? (from + 1) % tabs.length
-    : (from - 1 + tabs.length) % tabs.length;
+  const key = "KEY";
+  let next;
+  if (key === "first") next = 0;
+  else if (key === "last") next = tabs.length - 1;
+  else {
+    const step = key === "next" ? 1 : key === "prev" ? -1 : key === "right" ? (rtl ? -1 : 1) : (rtl ? 1 : -1);
+    next = from + step;
+    if (next < 0 || next >= tabs.length) next = (next + tabs.length) % tabs.length;
+  }
   tabs[next].focus();
-  tabs[next].click();
 })();"#;
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
@@ -123,6 +129,19 @@ fn list_id(root_id: usize) -> String {
     format!("tabs-{root_id}-list")
 }
 
+/// Classes of the tab list for `variant`, for building your own list.
+pub fn tabs_list_variants(variant: TabsVariant, class: Option<&str>) -> String {
+    let look = match variant {
+        TabsVariant::Default => "cn-tabs-list-variant-default bg-muted",
+        TabsVariant::Line => "cn-tabs-list-variant-line gap-1 bg-transparent",
+    };
+    cn!(
+        "cn-tabs-list group/tabs-list inline-flex w-fit items-center justify-center text-muted-foreground group-data-vertical/tabs:h-fit group-data-vertical/tabs:flex-col",
+        look,
+        class
+    )
+}
+
 #[component]
 pub fn Tabs(
     /// Value of the selected tab. Set it to control the selection; leave it unset to let the tabs manage it.
@@ -138,7 +157,7 @@ pub fn Tabs(
 ) -> Element {
     let mut attributes = attributes;
     let class = cn!(
-        "cn-tabs group/tabs flex gap-2 data-horizontal:flex-col data-vertical:flex-row",
+        "cn-tabs group/tabs flex data-horizontal:flex-col",
         take_class(&mut attributes)
     );
     let id = use_hook(|| NEXT_ID.fetch_add(1, Ordering::Relaxed));
@@ -171,10 +190,7 @@ pub fn TabsList(
     children: Element,
 ) -> Element {
     let mut attributes = attributes;
-    let class = cn!(
-        "cn-tabs-list group/tabs-list inline-flex w-fit items-center justify-center group-data-vertical/tabs:h-fit group-data-vertical/tabs:flex-col",
-        take_class(&mut attributes)
-    );
+    let class = tabs_list_variants(variant, take_class(&mut attributes).as_deref());
     let root = use_context::<TabsContext>();
     let orientation = (root.orientation)().name();
 
@@ -182,6 +198,7 @@ pub fn TabsList(
         div {
             "data-slot": "tabs-list",
             "data-variant": variant.name(),
+            "data-orientation": orientation,
             id: list_id(root.id),
             role: "tablist",
             aria_orientation: orientation,
@@ -197,19 +214,23 @@ pub fn TabsTrigger(
     /// Identifies the tab. It must match the `value` of its `TabsContent`.
     value: String,
     #[props(default)] disabled: bool,
+    onclick: Option<EventHandler<MouseEvent>>,
     onkeydown: Option<EventHandler<KeyboardEvent>>,
     #[props(extends = GlobalAttributes, extends = button)] attributes: Vec<Attribute>,
     children: Element,
 ) -> Element {
     let mut attributes = attributes;
     let class = cn!(
-        "cn-tabs-trigger relative inline-flex flex-1 items-center justify-center whitespace-nowrap outline-none data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+        "cn-tabs-trigger relative inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center whitespace-nowrap text-foreground/60 transition-all group-data-vertical/tabs:w-full group-data-vertical/tabs:justify-start hover:text-foreground focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 focus-visible:outline-1 focus-visible:outline-ring disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50 dark:text-muted-foreground dark:hover:text-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0",
+        "group-data-[variant=line]/tabs-list:bg-transparent group-data-[variant=line]/tabs-list:data-active:bg-transparent dark:group-data-[variant=line]/tabs-list:data-active:border-transparent dark:group-data-[variant=line]/tabs-list:data-active:bg-transparent",
+        "data-active:bg-background data-active:text-foreground dark:data-active:border-input dark:data-active:bg-input/30 dark:data-active:text-foreground",
+        "after:absolute after:bg-foreground after:opacity-0 after:transition-opacity group-data-horizontal/tabs:after:inset-x-0 group-data-horizontal/tabs:after:bottom-[-5px] group-data-horizontal/tabs:after:h-0.5 group-data-vertical/tabs:after:inset-y-0 group-data-vertical/tabs:after:-right-1 group-data-vertical/tabs:after:w-0.5 group-data-[variant=line]/tabs-list:data-active:after:opacity-100",
         take_class(&mut attributes)
     );
     let root = use_context::<TabsContext>();
     let active = root.current() == value;
-    let horizontal = (root.orientation)() == TabsOrientation::Horizontal;
-    let state = if active { "active" } else { "inactive" };
+    let orientation = (root.orientation)();
+    let horizontal = orientation == TabsOrientation::Horizontal;
     let tab_id = trigger_id(root.id, &value);
     let controls = panel_id(root.id, &value);
     let list = list_id(root.id);
@@ -218,37 +239,40 @@ pub fn TabsTrigger(
     rsx! {
         button {
             "data-slot": "tabs-trigger",
-            "data-state": state,
-            "data-selected": active.then_some("true"),
+            "data-active": active.then_some(""),
+            "data-disabled": disabled.then_some(""),
+            "data-orientation": orientation.name(),
             r#type: "button",
             role: "tab",
             id: tab_id,
             aria_selected: active,
             aria_controls: controls,
+            aria_disabled: disabled.then_some("true"),
             tabindex: if active { "0" } else { "-1" },
-            disabled: disabled,
             class: class,
-            onclick: move |_| {
-                if !disabled {
-                    root.select(&select_value);
+            onclick: move |event| {
+                if disabled {
+                    return;
+                }
+                root.select(&select_value);
+                if let Some(handler) = onclick {
+                    handler.call(event);
                 }
             },
             onkeydown: move |event: KeyboardEvent| {
-                let step = match event.key() {
-                    Key::ArrowRight if horizontal => "next",
-                    Key::ArrowLeft if horizontal => "prev",
+                let key = match event.key() {
+                    Key::ArrowRight if horizontal => "right",
+                    Key::ArrowLeft if horizontal => "left",
                     Key::ArrowDown if !horizontal => "next",
                     Key::ArrowUp if !horizontal => "prev",
                     Key::Home => "first",
                     Key::End => "last",
                     _ => "",
                 };
-                if !step.is_empty() {
+                if !key.is_empty() {
                     event.prevent_default();
-                    let script = MOVE_FOCUS_SCRIPT
-                        .replace("LIST_ID", &list)
-                        .replace("STEP", step);
-                    let _ = document::eval(&script);
+                    let js = MOVE_FOCUS_SCRIPT.replace("LIST_ID", &list).replace("KEY", key);
+                    let _ = document::eval(&js);
                 }
                 if let Some(handler) = onkeydown {
                     handler.call(event);
@@ -264,6 +288,9 @@ pub fn TabsTrigger(
 pub fn TabsContent(
     /// Identifies the tab this panel belongs to.
     value: String,
+    /// Keep the panel in the DOM, hidden, while its tab is not selected.
+    #[props(default)]
+    keep_mounted: bool,
     #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,
     children: Element,
 ) -> Element {
@@ -274,16 +301,19 @@ pub fn TabsContent(
     );
     let root = use_context::<TabsContext>();
     let active = root.current() == value;
-    let state = if active { "active" } else { "inactive" };
+    if !active && !keep_mounted {
+        return rsx! {};
+    }
 
     rsx! {
         div {
             "data-slot": "tabs-content",
-            "data-state": state,
+            "data-orientation": (root.orientation)().name(),
+            "data-hidden": (!active).then_some(""),
             role: "tabpanel",
             id: panel_id(root.id, &value),
             aria_labelledby: trigger_id(root.id, &value),
-            tabindex: "0",
+            tabindex: if active { "0" } else { "-1" },
             hidden: (!active).then_some("true"),
             class: class,
             ..attributes,

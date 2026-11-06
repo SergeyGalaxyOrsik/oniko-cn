@@ -1,4 +1,24 @@
 .style-vega {
+  /* MARK: Placeholders upstream leaves without a rule */
+  .cn-accordion-trigger-icon {
+  }
+
+  .cn-resizable-panel-group {
+  }
+
+
+  .cn-scroll-area {
+  }
+
+  .cn-scroll-area-viewport {
+  }
+
+  .cn-tabs-list-variant-default {
+  }
+
+  .cn-tabs-list-variant-line {
+  }
+
   /* MARK: Accordion */
   .cn-accordion {
   }

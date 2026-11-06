@@ -1,5 +1,5 @@
 //! Resizable: panels separated by handles that the user drags or moves with the arrow keys.
-//! ResizablePanelGroup: lays out its panels along a direction and shares their sizes.
+//! ResizablePanelGroup: lays out its panels along a orientation and shares their sizes.
 //! ResizablePanel: one panel, sized in percent of the group.
 //! ResizableHandle: the separator between two neighbouring panels.
 //!
@@ -12,26 +12,29 @@ use oniko_cn::{cn, take_class};
 
 const KEYBOARD_STEP: f64 = 5.0;
 
-const GROUP_BASE: &str = "flex h-full w-full";
+const GROUP_BASE: &str = "cn-resizable-panel-group flex h-full w-full aria-[orientation=vertical]:flex-col";
 
-const PANEL_BASE: &str = "relative min-h-0 min-w-0 overflow-hidden";
-
-const HANDLE_BASE: &str = "cn-resizable-handle relative flex shrink-0 items-center justify-center select-none touch-none aria-[orientation=horizontal]:h-px aria-[orientation=horizontal]:w-full aria-[orientation=vertical]:h-full aria-[orientation=vertical]:w-px after:absolute after:inset-y-0 after:left-1/2 after:w-1 after:-translate-x-1/2 aria-[orientation=horizontal]:after:left-0 aria-[orientation=horizontal]:after:h-1 aria-[orientation=horizontal]:after:w-full aria-[orientation=horizontal]:after:translate-x-0 aria-[orientation=horizontal]:after:-translate-y-1/2 [&[aria-orientation=horizontal]>div]:rotate-90";
+const HANDLE_BASE: &str = "cn-resizable-handle relative flex w-px items-center justify-center bg-border ring-offset-background after:absolute after:inset-y-0 after:left-1/2 after:w-1 after:-translate-x-1/2 focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-hidden aria-[orientation=horizontal]:h-px aria-[orientation=horizontal]:w-full aria-[orientation=horizontal]:after:left-0 aria-[orientation=horizontal]:after:h-1 aria-[orientation=horizontal]:after:w-full aria-[orientation=horizontal]:after:translate-x-0 aria-[orientation=horizontal]:after:-translate-y-1/2 [&[aria-orientation=horizontal]>div]:rotate-90";
 
 const GRIP_BASE: &str = "cn-resizable-handle-icon z-10 flex shrink-0";
 
+/// Parses a size such as `"50%"` or `50` into percent of the group.
+fn parse_percent(size: &str) -> Option<f64> {
+    size.trim().trim_end_matches('%').trim().parse().ok()
+}
+
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
-pub enum ResizableDirection {
+pub enum ResizableOrientation {
     #[default]
     Horizontal,
     Vertical,
 }
 
-impl ResizableDirection {
-    fn layout_class(self) -> &'static str {
+impl ResizableOrientation {
+    fn name(self) -> &'static str {
         match self {
-            Self::Horizontal => "flex-row",
-            Self::Vertical => "flex-col",
+            Self::Horizontal => "horizontal",
+            Self::Vertical => "vertical",
         }
     }
 
@@ -64,13 +67,13 @@ struct Drag {
     handle: usize,
     origin: f64,
     sizes: Vec<f64>,
-    /// Group length in pixels along the direction; known once the group has been measured.
+    /// Group length in pixels along the orientation; known once the group has been measured.
     length: Option<f64>,
 }
 
 #[derive(Clone, Copy)]
 struct ResizableContext {
-    direction: ResizableDirection,
+    orientation: ResizableOrientation,
     slots: Signal<Vec<PanelSlot>>,
     group: Signal<Option<Rc<MountedData>>>,
     drag: Signal<Option<Drag>>,
@@ -142,14 +145,13 @@ fn commit(mut slots: Signal<Vec<PanelSlot>>, sizes: &[f64]) {
 
 #[component]
 pub fn ResizablePanelGroup(
-    #[props(default)] direction: ResizableDirection,
+    #[props(default)] orientation: ResizableOrientation,
     #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,
     children: Element,
 ) -> Element {
     let mut attributes = attributes;
     let class = cn!(
         GROUP_BASE,
-        direction.layout_class(),
         take_class(&mut attributes).as_deref()
     );
 
@@ -159,7 +161,7 @@ pub fn ResizablePanelGroup(
     let panel_count = use_signal(|| 0);
     let handle_count = use_signal(|| 0);
     let ctx = use_context_provider(|| ResizableContext {
-        direction,
+        orientation,
         slots,
         group,
         drag,
@@ -170,6 +172,7 @@ pub fn ResizablePanelGroup(
     rsx! {
         div {
             "data-slot": "resizable-panel-group",
+            "aria-orientation": orientation.name(),
             class: class,
             onmounted: move |event| {
                 let mut group = ctx.group;
@@ -191,7 +194,7 @@ pub fn ResizablePanelGroup(
                     return;
                 }
                 let point = event.client_coordinates();
-                let position = ctx.direction.axis(point.x, point.y);
+                let position = ctx.orientation.axis(point.x, point.y);
                 let delta = (position - drag.origin) / length * 100.0;
                 let next = resize_pair(&drag.sizes, &ctx.slots.peek(), drag.handle, delta);
                 commit(ctx.slots, &next);
@@ -216,28 +219,29 @@ pub fn ResizablePanelGroup(
 
 #[component]
 pub fn ResizablePanel(
-    default_size: Option<f64>,
-    #[props(default = 0.0)] min_size: f64,
-    #[props(default = 100.0)] max_size: f64,
+    /// Initial size, such as `"50%"`. Panels without one share the remaining space.
+    default_size: Option<String>,
+    min_size: Option<String>,
+    max_size: Option<String>,
     #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,
     children: Element,
 ) -> Element {
     let ctx = use_context::<ResizableContext>();
     let index = use_hook(|| {
         ctx.register_panel(PanelSlot {
-            size: default_size,
-            min: min_size,
-            max: max_size,
+            size: default_size.as_deref().and_then(parse_percent),
+            min: min_size.as_deref().and_then(parse_percent).unwrap_or(0.0),
+            max: max_size.as_deref().and_then(parse_percent).unwrap_or(100.0),
         })
     });
     let size = effective_sizes(&ctx.slots.read())
         .get(index)
         .copied()
         .unwrap_or(100.0);
-    let style = format!("flex: 0 1 {size:.4}%;");
+    let style = format!("flex: 0 1 {size:.4}%; min-width: 0; min-height: 0; overflow: hidden;");
 
     let mut attributes = attributes;
-    let class = cn!(PANEL_BASE, take_class(&mut attributes).as_deref());
+    let class = cn!(take_class(&mut attributes).as_deref());
 
     rsx! {
         div {
@@ -266,11 +270,11 @@ pub fn ResizableHandle(
             "data-slot": "resizable-handle",
             role: "separator",
             tabindex: "0",
-            "aria-orientation": ctx.direction.separator_orientation(),
+            "aria-orientation": ctx.orientation.separator_orientation(),
             class: class,
             onpointerdown: move |event| {
                 let point = event.client_coordinates();
-                let origin = ctx.direction.axis(point.x, point.y);
+                let origin = ctx.orientation.axis(point.x, point.y);
                 let sizes = effective_sizes(&ctx.slots.peek());
                 let mut drag = ctx.drag;
                 drag.set(Some(Drag {
@@ -287,7 +291,7 @@ pub fn ResizableHandle(
                     let Ok(rect) = group.get_client_rect().await else {
                         return;
                     };
-                    let length = ctx.direction.axis(rect.size.width, rect.size.height);
+                    let length = ctx.orientation.axis(rect.size.width, rect.size.height);
                     let mut drag = ctx.drag;
                     if let Some(active) = drag
                         .write()
@@ -299,11 +303,11 @@ pub fn ResizableHandle(
                 });
             },
             onkeydown: move |event| {
-                let step = match (ctx.direction, event.key()) {
-                    (ResizableDirection::Horizontal, Key::ArrowLeft)
-                    | (ResizableDirection::Vertical, Key::ArrowUp) => -KEYBOARD_STEP,
-                    (ResizableDirection::Horizontal, Key::ArrowRight)
-                    | (ResizableDirection::Vertical, Key::ArrowDown) => KEYBOARD_STEP,
+                let step = match (ctx.orientation, event.key()) {
+                    (ResizableOrientation::Horizontal, Key::ArrowLeft)
+                    | (ResizableOrientation::Vertical, Key::ArrowUp) => -KEYBOARD_STEP,
+                    (ResizableOrientation::Horizontal, Key::ArrowRight)
+                    | (ResizableOrientation::Vertical, Key::ArrowDown) => KEYBOARD_STEP,
                     _ => return,
                 };
                 event.prevent_default();
@@ -314,10 +318,7 @@ pub fn ResizableHandle(
             },
             ..attributes,
             if with_handle {
-                div {
-                    "data-slot": "resizable-handle-icon",
-                    class: GRIP_BASE,
-                }
+                div { class: GRIP_BASE }
             }
         }
     }
