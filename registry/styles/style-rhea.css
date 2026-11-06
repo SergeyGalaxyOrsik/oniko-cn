@@ -1570,6 +1570,9 @@
     @apply bg-muted text-foreground w-10 rounded-lg group-data-[size=sm]/attachment:w-8 group-data-[size=xs]/attachment:w-7 group-data-[size=xs]/attachment:rounded-md [&_svg:not([class*='size-'])]:size-4 group-data-[size=xs]/attachment:[&_svg:not([class*='size-'])]:size-3.5 group-data-[orientation=vertical]/attachment:w-full group-data-[orientation=vertical]/attachment:[&_svg:not([class*='size-'])]:size-6 group-data-[orientation=vertical]/attachment:*:data-[slot=spinner]:size-6!;
   }
 
+  .cn-attachment-media-variant-icon {
+  }
+
   .cn-attachment-media-variant-image {
     @apply opacity-60 group-data-[state=idle]/attachment:opacity-100 group-data-[state=done]/attachment:opacity-100;
   }
@@ -1588,6 +1591,9 @@
 
   .cn-attachment-actions {
     @apply group-data-[orientation=vertical]/attachment:absolute group-data-[orientation=vertical]/attachment:top-3 group-data-[orientation=vertical]/attachment:right-3 relative z-20 group-data-[orientation=vertical]/attachment:gap-1;
+  }
+
+  .cn-attachment-action {
   }
 
   .cn-attachment-group {
@@ -1688,6 +1694,27 @@
     @apply gap-2 sm:min-h-8;
   }
 
+  .cn-questionnaire-choice-input {
+  }
+
+  .cn-questionnaire-choice-label {
+  }
+
+  .cn-questionnaire-choice-shortcut {
+  }
+
+  .cn-questionnaire-previous {
+  }
+
+  .cn-questionnaire-skip {
+  }
+
+  .cn-questionnaire-next {
+  }
+
+  .cn-questionnaire-submit {
+  }
+
   /* MARK: Trace */
   .cn-trace {
     @apply gap-2 *:has-[>[data-slot=trace-line]]:rounded-lg *:has-[>[data-slot=trace-line]]:focus-visible:ring-3 *:has-[>[data-slot=trace-line]]:focus-visible:ring-ring/30;
@@ -1767,6 +1794,18 @@
   }
 
   /* MARK: Message Scroller */
+  .cn-message-scroller {
+  }
+
+  .cn-message-scroller-viewport {
+  }
+
+  .cn-message-scroller-item {
+  }
+
+  .cn-message-scroller-button {
+  }
+
   .cn-message-scroller-content {
     @apply gap-8;
   }

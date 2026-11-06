@@ -223,7 +223,12 @@
     {
       "name": "message",
       "type": "registry:ui",
-      "description": "A chat message row with content, action buttons and navigation between alternative branches."
+      "description": "One turn in a conversation, with an avatar, a header, content and a footer."
+    },
+    {
+      "name": "attachment",
+      "type": "registry:ui",
+      "description": "A file or image chip with a status, actions and an optional trigger that makes the whole card clickable."
     },
     {
       "name": "inline-citation",
