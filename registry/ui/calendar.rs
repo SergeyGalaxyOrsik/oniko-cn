@@ -811,9 +811,23 @@ pub fn Calendar(
     let focus_target = use_signal(|| None);
     let focus_request = use_signal(|| None);
     let locale_signal = use_prop(locale.clone());
+    let mode_prop = use_prop(mode);
+    let nav_start_prop = use_prop(nav_start);
+    let nav_end_prop = use_prop(nav_end);
+    let today_prop = use_prop(today_now);
+    let disabled_prop = use_prop(disabled);
+    let hidden_prop = use_prop(hidden);
+    let modifiers_prop = use_prop(modifiers);
+    let show_outside_days_prop = use_prop(show_outside_days);
+    let show_week_number_prop = use_prop(show_week_number);
+    let fixed_weeks_prop = use_prop(fixed_weeks);
+    let rtl_prop = use_prop(rtl);
+    let caption_layout_prop = use_prop(caption_layout);
+    let button_variant_prop = use_prop(button_variant);
+    let day_button_prop = use_prop(day_button);
     let context = use_context_provider(|| CalendarContext {
         id,
-        mode: use_prop(mode),
+        mode: mode_prop,
         selection,
         internal_selection,
         controlled_selection,
@@ -823,23 +837,23 @@ pub fn Calendar(
         controlled_month,
         on_month_change,
         number_of_months,
-        nav_start: use_prop(nav_start),
-        nav_end: use_prop(nav_end),
+        nav_start: nav_start_prop,
+        nav_end: nav_end_prop,
         focused,
         focus_target,
         focus_request,
-        today: use_prop(today_now),
-        disabled: use_prop(disabled),
-        hidden: use_prop(hidden),
-        modifiers: use_prop(modifiers),
-        show_outside_days: use_prop(show_outside_days),
-        show_week_number: use_prop(show_week_number),
-        fixed_weeks: use_prop(fixed_weeks),
-        rtl: use_prop(rtl),
+        today: today_prop,
+        disabled: disabled_prop,
+        hidden: hidden_prop,
+        modifiers: modifiers_prop,
+        show_outside_days: show_outside_days_prop,
+        show_week_number: show_week_number_prop,
+        fixed_weeks: fixed_weeks_prop,
+        rtl: rtl_prop,
         locale: locale_signal,
-        caption_layout: use_prop(caption_layout),
-        button_variant: use_prop(button_variant),
-        day_button: use_prop(day_button),
+        caption_layout: caption_layout_prop,
+        button_variant: button_variant_prop,
+        day_button: day_button_prop,
     });
 
     let mut target_signal = focus_target;
