@@ -1712,6 +1712,15 @@
     @apply size-4 [&_svg:not([class*='size-'])]:size-4 [[data-slot=trace-title]~&]:-ml-1;
   }
 
+  .cn-trace-title {
+  }
+
+  .cn-trace-description {
+  }
+
+  .cn-trace-collapsible {
+  }
+
   .cn-trace-collapsible-content {
     @apply duration-200;
   }
@@ -1758,6 +1767,12 @@
 
   .cn-code-block-line {
     @apply -mx-4 px-4 in-data-numbered:gap-x-3 before:min-w-6 before:text-end before:text-muted-foreground after:start-1 after:text-muted-foreground group-data-[size=sm]/code-block:-mx-3 group-data-[size=sm]/code-block:px-3;
+  }
+
+  .cn-code-block-code {
+  }
+
+  .cn-code-block-line-variant-default {
   }
 
   .cn-code-block-line-variant-highlighted {

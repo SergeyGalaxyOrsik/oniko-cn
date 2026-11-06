@@ -53,7 +53,7 @@
     {
       "name": "bubble",
       "type": "registry:ui",
-      "description": "A chat message bubble with variants, alignment and reactions."
+      "description": "Displays conversational content in a message bubble. Supports variants, alignment, grouping, reactions, and collapsible content."
     },
     {
       "name": "accordion",
@@ -103,7 +103,7 @@
     {
       "name": "code-block",
       "type": "registry:ui",
-      "description": "Displays code, terminal output or a diff with an optional title, copy button and line numbers."
+      "description": "Displays code, terminal output and diffs with an optional header, line numbers and a copy button."
     },
     {
       "name": "checkbox",
@@ -393,7 +393,7 @@
     {
       "name": "trace",
       "type": "registry:ui",
-      "description": "A compact list of AI steps, such as searches and commands, that can expand to show details."
+      "description": "The building block for reasoning, tool calls, sources and more."
     },
     {
       "name": "typeset",

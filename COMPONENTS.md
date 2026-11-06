@@ -198,7 +198,10 @@
 - Части: `CodeBlock`, `CodeBlockHeader`, `CodeBlockTitle`, `CodeBlockActions`, `CodeBlockCopyButton`, `CodeBlockContent`, `CodeBlockLine`, `CodeBlockFooter`
 - `CodeBlockCopyButton` копирует `value` через `navigator.clipboard` (`document::eval`); `CodeBlockActions` внутри `CodeBlock` всплывает поверх содержимого
 - `CodeBlockContent`: `wrap`, `line_numbers`, `start_line`; `CodeBlockLine` варианты (`CodeBlockLineVariant`): `Default`, `Added`, `Removed`, `Highlighted`
-- Подсветка синтаксиса не входит в компонент: текст выводится как есть
+- `CodeBlockContent` принимает `code: Option<String>` вместо строки-ребёнка из React: с `line_numbers` текст режется на нумерованные строки, без него выводится как есть
+- `CodeBlockCopyButton`: `variant` и `size` (по умолчанию `Ghost` и `IconXs`), `data-copied` и `aria-label` («Copy» / «Copied») меняются на две секунды после копирования
+- `CodeBlockLine` с пустым содержимым выводит перевод строки, чтобы пустые строки не терялись при копировании
+- Подсветка синтаксиса: функция `highlight_lines(code, language) -> Vec<Element>` в том же файле (аналог `useHighlightedCode`) на чистом Rust, цвета GitHub light/dark через `--shiki-light` и `--shiki-dark`; языки `js`, `jsx`, `ts`, `tsx`, `json`, `bash`, `css`, `python`, `sql`, `yaml`, `diff`, `ansi`, остальные выводятся без цвета. Это лексер, а не грамматики TextMate, поэтому оттенки местами отличаются от shiki
 - Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
 
 ### Combobox
@@ -482,6 +485,14 @@
 - Части: `Suggestions` (горизонтальная строка, прокручивается по горизонтали при переполнении), `Suggestion` (pill-кнопка с `suggestion: String`; `on_click: Option<EventHandler<String>>` получает текст подсказки; `children` заменяют текст)
 - Кнопка собрана через `button_variants` из `button` с вариантом `Outline` и размером `Sm`; полоса прокрутки скрыта
 - Зависит от `button`, который ставится автоматически
+- Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
+
+### Trace
+
+- Части: `Trace`, `TraceLine` (`status`: `TraceStatus` с `Complete`, `Running`, `Error`, `Pending`; попадает в `data-status`, у завершённого шага атрибута нет), `TraceIcon`, `TraceTitle`, `TraceDescription`, `TraceCollapsible`, `TraceCollapsibleTrigger`, `TraceCollapsibleContent`
+- `TraceCollapsible` напрямую собирает `Collapsible` (`open`, `default_open`, `on_open_change`), без лишней обёртки; шеврон в `TraceCollapsibleTrigger` поворачивается по `aria-expanded`
+- `class` у `TraceCollapsibleContent` попадает на внутренний `div`, как в upstream; остальные атрибуты на панель
+- Закрытое содержимое не монтируется (так работает наш `Collapsible`), поэтому `keepMounted` и анимации высоты из Base UI не поддерживаются
 - Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
 
 ### Subagent
