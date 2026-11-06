@@ -137,8 +137,8 @@
     },
     {
       "name": "data-table",
-      "type": "registry:ui",
-      "description": "A table with sorting, filtering, pagination and row selection."
+      "type": "registry:block",
+      "description": "A table with sorting, filtering, column visibility, row selection and pagination, built from Table, Checkbox, DropdownMenu, Button and Input."
     },
     {
       "name": "popover",
@@ -147,8 +147,8 @@
     },
     {
       "name": "date-picker",
-      "type": "registry:ui",
-      "description": "A button that opens a calendar popover to pick a single day."
+      "type": "registry:block",
+      "description": "A button that opens a calendar in a popover to pick a day, built from Popover, Calendar and Button."
     },
     {
       "name": "empty",
@@ -416,9 +416,9 @@
       "description": "The building block for reasoning, tool calls, sources and more."
     },
     {
-      "name": "typeset",
-      "type": "registry:ui",
-      "description": "Typography scale for prose: headings, paragraphs, lists, blockquotes and inline code."
+      "name": "typography",
+      "type": "registry:block",
+      "description": "Styles for headings, paragraphs, blockquotes, tables, lists and inline code, as small components with upstream's utility classes."
     },
     {
       "name": "suggestion",

@@ -200,12 +200,12 @@
     },
     {
       "name": "data-table",
-      "type": "registry:ui",
+      "type": "registry:block",
       "title": "Data Table",
-      "description": "A table with sorting, filtering, pagination and row selection.",
+      "description": "A table with sorting, filtering, column visibility, row selection and pagination, built from Table, Checkbox, DropdownMenu, Button and Input.",
       "dependencies": ["oniko-cn@0.1"],
-      "registryDependencies": ["button", "checkbox", "table"],
-      "files": [{ "path": "ui/data_table.rs", "type": "registry:ui" }]
+      "registryDependencies": ["button", "checkbox", "dropdown-menu", "input", "table"],
+      "files": [{ "path": "blocks/data_table.rs", "type": "registry:block" }]
     },
     {
       "name": "popover",
@@ -217,12 +217,12 @@
     },
     {
       "name": "date-picker",
-      "type": "registry:ui",
+      "type": "registry:block",
       "title": "Date Picker",
-      "description": "A button that opens a calendar popover to pick a single day.",
+      "description": "A button that opens a calendar in a popover to pick a day, built from Popover, Calendar and Button.",
       "dependencies": ["oniko-cn@0.1"],
       "registryDependencies": ["button", "calendar", "popover"],
-      "files": [{ "path": "ui/date_picker.rs", "type": "registry:ui" }]
+      "files": [{ "path": "blocks/date_picker.rs", "type": "registry:block" }]
     },
     {
       "name": "empty",
@@ -676,12 +676,12 @@
       "files": [{ "path": "ui/trace.rs", "type": "registry:ui" }]
     },
     {
-      "name": "typeset",
-      "type": "registry:ui",
-      "title": "Typeset",
-      "description": "Typography scale for prose: headings, paragraphs, lists, blockquotes and inline code.",
+      "name": "typography",
+      "type": "registry:block",
+      "title": "Typography",
+      "description": "Styles for headings, paragraphs, blockquotes, tables, lists and inline code, as small components with upstream's utility classes.",
       "dependencies": ["oniko-cn@0.1"],
-      "files": [{ "path": "ui/typeset.rs", "type": "registry:ui" }]
+      "files": [{ "path": "blocks/typography.rs", "type": "registry:block" }]
     },
     {
       "name": "suggestion",
