@@ -17,6 +17,17 @@ pub enum BadgeVariant {
 }
 
 impl BadgeVariant {
+    fn name(self) -> &'static str {
+        match self {
+            Self::Default => "default",
+            Self::Secondary => "secondary",
+            Self::Destructive => "destructive",
+            Self::Outline => "outline",
+            Self::Ghost => "ghost",
+            Self::Link => "link",
+        }
+    }
+
     pub fn class(self) -> &'static str {
         match self {
             Self::Default => "cn-badge-variant-default",
@@ -48,6 +59,7 @@ pub fn Badge(
     rsx! {
         span {
             "data-slot": "badge",
+            "data-variant": variant.name(),
             class: class,
             ..attributes,
             {children}

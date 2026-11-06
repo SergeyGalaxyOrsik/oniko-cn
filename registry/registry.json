@@ -123,6 +123,7 @@
       "title": "Button Group",
       "description": "A container that groups related buttons into one joined control.",
       "dependencies": ["oniko-cn@0.1"],
+      "registryDependencies": ["separator"],
       "files": [{ "path": "ui/button_group.rs", "type": "registry:ui" }]
     },
     {

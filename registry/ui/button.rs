@@ -68,6 +68,7 @@ pub fn button_variants(variant: ButtonVariant, size: ButtonSize, class: Option<&
 pub fn Button(
     #[props(default)] variant: ButtonVariant,
     #[props(default)] size: ButtonSize,
+    #[props(default)] disabled: bool,
     #[props(extends = GlobalAttributes, extends = button)] attributes: Vec<Attribute>,
     onclick: Option<EventHandler<MouseEvent>>,
     onkeydown: Option<EventHandler<KeyboardEvent>>,
@@ -80,6 +81,9 @@ pub fn Button(
         button {
             "data-slot": "button",
             class: class,
+            r#type: "button",
+            disabled: disabled,
+            "data-disabled": disabled.then_some(""),
             onclick: move |event| {
                 if let Some(handler) = onclick {
                     handler.call(event);

@@ -30,14 +30,14 @@ pub fn Kbd(
 
 #[component]
 pub fn KbdGroup(
-    #[props(extends = GlobalAttributes, extends = span)] attributes: Vec<Attribute>,
+    #[props(extends = GlobalAttributes, extends = kbd)] attributes: Vec<Attribute>,
     children: Element,
 ) -> Element {
     let mut attributes = attributes;
     let class = cn!(KBD_GROUP_BASE, take_class(&mut attributes).as_deref());
 
     rsx! {
-        span {
+        kbd {
             "data-slot": "kbd-group",
             class: class,
             ..attributes,

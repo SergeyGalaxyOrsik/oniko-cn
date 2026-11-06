@@ -5,8 +5,7 @@
 use dioxus::prelude::*;
 use oniko_cn::{cn, take_class};
 
-const LABEL_BASE: &str =
-    "cn-label flex items-center select-none group-data-[disabled=true]:pointer-events-none";
+const LABEL_BASE: &str = "cn-label flex items-center select-none group-data-[disabled=true]:pointer-events-none peer-disabled:cursor-not-allowed";
 
 /// Label classes for any element, e.g. a styled caption outside of [`Label`].
 pub fn label_variants(class: Option<&str>) -> String {

@@ -5,7 +5,7 @@
 use dioxus::prelude::*;
 use oniko_cn::{cn, take_class};
 
-const LABEL_BASE: &str = "gap-2 text-sm leading-none font-medium group-data-[disabled=true]:opacity-50 peer-disabled:opacity-50 flex items-center select-none group-data-[disabled=true]:pointer-events-none";
+const LABEL_BASE: &str = "gap-2 text-sm leading-none font-medium group-data-[disabled=true]:opacity-50 peer-disabled:opacity-50 flex items-center select-none group-data-[disabled=true]:pointer-events-none peer-disabled:cursor-not-allowed";
 
 /// Label classes for any element, e.g. a styled caption outside of [`Label`].
 pub fn label_variants(class: Option<&str>) -> String {

@@ -20,18 +20,13 @@ impl SeparatorOrientation {
             Self::Vertical => "vertical",
         }
     }
-
-    fn class(self) -> &'static str {
-        match self {
-            Self::Horizontal => "cn-separator-horizontal",
-            Self::Vertical => "cn-separator-vertical",
-        }
-    }
 }
 
+const SEPARATOR_BASE: &str = "shrink-0 bg-border data-horizontal:h-px data-horizontal:w-full data-vertical:w-px data-vertical:self-stretch";
+
 /// Classes for a separator element, for components that render their own.
-pub fn separator_variants(orientation: SeparatorOrientation, class: Option<&str>) -> String {
-    cn!("cn-separator shrink-0", orientation.class(), class)
+pub fn separator_variants(class: Option<&str>) -> String {
+    cn!(SEPARATOR_BASE, class)
 }
 
 #[component]
@@ -40,14 +35,14 @@ pub fn Separator(
     #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,
 ) -> Element {
     let mut attributes = attributes;
-    let class = separator_variants(orientation, take_class(&mut attributes).as_deref());
+    let class = separator_variants(take_class(&mut attributes).as_deref());
 
     rsx! {
         div {
             "data-slot": "separator",
             role: "separator",
             "data-orientation": orientation.as_str(),
-            "aria-orientation": orientation.as_str(),
+            "aria-orientation": (orientation == SeparatorOrientation::Vertical).then_some("vertical"),
             class: class,
             ..attributes,
         }
