@@ -197,18 +197,18 @@
     },
     {
       "name": "chat",
-      "type": "registry:ui",
-      "description": "A full-height conversation layout: a scrolling message log above a composer."
+      "type": "registry:block",
+      "description": "The thread of a conversation: Message turns inside a Message Scroller that keeps your place while the reply streams."
     },
     {
       "name": "checkpoint",
-      "type": "registry:ui",
-      "description": "A marker after a point in a conversation, with a restore button you can return to."
+      "type": "registry:block",
+      "description": "A point in the conversation you can return to: a separator Marker with a Restore button."
     },
     {
       "name": "confirmation",
-      "type": "registry:ui",
-      "description": "An approval prompt for a tool call, with approve and deny actions and the answer once given."
+      "type": "registry:block",
+      "description": "Asks for a yes or no before a tool runs: an Item with Deny and Approve buttons."
     },
     {
       "name": "chain-of-thought",
@@ -257,8 +257,8 @@
     },
     {
       "name": "prompt-input",
-      "type": "registry:ui",
-      "description": "A message box with a textarea that sends on Enter, header and footer rows, and a submit button that shows the request status."
+      "type": "registry:block",
+      "description": "The field the person types into to message the agent: an Input Group with a textarea, an attach button and a send button."
     },
     {
       "name": "sources",
@@ -417,8 +417,8 @@
     },
     {
       "name": "suggestion",
-      "type": "registry:ui",
-      "description": "A horizontal row of pill buttons that offer follow-up prompts, scrolling sideways when they overflow."
+      "type": "registry:block",
+      "description": "A row of buttons that send a prompt in one click, scrolling sideways when they do not fit."
     },
     {
       "name": "subagent",

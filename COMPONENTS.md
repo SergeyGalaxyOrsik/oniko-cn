@@ -38,7 +38,7 @@
 | Field | `registry/ui/field.rs` | `oniko add field` | web, desktop |
 | Input OTP | `registry/ui/input_otp.rs` | `oniko add input-otp` | web, desktop |
 | Input | `registry/ui/input.rs` | `oniko add input` | web, desktop |
-| Checkpoint | `registry/ui/checkpoint.rs` | `oniko add checkpoint` | web, desktop |
+| Checkpoint | `registry/blocks/checkpoint.rs` | `oniko add checkpoint` | web, desktop |
 | File Tree | `registry/ui/file_tree.rs` | `oniko add file-tree` | web, desktop |
 | Message | `registry/ui/message.rs` | `oniko add message` | web, desktop |
 | Attachment | `registry/ui/attachment.rs` | `oniko add attachment` | web, desktop |
@@ -46,15 +46,15 @@
 | Plan | `registry/ui/plan.rs` | `oniko add plan` | web, desktop |
 | Reasoning | `registry/ui/reasoning.rs` | `oniko add reasoning` | web, desktop |
 | Queue | `registry/ui/queue.rs` | `oniko add queue` | web, desktop |
-| Prompt Input | `registry/ui/prompt_input.rs` | `oniko add prompt-input` | web, desktop |
+| Prompt Input | `registry/blocks/prompt_input.rs` | `oniko add prompt-input` | web, desktop |
 | Sources | `registry/ui/sources.rs` | `oniko add sources` | web, desktop |
-| Chat | `registry/ui/chat.rs` | `oniko add chat` | web, desktop |
-| Confirmation | `registry/ui/confirmation.rs` | `oniko add confirmation` | web, desktop |
+| Chat | `registry/blocks/chat.rs` | `oniko add chat` | web, desktop |
+| Confirmation | `registry/blocks/confirmation.rs` | `oniko add confirmation` | web, desktop |
 | Chain of Thought | `registry/ui/chain_of_thought.rs` | `oniko add chain-of-thought` | web, desktop |
 | Inline Citation | `registry/ui/inline_citation.rs` | `oniko add inline-citation` | web, desktop |
 | Model Selector | `registry/ui/model_selector.rs` | `oniko add model-selector` | web, desktop |
 | Subagent | `registry/ui/subagent.rs` | `oniko add subagent` | web, desktop |
-| Suggestion | `registry/ui/suggestion.rs` | `oniko add suggestion` | web, desktop |
+| Suggestion | `registry/blocks/suggestion.rs` | `oniko add suggestion` | web, desktop |
 | Stack Trace | `registry/ui/stack_trace.rs` | `oniko add stack-trace` | web, desktop |
 | Task | `registry/ui/task.rs` | `oniko add task` | web, desktop |
 | Test Results | `registry/ui/test_results.rs` | `oniko add test-results` | web, desktop |
@@ -517,22 +517,23 @@
 
 ### Chat
 
-- Части: `Chat` (колонка на всю высоту), `ChatMessages` (прокручиваемая лента с `role="log"`), `ChatComposer` (нижняя область для ввода)
-- Это каркас разметки, а не готовый чат: полный вариант из shadcn AI Elements собирается из `Message Scroller`, `Message`, `Bubble`, `Input Group` и `Prompt Input`, которых в реестре пока нет
-- Не зависит от других компонентов
+- Блок (`registry:block`), а не компонент: собирает из `Message Scroller`, `Message` и `Bubble` ленту диалога, как в разделе Usage на странице shadcn
+- Части: `Chat` (`MessageScrollerProvider` с `auto_scroll`, по умолчанию включён, `MessageScroller`, viewport, content и кнопка прокрутки; `content_class` задаёт классы колонки), `ChatUserTurn` (ход человека: `Message` с `align` end и `Bubble` с вариантом `Muted`; это якорь прокрутки `scroll_anchor`, `id` попадает в `message_id`), `ChatAgentTurn` (ход агента: `Message` без пузыря)
+- Поле ввода под лентой собирается из `Input Group`; в превью есть пример с ним, `Trace`, `Empty` и меню вложений
+- Зависит от `message-scroller`, `message` и `bubble`, которые ставятся автоматически
 - Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
 
 ### Checkpoint
 
-- Части: `Checkpoint` (строка с линией-разделителем), `CheckpointIcon` (иконка-закладка по умолчанию, при передаче детей заменяется ими), `CheckpointTrigger` (кнопка `Restore`-типа; варианты и размеры берутся из `Button`, по умолчанию `Ghost` и `Sm`)
-- `CheckpointTrigger`: `tooltip` выводится как `title`, так как `Tooltip` в реестре пока нет
-- Зависит от `button` и `separator`, которые ставятся автоматически
+- Блок (`registry:block`): `Marker` с вариантом `Separator` и кнопкой `Restore` (`Button`, `Xs`, `Outline`), как в разделе Usage на странице shadcn
+- Часть одна: `Checkpoint` (`label: String`, `on_restore: Option<EventHandler<()>>`; без `on_restore` кнопка не выводится; `aria-label` кнопки: «Restore to {label}»)
+- Зависит от `marker` и `button`, которые ставятся автоматически
 - Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
 
 ### Confirmation
 
-- Части: `Confirmation` (строка `Item` с рамкой и размером `Sm`; принимает `approval` (`ConfirmationApproval`: `id`, `approved`) и `state` (`ConfirmationState`)), `ConfirmationTitle`, `ConfirmationRequest` (виден только в состоянии `ApprovalRequested`), `ConfirmationAccepted` и `ConfirmationRejected` (виден при `approved` = `Some(true)` / `Some(false)`), `ConfirmationActions` (виден только при запросе), `ConfirmationAction` (кнопка; по умолчанию `Default` и `Sm`, обработчик `onclick`)
-- Иконки не входят в компонент: их передаёт приложение, например в `ItemMedia` или через свой элемент внутри `ConfirmationTitle`
+- Блок (`registry:block`): `Item` с рамкой и размером `Sm`, кнопки `Deny` (`Outline`) и `Approve`, как в разделе Usage на странице shadcn
+- Часть одна: `Confirmation` (`title`, `description`, `icon` для `ItemMedia`, `on_deny`, `on_approve`). После ответа человека вместо него выводится строка `Trace`, как в примере в превью
 - Зависит от `item` и `button`, которые ставятся автоматически
 - Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
 
@@ -627,11 +628,10 @@
 
 ### Prompt Input
 
-- Части: `PromptInput` (корень, `form`; `onsubmit: Option<EventHandler<PromptInputMessage>>` получает текст и очищает поле), `PromptInputBody`, `PromptInputHeader`, `PromptInputFooter`, `PromptInputTools`, `PromptInputTextarea` (Enter отправляет, Shift+Enter переносит строку), `PromptInputButton` (кнопка в строке инструментов, форму не отправляет), `PromptInputSubmit` (`status`: `PromptInputStatus` с вариантами `Ready`, `Submitted`, `Streaming`, `Error`; иконка и `data-status` следуют за статусом; `onstop` срабатывает по нажатию во время `Submitted` и `Streaming`)
-- Пустой или пробельный текст не отправляется
-- Вложения, голосовой ввод, перетаскивание файлов, вставка файлов из буфера и скриншоты не перенесены: для них нужны браузерные API или собственный конвейер файлов
-- Поле ввода и кнопки рендерятся напрямую, а не через `InputGroupTextarea` и `InputGroupButton`: те не принимают HTML-атрибуты от вызывающего кода. Классы и поведение фокуса по клику на шапку и подвал сохранены
-- Зависит от `button` и `input-group`, которые ставятся автоматически. `Tooltip` в реестре нет, поэтому подсказок у кнопок нет
+- Блок (`registry:block`): `InputGroup` с `InputGroupTextarea` (`p-3`) и аддоном `block-end` с круглыми кнопками прикрепления и отправки, как в разделе Usage на странице shadcn
+- Часть одна: `PromptInput` (`text: Signal<String>`, `placeholder`, `on_submit` получает обрезанный текст и вызывается по Enter или кнопке Send; пустой текст не отправляется, поле очищает вызывающий код; `on_attach` показывает кнопку прикрепления; `header` выводится в аддоне `block-start`, например чипы `Attachment`; `children` встают между кнопками, первому из них нужен `ml-auto`). Shift+Enter переносит строку
+- Скрытое поле выбора файла, меню модели и усилия (`DropdownMenu`) и чипы вложений собираются в примере в превью, а не в блоке
+- Зависит от `input-group` и `button`, которые ставятся автоматически
 - Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
 
 ### Sources
@@ -651,8 +651,8 @@
 
 ### Suggestion
 
-- Части: `Suggestions` (горизонтальная строка, прокручивается по горизонтали при переполнении), `Suggestion` (pill-кнопка с `suggestion: String`; `on_click: Option<EventHandler<String>>` получает текст подсказки; `children` заменяют текст)
-- Кнопка собрана через `button_variants` из `button` с вариантом `Outline` и размером `Sm`; полоса прокрутки скрыта
+- Блок (`registry:block`): строка кнопок `Button` (`Outline`, `Sm`, `shrink-0`), которая прокручивается по горизонтали с `scroll-fade-x`, как в разделе Usage на странице shadcn
+- Части: `Suggestions` (контейнер), `Suggestion` (`suggestion: String`; `on_click: Option<EventHandler<String>>` получает текст подсказки)
 - Зависит от `button`, который ставится автоматически
 - Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
 

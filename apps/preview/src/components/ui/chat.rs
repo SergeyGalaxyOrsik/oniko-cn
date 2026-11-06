@@ -1,74 +1,64 @@
-//! Chat: a conversation with an agent, laid out as a scrolling thread above a composer.
+//! Chat: the thread of a conversation, a list of `Message` turns inside a `MessageScroller`.
+//!
+//! Built from `MessageScroller`, `Message` and `Bubble`. The person's turn is the scroll anchor, so a
+//! new question settles near the top and the reply streams in under it. `auto_scroll` follows the
+//! reply while the person stays at the live edge. Put a prompt input under it.
 //!
 //! Installed by oniko-cn. This file is yours: edit it freely.
 
 use dioxus::prelude::*;
-use oniko_cn::{cn, take_class};
 
-/// The full-height column that holds a conversation.
+use super::bubble::{Bubble, BubbleAlign, BubbleContent, BubbleVariant};
+use super::message::{Message, MessageAlign, MessageContent};
+use super::message_scroller::{
+    MessageScroller, MessageScrollerButton, MessageScrollerContent, MessageScrollerItem,
+    MessageScrollerProvider, MessageScrollerViewport,
+};
+
+/// The scrolling thread. Wrap each turn in `ChatUserTurn` or `ChatAgentTurn`.
 #[component]
 pub fn Chat(
-    #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,
+    #[props(default = true)] auto_scroll: bool,
+    /// Classes for the content column, such as `gap-6 px-8`.
+    content_class: Option<String>,
     children: Element,
 ) -> Element {
-    let mut attributes = attributes;
-    let class = cn!(
-        "flex h-full min-h-0 w-full flex-col",
-        take_class(&mut attributes).as_deref()
-    );
-
     rsx! {
-        div {
-            "data-slot": "chat",
-            class: class,
-            ..attributes,
-            {children}
+        MessageScrollerProvider { auto_scroll,
+            MessageScroller {
+                MessageScrollerViewport {
+                    MessageScrollerContent { class: content_class, {children} }
+                }
+                MessageScrollerButton {}
+            }
         }
     }
 }
 
-/// The scrolling thread of turns. Announced to assistive tech as a log.
+/// The person's turn, in a muted bubble on the end side. It is the scroll anchor.
 #[component]
-pub fn ChatMessages(
-    #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,
-    children: Element,
-) -> Element {
-    let mut attributes = attributes;
-    let class = cn!(
-        "flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-4",
-        take_class(&mut attributes).as_deref()
-    );
-
+pub fn ChatUserTurn(id: String, children: Element) -> Element {
     rsx! {
-        div {
-            "data-slot": "chat-messages",
-            role: "log",
-            aria_live: "polite",
-            class: class,
-            ..attributes,
-            {children}
+        MessageScrollerItem { message_id: id, scroll_anchor: true,
+            Message { align: MessageAlign::End,
+                MessageContent {
+                    Bubble { align: BubbleAlign::End, variant: BubbleVariant::Muted,
+                        BubbleContent { {children} }
+                    }
+                }
+            }
         }
     }
 }
 
-/// The area under the thread where the person writes the next turn.
+/// The agent's turn: plain content on the start side.
 #[component]
-pub fn ChatComposer(
-    #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,
-    children: Element,
-) -> Element {
-    let mut attributes = attributes;
-    let class = cn!(
-        "shrink-0 border-t bg-background p-4",
-        take_class(&mut attributes).as_deref()
-    );
-
+pub fn ChatAgentTurn(id: String, class: Option<String>, children: Element) -> Element {
     rsx! {
-        div {
-            "data-slot": "chat-composer",
-            class: class,
-            ..attributes,
-            {children}
+        MessageScrollerItem { message_id: id,
+            Message {
+                MessageContent { class, {children} }
+            }
         }
     }
 }

@@ -1,9 +1,9 @@
 {
   "$schema": "https://oniko.dev/schema/registry-item.json",
   "name": "suggestion",
-  "type": "registry:ui",
+  "type": "registry:block",
   "title": "Suggestion",
-  "description": "A horizontal row of pill buttons that offer follow-up prompts, scrolling sideways when they overflow.",
+  "description": "A row of buttons that send a prompt in one click, scrolling sideways when they do not fit.",
   "dependencies": [
     "oniko-cn@0.1"
   ],
@@ -12,9 +12,9 @@
   ],
   "files": [
     {
-      "path": "ui/suggestion.rs",
-      "type": "registry:ui",
-      "content": "//! Suggestion: a row of pill buttons that offer follow-up prompts, scrolling sideways when they do not fit.\n//!\n//! Installed by oniko-cn. This file is yours: edit it freely.\n\nuse dioxus::prelude::*;\nuse oniko_cn::{cn, take_class};\n\nuse super::button::{ButtonSize, ButtonVariant, button_variants};\n\n/// A horizontal row of `Suggestion` buttons that scrolls sideways when it overflows.\n#[component]\npub fn Suggestions(\n    #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,\n    children: Element,\n) -> Element {\n    let mut attributes = attributes;\n    let class = cn!(\n        \"flex w-full flex-nowrap items-center gap-2 overflow-x-auto whitespace-nowrap [scrollbar-width:none] [&::-webkit-scrollbar]:hidden\",\n        take_class(&mut attributes).as_deref()\n    );\n\n    rsx! {\n        div {\n            \"data-slot\": \"suggestions\",\n            class: class,\n            ..attributes,\n            {children}\n        }\n    }\n}\n\n/// A pill button that offers `suggestion`. `on_click` receives the suggestion text.\n/// Pass `children` to replace the text shown in the pill.\n#[component]\npub fn Suggestion(\n    suggestion: String,\n    on_click: Option<EventHandler<String>>,\n    children: Option<Element>,\n    #[props(extends = GlobalAttributes, extends = button)] attributes: Vec<Attribute>,\n) -> Element {\n    let mut attributes = attributes;\n    let extra = cn!(\n        \"cursor-pointer rounded-full px-4 whitespace-nowrap\",\n        take_class(&mut attributes).as_deref()\n    );\n    let class = button_variants(ButtonVariant::Outline, ButtonSize::Sm, Some(extra.as_str()));\n    let content = match children {\n        Some(children) => children,\n        None => rsx! { \"{suggestion}\" },\n    };\n\n    rsx! {\n        button {\n            \"data-slot\": \"suggestion\",\n            r#type: \"button\",\n            class: class,\n            onclick: move |_| {\n                if let Some(handler) = on_click {\n                    handler.call(suggestion.clone());\n                }\n            },\n            ..attributes,\n            {content}\n        }\n    }\n}\n"
+      "path": "blocks/suggestion.rs",
+      "type": "registry:block",
+      "content": "//! Suggestion: a row of buttons that send a prompt in one click, scrolling sideways when they do not fit.\n//!\n//! Built from `Button`. Put the row above the prompt input.\n//!\n//! Installed by oniko-cn. This file is yours: edit it freely.\n\nuse dioxus::prelude::*;\nuse oniko_cn::{cn, take_class};\n\nuse super::button::{Button, ButtonSize, ButtonVariant};\n\n#[component]\npub fn Suggestions(\n    #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,\n    children: Element,\n) -> Element {\n    let mut attributes = attributes;\n    let class = cn!(\n        \"flex scroll-fade-x scrollbar-none gap-2 overflow-x-auto overscroll-x-contain\",\n        take_class(&mut attributes).as_deref()\n    );\n\n    rsx! {\n        div { class: class, ..attributes, {children} }\n    }\n}\n\n/// A button whose label is the prompt. `on_click` receives the label.\n#[component]\npub fn Suggestion(\n    suggestion: String,\n    on_click: Option<EventHandler<String>>,\n    #[props(extends = GlobalAttributes, extends = button)] attributes: Vec<Attribute>,\n) -> Element {\n    let mut attributes = attributes;\n    let class = cn!(\"shrink-0\", take_class(&mut attributes).as_deref());\n    let prompt = suggestion.clone();\n\n    rsx! {\n        Button {\n            variant: ButtonVariant::Outline,\n            size: ButtonSize::Sm,\n            class: class,\n            attributes,\n            onclick: move |_| {\n                if let Some(handler) = on_click {\n                    handler.call(prompt.clone());\n                }\n            },\n            \"{suggestion}\"\n        }\n    }\n}\n"
     }
   ]
 }
