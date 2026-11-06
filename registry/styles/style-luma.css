@@ -495,6 +495,9 @@
     @apply bg-accent text-accent-foreground;
   }
 
+  .cn-calendar-day-button {
+  }
+
   /* MARK: Card */
   .cn-card-action {
   }
@@ -1150,6 +1153,9 @@
     @apply bg-popover text-popover-foreground ring-foreground/5 dark:ring-foreground/10 rounded-3xl shadow-lg ring-1 transition-all ease-[cubic-bezier(0.22,1,0.36,1)] outline-none data-ending-style:scale-90 data-ending-style:opacity-0 data-ending-style:duration-150 data-starting-style:scale-90 data-starting-style:opacity-0;
   }
 
+  .cn-navigation-menu-item {
+  }
+
   /* MARK: Pagination */
   .cn-pagination {
   }
@@ -1563,6 +1569,9 @@
 
   .cn-calendar-caption-label {
     @apply h-8 pr-2 pl-3;
+  }
+
+  .cn-calendar-caption {
   }
 
   /* MARK: Carousel */

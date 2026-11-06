@@ -286,6 +286,12 @@
     @apply h-6 rounded-none pr-1 pl-1.5;
   }
 
+  .cn-calendar-caption {
+  }
+
+  .cn-calendar-day-button {
+  }
+
   /* MARK: Card */
   .cn-card-action {
   }
@@ -976,6 +982,9 @@
 
   .cn-navigation-menu-popup {
     @apply bg-popover text-popover-foreground ring-foreground/10 rounded-none shadow ring-1 transition-all ease-[cubic-bezier(0.22,1,0.36,1)] outline-none data-ending-style:scale-90 data-ending-style:opacity-0 data-ending-style:duration-150 data-starting-style:scale-90 data-starting-style:opacity-0;
+  }
+
+  .cn-navigation-menu-item {
   }
 
   /* MARK: Native Select */
