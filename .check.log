@@ -1,0 +1,455 @@
+    Checking oniko-preview v0.1.0 (/Users/seglx/Documents/Projects/pet-projects/oniko-workspace/oniko-cn/.claude/worktrees/agent-a8b1d1445f240e5bd/apps/preview)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1m 38s
+    Checking smallvec v1.16.4
+    Checking stable_deref_trait v1.2.1
+   Compiling num-traits v0.2.19
+   Compiling objc2 v0.6.5
+   Compiling crossbeam-utils v0.8.23
+   Compiling syn v3.0.9
+    Checking bitflags v2.13.2
+   Compiling objc2-exception-helper v0.1.1
+    Checking memchr v2.8.3
+    Checking futures-core v0.3.34
+    Checking simd-adler32 v0.3.10
+    Checking core-foundation-sys v0.8.7
+   Compiling crossbeam-epoch v0.9.21
+    Checking futures-util v0.3.34
+    Checking futures-channel v0.3.34
+    Checking parking_lot_core v0.9.12
+   Compiling zerocopy v0.8.63
+    Checking core-foundation v0.10.1
+   Compiling zerocopy-derive v0.8.63
+    Checking parking_lot v0.12.5
+    Checking litemap v0.8.3
+    Checking generational-box v0.7.10
+   Compiling crossbeam-deque v0.8.8
+    Checking utf_types v1.0.0
+    Checking writeable v0.6.4
+    Checking utf8_iter v1.1.0
+   Compiling rayon-core v1.13.0
+   Compiling icu_normalizer_data v2.4.0
+   Compiling crc32fast v1.5.4
+   Compiling icu_properties_data v2.4.0
+   Compiling equator-macro v0.4.2
+    Checking num-integer v0.1.47
+    Checking miniz_oxide v0.9.1
+    Checking errno v0.3.14
+    Checking unicode-segmentation v1.13.3
+    Checking equator v0.4.2
+    Checking either v1.19.0
+   Compiling paste v1.0.15
+    Checking num-bigint v0.4.8
+    Checking miniz_oxide v0.8.9
+    Checking arrayvec v0.7.8
+   Compiling synstructure v0.14.0
+    Checking num-rational v0.4.2
+    Checking core-graphics-types v0.2.0
+    Checking fdeflate v0.3.7
+    Checking as-slice v0.2.1
+   Compiling libm v0.2.16
+    Checking dioxus-cli-config v0.7.10
+    Checking foreign-types-shared v0.3.1
+   Compiling built v0.8.1
+   Compiling av-scenechange v0.14.1
+    Checking bytemuck v1.25.2
+    Checking aligned v0.4.3
+    Checking serde_json v1.0.154
+   Compiling rav1e v0.8.1
+    Checking rustix v1.1.6
+    Checking form_urlencoded v1.2.2
+   Compiling serde_derive v1.0.229
+   Compiling thiserror-impl v2.0.21
+   Compiling zerofrom-derive v0.1.8
+   Compiling yoke-derive v0.8.4
+   Compiling zerovec-derive v0.11.7
+   Compiling displaydoc v0.2.7
+    Checking thiserror v2.0.21
+    Checking zerofrom v0.1.8
+    Checking aligned-vec v0.6.4
+    Checking flate2 v1.1.10
+    Checking rayon v1.12.0
+   Compiling foreign-types-macros v0.2.4
+    Checking v_frame v0.3.9
+    Checking crossbeam-channel v0.5.17
+    Checking nom v8.0.0
+    Checking foreign-types v0.5.0
+    Checking no_std_io2 v0.9.4
+    Checking security-framework-sys v2.17.0
+   Compiling profiling-procmacros v1.0.18
+   Compiling arg_enum_proc_macro v0.3.4
+    Checking serde v1.0.229
+   Compiling pulp v0.22.3
+   Compiling native-tls v0.2.18
+    Checking y4m v0.8.0
+   Compiling pastey v0.1.1
+    Checking dpi v0.1.2
+    Checking block2 v0.6.2
+    Checking objc2-core-foundation v0.3.2
+    Checking quick-error v2.0.1
+   Compiling num-conv v0.2.2
+   Compiling time-core v0.1.9
+    Checking tempfile v3.27.0
+   Compiling time-macros v0.2.32
+    Checking maybe-rayon v0.1.1
+    Checking av1-grain v0.2.5
+    Checking profiling v1.0.18
+    Checking objc2-foundation v0.3.2
+    Checking security-framework v3.7.0
+    Checking yoke v0.8.4
+    Checking bitstream-io v4.10.0
+   Compiling serde_repr v0.1.21
+   Compiling async-trait v0.1.92
+    Checking num-complex v0.4.6
+    Checking itertools v0.14.0
+   Compiling num-derive v0.4.2
+    Checking ppv-lite86 v0.2.21
+    Checking rand_chacha v0.9.0
+    Checking subsecond-types v0.7.10
+    Checking slotmap v1.1.1
+    Checking subsecond v0.7.10
+    Checking bytes v1.12.1
+    Checking keyboard-types v0.7.0
+    Checking euclid v0.22.14
+    Checking half v2.7.1
+    Checking malloc_buf v0.0.6
+   Compiling simd_helpers v0.1.0
+    Checking http v1.5.0
+   Compiling cookie v0.18.2
+    Checking dioxus-core v0.7.10
+    Checking uuid v1.29.0
+   Compiling noop_proc_macro v0.3.0
+    Checking new_debug_unreachable v1.0.6
+    Checking imgref v1.12.3
+    Checking zune-core v0.5.3
+    Checking powerfmt v0.2.1
+    Checking option-ext v0.2.0
+    Checking byteorder v1.5.0
+    Checking fnv v1.0.7
+    Checking reborrow v0.5.5
+    Checking raw-window-handle v0.6.2
+    Checking weezl v0.1.12
+    Checking bitflags v1.3.2
+    Checking pulp-wasm-simd-flag v0.1.1
+    Checking deranged v0.5.9
+    Checking cfb v0.7.3
+    Checking png v0.17.16
+    Checking zune-jpeg v0.5.15
+    Checking dirs-sys v0.5.0
+    Checking loop9 v0.1.5
+    Checking objc v0.2.7
+   Compiling const-serialize v0.8.0-alpha.0
+    Checking rand v0.9.5
+    Checking dispatch2 v0.3.1
+   Compiling tokio-macros v2.7.2
+    Checking avif-serialize v0.8.9
+   Compiling dioxus-interpreter-js v0.7.10
+    Checking dioxus-signals v0.7.10
+    Checking zune-inflate v0.2.54
+   Compiling sledgehammer_bindgen_macro v0.6.5
+    Checking objc2-app-kit v0.3.2
+    Checking byteorder-lite v0.1.0
+    Checking color_quant v1.1.0
+   Compiling signal-hook v0.3.18
+   Compiling rfd v0.17.2
+    Checking zerovec v0.11.9
+    Checking zerotrie v0.2.5
+    Checking time v0.3.55
+    Checking dioxus-hooks v0.7.10
+    Checking fax v0.2.7
+    Checking lebe v0.5.3
+    Checking block v0.1.6
+   Compiling wry v0.53.5
+    Checking rgb v0.8.53
+    Checking bit_field v0.10.3
+    Checking dioxus-html v0.7.10
+    Checking pxfm v0.1.30
+    Checking cocoa-foundation v0.2.1
+    Checking tiff v0.11.3
+    Checking sledgehammer_bindgen v0.6.0
+    Checking tokio v1.54.1
+   Compiling manganis-core v0.7.10
+    Checking tinystr v0.8.5
+    Checking potential_utf v0.1.6
+    Checking icu_collections v2.4.0
+    Checking icu_locale_core v2.4.0
+    Checking moxcms v0.8.1
+    Checking image-webp v0.2.4
+    Checking icu_provider v2.4.0
+    Checking icu_properties v2.4.0
+    Checking icu_normalizer v2.4.0
+    Checking tungstenite v0.28.0
+    Checking gif v0.14.2
+    Checking dioxus-devtools-types v0.7.10
+    Checking objc2-web-kit v0.3.2
+    Checking muda v0.17.2
+    Checking idna_adapter v1.2.2
+    Checking infer v0.19.0
+    Checking dirs v6.0.0
+    Checking idna v1.1.0
+    Checking core-graphics v0.25.0
+    Checking core-graphics v0.24.0
+    Checking url v2.5.8
+    Checking objc2-core-graphics v0.3.2
+    Checking exr v1.74.2
+    Checking png v0.18.1
+    Checking qoi v0.4.1
+    Checking signal-hook-registry v1.4.8
+   Compiling dioxus-desktop v0.7.10
+    Checking raw-window-handle v0.5.2
+   Compiling manganis-macro v0.7.10
+    Checking tao v0.34.8
+    Checking dioxus-document v0.7.10
+    Checking webbrowser v1.2.6
+    Checking cocoa v0.26.1
+    Checking tray-icon v0.21.3
+    Checking dioxus-devtools v0.7.10
+    Checking global-hotkey v0.7.0
+    Checking dioxus-history v0.7.10
+    Checking dunce v1.0.5
+    Checking base64 v0.22.1
+    Checking subtle v2.6.1
+    Checking nom v7.1.3
+    Checking dioxus-stores v0.7.10
+    Checking dioxus-logger v0.7.10
+   Compiling dioxus-config-macro v0.7.10
+    Checking manganis v0.7.10
+    Checking dioxus-asset-resolver v0.7.10
+    Checking tailwind_fuse v0.3.2
+    Checking oniko-cn v0.1.0 (/Users/seglx/Documents/Projects/pet-projects/oniko-workspace/oniko-cn/.claude/worktrees/agent-a8b1d1445f240e5bd/crates/oniko-cn)
+    Checking ravif v0.13.0
+    Checking image v0.25.10
+    Checking dioxus v0.7.10
+    Checking lucide-dioxus v3.63.0
+    Checking oniko-preview v0.1.0 (/Users/seglx/Documents/Projects/pet-projects/oniko-workspace/oniko-cn/.claude/worktrees/agent-a8b1d1445f240e5bd/apps/preview)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2m 51s
+warning: the following packages contain code that will be rejected by a future version of Rust: block v0.1.6
+note: to see what the problems were, use the option `--future-incompat-report`, or run `cargo report future-incompatibilities --id 1`
+   Compiling unicode-ident v1.0.27
+   Compiling memchr v2.8.3
+   Compiling pin-project-lite v0.2.17
+   Compiling once_cell v1.21.4
+   Compiling futures-core v0.3.34
+   Compiling slab v0.4.12
+   Compiling libc v0.2.191
+   Compiling serde_core v1.0.229
+   Compiling futures-task v0.3.34
+   Compiling futures-io v0.3.34
+   Compiling futures-sink v0.3.34
+   Compiling smallvec v1.16.4
+   Compiling proc-macro2 v1.0.107
+   Compiling wasm-bindgen-shared v0.2.130
+   Compiling scopeguard v1.2.0
+   Compiling dioxus-core-types v0.7.10
+   Compiling konst_macro_rules v0.2.19
+   Compiling futures-channel v0.3.34
+   Compiling tracing-core v0.1.36
+   Compiling lock_api v0.4.14
+   Compiling libloading v0.8.9
+   Compiling rustc-hash v2.1.3
+   Compiling longest-increasing-subsequence v0.1.0
+   Compiling bitflags v2.13.2
+   Compiling konst v0.2.20
+   Compiling typenum v1.20.1
+   Compiling httparse v1.10.1
+   Compiling zerocopy v0.8.63
+   Compiling http v1.5.0
+   Compiling num-traits v0.2.19
+   Compiling regex-syntax v0.8.11
+   Compiling winnow v0.7.15
+   Compiling keyboard-types v0.7.0
+   Compiling utf-8 v0.7.6
+   Compiling quote v1.0.47
+   Compiling syn v3.0.9
+   Compiling syn v2.0.119
+   Compiling parking_lot_core v0.9.12
+   Compiling const_format_proc_macros v0.2.37
+   Compiling memmap2 v0.9.12
+   Compiling parking_lot v0.12.5
+   Compiling getrandom v0.3.4
+   Compiling generic-array v0.14.7
+   Compiling rand_core v0.9.5
+   Compiling cpufeatures v0.2.17
+   Compiling euclid v0.22.14
+   Compiling errno v0.3.14
+   Compiling minimal-lexical v0.2.1
+   Compiling data-encoding v2.11.1
+   Compiling lazy_static v1.5.1
+   Compiling rustc-hash v1.1.0
+   Compiling regex-automata v0.4.18
+   Compiling crypto-common v0.1.7
+   Compiling block-buffer v0.10.4
+   Compiling sledgehammer_utils v0.3.1
+   Compiling digest v0.10.7
+   Compiling sha1 v0.10.7
+   Compiling sharded-slab v0.1.7
+   Compiling nom v7.1.3
+   Compiling rustix v1.1.6
+   Compiling const_format v0.2.37
+   Compiling getrandom v0.2.17
+   Compiling getrandom v0.4.3
+   Compiling thread_local v1.1.10
+   Compiling objc2-encode v4.1.0
+   Compiling fastrand v2.5.0
+   Compiling serde_json v1.0.154
+   Compiling ring v0.17.14
+   Compiling send_wrapper v0.6.0
+   Compiling objc2 v0.6.5
+   Compiling dioxus-config-macro v0.7.10
+   Compiling dioxus-config-macros v0.7.10
+   Compiling ureq-proto v0.7.1
+   Compiling tempfile v3.27.0
+   Compiling tailwind_fuse v0.3.2
+   Compiling matchers v0.2.0
+   Compiling rustls-webpki v0.103.16
+   Compiling rustls v0.23.46
+   Compiling darling_core v0.21.3
+   Compiling proc-macro2-diagnostics v0.10.1
+   Compiling macro-string v0.1.4
+   Compiling wasm-bindgen-macro-support v0.2.130
+   Compiling dioxus-rsx v0.7.10
+   Compiling ppv-lite86 v0.2.21
+   Compiling rand_chacha v0.9.0
+   Compiling rand v0.9.5
+   Compiling tracing-attributes v0.1.31
+   Compiling pin-project-internal v1.1.13
+   Compiling warnings-macro v0.2.0
+   Compiling const-serialize-macro v0.7.2
+   Compiling const-serialize-macro v0.8.0-alpha.3
+   Compiling serde_derive v1.0.229
+   Compiling futures-macro v0.3.34
+   Compiling thiserror-impl v2.0.21
+   Compiling const-serialize v0.7.2
+   Compiling async-trait v0.1.92
+   Compiling dioxus-core-macro v0.7.10
+   Compiling sledgehammer_bindgen_macro v0.6.5
+   Compiling futures-util v0.3.34
+   Compiling pin-project v1.1.13
+   Compiling dioxus-html-internal-macro v0.7.10
+   Compiling tracing v0.1.44
+   Compiling dioxus-stores-macro v0.7.10
+   Compiling clap_derive v4.6.7
+   Compiling thiserror v2.0.21
+   Compiling darling_macro v0.21.3
+   Compiling darling v0.21.3
+   Compiling serde v1.0.229
+   Compiling clap v4.6.7
+   Compiling ureq v3.5.1
+   Compiling wasm-bindgen-macro v0.2.130
+   Compiling wasm-bindgen v0.2.130
+   Compiling generational-box v0.7.10
+   Compiling warnings v0.2.1
+   Compiling tracing-subscriber v0.3.23
+   Compiling tungstenite v0.28.0
+   Compiling enumset_derive v0.15.1
+   Compiling enumset v1.1.15
+   Compiling subsecond-types v0.7.10
+   Compiling slotmap v1.1.1
+   Compiling const-serialize v0.8.0-alpha.0
+   Compiling oniko-registry v0.1.0 (/Users/seglx/Documents/Projects/pet-projects/oniko-workspace/oniko-cn/.claude/worktrees/agent-a8b1d1445f240e5bd/crates/oniko-registry)
+   Compiling subsecond v0.7.10
+   Compiling dioxus-core v0.7.10
+   Compiling oniko-cli v0.1.0 (/Users/seglx/Documents/Projects/pet-projects/oniko-workspace/oniko-cn/.claude/worktrees/agent-a8b1d1445f240e5bd/crates/oniko-cli)
+   Compiling dioxus-devtools-types v0.7.10
+   Compiling dioxus-history v0.7.10
+   Compiling oniko-cn v0.1.0 (/Users/seglx/Documents/Projects/pet-projects/oniko-workspace/oniko-cn/.claude/worktrees/agent-a8b1d1445f240e5bd/crates/oniko-cn)
+   Compiling js-sys v0.3.107
+   Compiling dioxus-cli-config v0.7.10
+   Compiling sledgehammer_bindgen v0.6.0
+   Compiling dioxus-logger v0.7.10
+   Compiling dioxus-signals v0.7.10
+   Compiling dioxus-hooks v0.7.10
+   Compiling dioxus-devtools v0.7.10
+   Compiling dioxus-stores v0.7.10
+   Compiling dioxus-html v0.7.10
+   Compiling manganis-core v0.7.10
+   Compiling manganis-macro v0.7.10
+   Compiling manganis v0.7.10
+   Compiling web-sys v0.3.107
+   Compiling wasm-bindgen-futures v0.4.80
+   Compiling gloo-timers v0.3.0
+   Compiling serde-wasm-bindgen v0.6.5
+   Compiling dioxus-document v0.7.10
+   Compiling dioxus-interpreter-js v0.7.10
+   Compiling dioxus-asset-resolver v0.7.10
+   Compiling wasm-streams v0.4.2
+   Compiling dioxus-web v0.7.10
+   Compiling dioxus v0.7.10
+   Compiling lucide-dioxus v3.63.0
+   Compiling oniko-preview v0.1.0 (/Users/seglx/Documents/Projects/pet-projects/oniko-workspace/oniko-cn/.claude/worktrees/agent-a8b1d1445f240e5bd/apps/preview)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 3m 58s
+     Running unittests src/main.rs (target/debug/deps/oniko-091f8d90d9bdf10c)
+
+running 2 tests
+test project::tests::adds_only_missing_dependencies_and_keeps_formatting ... ok
+test project::tests::declares_module_chain_once ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/oniko_cn-65576d1e30c28bcd)
+
+running 6 tests
+test tests::skips_empty_and_none ... ok
+test tests::ring_width_vs_ring_color ... ok
+test tests::font_size_and_text_color_do_not_collide ... ok
+test tests::caller_overrides_size ... ok
+test tests::later_fragment_wins ... ok
+test tests::tailwind_v4_classes_survive ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (target/debug/deps/oniko_preview-43be31f4ba95c18f)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/oniko_registry-031bf88945ca77c3)
+
+running 8 tests
+test theme::tests::renders_tokens_and_theme_mapping ... ok
+test transform::tests::leaves_comments_chars_and_lifetimes_alone ... ok
+test style_map::tests::parses_nested_rules ... ok
+test theme::tests::upsert_is_idempotent_and_keeps_user_css ... ok
+test transform::tests::handles_raw_strings ... ok
+test transform::tests::inlines_and_removes_placeholders ... ok
+test style_map::tests::compiles_every_shipped_style ... ok
+test build::tests::builds_shipped_registry_without_placeholders ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 21.37s
+
+     Running tests/repo.rs (target/debug/deps/repo-3fb8e7731255be43)
+
+running 5 tests
+test every_component_is_registered_and_documented ... ok
+test components_do_not_use_web_only_crates ... ok
+test preview_installs_every_component_unmodified ... ok
+test every_placeholder_is_defined_by_every_style ... FAILED
+test published_registry_matches_sources ... ok
+
+failures:
+
+---- every_placeholder_is_defined_by_every_style stdout ----
+
+thread 'every_placeholder_is_defined_by_every_style' (8055907) panicked at crates/oniko-registry/tests/repo.rs:60:5:
+
+`cn-sidebar-trigger` has no rule in registry/styles/style-luma.css
+`cn-sidebar-trigger` has no rule in registry/styles/style-sera.css
+`cn-sidebar-trigger` has no rule in registry/styles/style-vega.css
+`cn-sidebar-trigger` has no rule in registry/styles/style-rhea.css
+`cn-sidebar-trigger` has no rule in registry/styles/style-mira.css
+`cn-sidebar-trigger` has no rule in registry/styles/style-lyra.css
+`cn-sidebar-trigger` has no rule in registry/styles/style-nova.css
+`cn-sidebar-trigger` has no rule in registry/styles/style-maia.css
+
+Fix: add a `.cn-...` rule to every style, or use an existing placeholder
+
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    every_placeholder_is_defined_by_every_style
+
+test result: FAILED. 4 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 28.98s
+
+error: test failed, to rerun pass `-p oniko-registry --test repo`
+done
