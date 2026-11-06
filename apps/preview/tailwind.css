@@ -637,6 +637,85 @@
   }
 }
 
+/* Tailwind CSS v4.3 core utilities that shadcn/ui components use. The Tailwind
+   CLI that dioxus-cli downloads (v4.1) does not have them yet. */
+@utility scrollbar-auto {
+  scrollbar-width: auto;
+}
+
+@utility scrollbar-thin {
+  scrollbar-width: thin;
+}
+
+@utility scrollbar-none {
+  scrollbar-width: none;
+}
+
+@property --tw-scrollbar-thumb {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: #0000;
+}
+@property --tw-scrollbar-track {
+  syntax: "<color>";
+  inherits: false;
+  initial-value: #0000;
+}
+
+@utility scrollbar-thumb-* {
+  --tw-scrollbar-thumb: --value(--color, [color]);
+  --tw-scrollbar-thumb: color-mix(
+    in oklab,
+    --value(--color, [color]) calc(--modifier(integer) * 1%),
+    transparent
+  );
+  scrollbar-color: var(--tw-scrollbar-thumb) var(--tw-scrollbar-track);
+}
+
+@utility scrollbar-thumb-transparent {
+  --tw-scrollbar-thumb: transparent;
+  scrollbar-color: var(--tw-scrollbar-thumb) var(--tw-scrollbar-track);
+}
+
+@utility scrollbar-track-* {
+  --tw-scrollbar-track: --value(--color, [color]);
+  --tw-scrollbar-track: color-mix(
+    in oklab,
+    --value(--color, [color]) calc(--modifier(integer) * 1%),
+    transparent
+  );
+  scrollbar-color: var(--tw-scrollbar-thumb) var(--tw-scrollbar-track);
+}
+
+@utility scrollbar-track-transparent {
+  --tw-scrollbar-track: transparent;
+  scrollbar-color: var(--tw-scrollbar-thumb) var(--tw-scrollbar-track);
+}
+
+@utility scrollbar-gutter-auto {
+  scrollbar-gutter: auto;
+}
+
+@utility scrollbar-gutter-stable {
+  scrollbar-gutter: stable;
+}
+
+@utility scrollbar-gutter-both {
+  scrollbar-gutter: stable both-edges;
+}
+
+@utility inset-s-* {
+  inset-inline-start: calc(var(--spacing) * --value(integer));
+  inset-inline-start: --value([length], [percentage]);
+  inset-inline-start: calc(--value(ratio) * 100%);
+}
+
+@utility inset-e-* {
+  inset-inline-end: calc(var(--spacing) * --value(integer));
+  inset-inline-end: --value([length], [percentage]);
+  inset-inline-end: calc(--value(ratio) * 100%);
+}
+
 :root {
   --accent: oklch(0.97 0 0);
   --accent-foreground: oklch(0.205 0 0);

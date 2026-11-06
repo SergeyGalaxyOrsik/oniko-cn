@@ -2,6 +2,7 @@ pub mod accordion;
 pub mod alert;
 pub mod alert_dialog;
 pub mod aspect_ratio;
+pub mod attachment;
 pub mod avatar;
 pub mod badge;
 pub mod breadcrumb;

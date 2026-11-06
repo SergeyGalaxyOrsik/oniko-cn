@@ -41,6 +41,7 @@
 | Checkpoint | `registry/ui/checkpoint.rs` | `oniko add checkpoint` | web, desktop |
 | File Tree | `registry/ui/file_tree.rs` | `oniko add file-tree` | web, desktop |
 | Message | `registry/ui/message.rs` | `oniko add message` | web, desktop |
+| Attachment | `registry/ui/attachment.rs` | `oniko add attachment` | web, desktop |
 | Context | `registry/ui/context.rs` | `oniko add context` | web, desktop |
 | Plan | `registry/ui/plan.rs` | `oniko add plan` | web, desktop |
 | Reasoning | `registry/ui/reasoning.rs` | `oniko add reasoning` | web, desktop |
@@ -449,9 +450,31 @@
 
 ### Message
 
-- Части: `Message` (`from`: `MessageFrom`: `User`, `Assistant` (по умолчанию), `System`; попадает в `data-from`, пользовательские сообщения выравниваются вправо), `MessageContent` (пузырь для пользователя, текст без обводки для ассистента), `MessageResponse` (выводит детей как есть, без markdown), `MessageActions`, `MessageAction`, `MessageToolbar`
-- `MessageAction`: `variant` и `size` берутся из `Button` (по умолчанию `Ghost` и `IconSm`), `tooltip` выводится как `title`, так как `Tooltip` в реестре пока нет, `label` читают только программы (`sr-only`)
-- Ветки ответа: `MessageBranch` (`default_branch`, `on_branch_change`), `MessageBranchContent` (принимает `branches: Vec<Element>`, показывает одну ветку), `MessageBranchSelector` (скрыт при одной ветке), `MessageBranchPrevious`, `MessageBranchNext`, `MessageBranchPage` (строка «2 of 3»)
+- Части: `MessageGroup`, `Message` (`align`: `MessageAlign`: `Start` (по умолчанию) или `End`; попадает в `data-align`, при `End` ряд разворачивается), `MessageAvatar`, `MessageContent`, `MessageHeader`, `MessageFooter` (при `End` прижимает содержимое вправо)
+- Компонент не рисует сам пузырь: внутрь `MessageContent` кладут `Bubble`, `Attachment` или любой другой элемент
+- Зависимостей нет
+- Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
+
+### Attachment
+
+- Части: `Attachment` (`state`: `AttachmentState`: `Idle`, `Uploading`, `Processing`, `Error`, `Done` (по умолчанию); `size`: `Default`, `Sm`, `Xs`; `orientation`: `Horizontal`, `Vertical`), `AttachmentMedia` (`variant`: `Icon` или `Image`), `AttachmentContent`, `AttachmentTitle` (мерцает при `Uploading` и `Processing`), `AttachmentDescription`, `AttachmentActions`, `AttachmentAction` (кнопка, по умолчанию `Ghost` и `IconXs`; принимает `onclick`), `AttachmentTrigger` (растягивается на всю карточку под действиями; `href` делает ссылку, иначе кнопка; `onclick`), `AttachmentGroup` (горизонтальная прокручиваемая лента)
+- В отличие от shadcn, `AttachmentTrigger` не принимает `render`: ссылка выбирается через `href`, а диалог открывается из `onclick` при управляемом `open`
+- Зависит от `button`, который ставится автоматически
+- Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
+
+### Message Scroller
+
+- Части: `MessageScrollerProvider` (настройки прокрутки и общее состояние), `MessageScroller`, `MessageScrollerViewport`, `MessageScrollerContent`, `MessageScrollerItem` (`scroll_anchor`), `MessageScrollerButton` (`direction`: к концу или к началу ленты)
+- Хуки: `use_message_scroller` (команды прокрутки к началу, концу и сообщению), `use_message_scroller_scrollable`, `use_message_scroller_visibility`
+- Прокрутка (якорение ходов, удержание нижнего края при потоковом ответе, начальная позиция, сохранение места при подгрузке истории) работает скриптом через `document::eval`, одинаково в браузере и в окне desktop
+- Зависит от `button`, который ставится автоматически
+- Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
+
+### Questionnaire
+
+- Части: `Questionnaire` (корень, `form`; `items`, `default_item`, `item` с `on_item_change`, `shortcuts`; ответы читаются в `onsubmit` через `event.values()`), `QuestionnaireProgress`, `QuestionnaireItem` (`fieldset`; `name`, `required`, `multiple`, `invalid`, `disabled`, `on_status_change`), `QuestionnaireTitle`, `QuestionnaireDescription`, `QuestionnaireChoices`, `QuestionnaireChoice`, `QuestionnaireChoiceDescription`, `QuestionnaireInput`, `QuestionnaireError`, `QuestionnaireActions`, `QuestionnairePrevious`, `QuestionnaireSkip`, `QuestionnaireNext`, `QuestionnaireSubmit`
+- Состояния для стилей: `data-checked`, `data-unchecked`, `data-disabled`, `data-invalid`, `data-type`, `data-shortcut` на выборе; `data-active` на вопросе; `data-visible` и `data-hidden` на кнопках
+- Клавиатура: стрелки вверх и вниз между ответами, влево и вправо между вопросами, Enter и Cmd/Ctrl+Enter подтверждают, буквы или цифры выбирают ответ при `shortcuts`
 - Зависит от `button`, который ставится автоматически
 - Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
 
