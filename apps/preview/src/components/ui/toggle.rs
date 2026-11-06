@@ -45,15 +45,11 @@ impl ToggleSize {
     }
 }
 
-const TOGGLE_BASE: &str = "hover:text-foreground aria-pressed:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive gap-1 rounded-md text-sm font-medium transition-[color,box-shadow] [&_svg:not([class*='size-'])]:size-4 inline-flex shrink-0 items-center justify-center whitespace-nowrap outline-none select-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0";
+const TOGGLE_BASE: &str = "hover:text-foreground aria-pressed:bg-muted focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive gap-1 rounded-md text-sm font-medium transition-[color,box-shadow] [&_svg:not([class*='size-'])]:size-4 group/toggle inline-flex items-center justify-center whitespace-nowrap outline-none hover:bg-muted focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0";
 
 /// Toggle classes for any element, e.g. a toggle-group item that should look like a toggle.
 pub fn toggle_variants(variant: ToggleVariant, size: ToggleSize, class: Option<&str>) -> String {
     cn!(TOGGLE_BASE, variant.class(), size.class(), class)
-}
-
-fn state(pressed: bool) -> &'static str {
-    if pressed { "on" } else { "off" }
 }
 
 /// A two-state button. Pass `pressed` to control it, or leave it out and use `default_pressed`.
@@ -81,10 +77,10 @@ pub fn Toggle(
     rsx! {
         button {
             "data-slot": "toggle",
-            "data-state": state(is_pressed),
-            "data-disabled": disabled.then_some("true"),
+            "data-pressed": is_pressed.then_some(""),
+            "data-disabled": disabled.then_some(""),
             r#type: "button",
-            aria_pressed: is_pressed,
+            "aria-pressed": if is_pressed { "true" } else { "false" },
             disabled: disabled,
             class: class,
             onclick: move |event| {

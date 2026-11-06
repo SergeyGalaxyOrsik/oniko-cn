@@ -11,7 +11,7 @@
     {
       "path": "ui/skeleton.rs",
       "type": "registry:ui",
-      "content": "//! Skeleton: a pulsing placeholder that stands in for content while it loads.\n//!\n//! Installed by oniko-cn. This file is yours: edit it freely.\n\nuse dioxus::prelude::*;\nuse oniko_cn::{cn, take_class};\n\nconst SKELETON_BASE: &str = \"bg-muted rounded-none animate-pulse motion-reduce:animate-none\";\n\n#[component]\npub fn Skeleton(\n    #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,\n) -> Element {\n    let mut attributes = attributes;\n    let class = cn!(SKELETON_BASE, take_class(&mut attributes).as_deref());\n\n    rsx! {\n        div {\n            \"data-slot\": \"skeleton\",\n            class: class,\n            ..attributes,\n        }\n    }\n}\n"
+      "content": "//! Skeleton: a pulsing placeholder that stands in for content while it loads.\n//!\n//! Installed by oniko-cn. This file is yours: edit it freely.\n\nuse dioxus::prelude::*;\nuse oniko_cn::{cn, take_class};\n\nconst SKELETON_BASE: &str = \"bg-muted rounded-none animate-pulse\";\n\n#[component]\npub fn Skeleton(\n    #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,\n    children: Element,\n) -> Element {\n    let mut attributes = attributes;\n    let class = cn!(SKELETON_BASE, take_class(&mut attributes).as_deref());\n\n    rsx! {\n        div {\n            \"data-slot\": \"skeleton\",\n            class: class,\n            ..attributes,\n            {children}\n        }\n    }\n}\n"
     }
   ]
 }

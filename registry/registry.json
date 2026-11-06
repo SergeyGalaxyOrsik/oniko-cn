@@ -148,7 +148,7 @@
       "name": "checkbox",
       "type": "registry:ui",
       "title": "Checkbox",
-      "description": "A control that toggles between checked and unchecked.",
+      "description": "A control that toggles between checked and unchecked, or shows a mixed state.",
       "dependencies": ["oniko-cn@0.1"],
       "files": [{ "path": "ui/checkbox.rs", "type": "registry:ui" }]
     },
@@ -613,7 +613,7 @@
       "name": "toggle-group",
       "type": "registry:ui",
       "title": "Toggle Group",
-      "description": "A row or column of toggles that share one pressed state, in single or multiple mode.",
+      "description": "A row or column of toggles that share one pressed state, with one or several items pressed at a time.",
       "dependencies": ["oniko-cn@0.1"],
       "registryDependencies": ["toggle"],
       "files": [{ "path": "ui/toggle_group.rs", "type": "registry:ui" }]

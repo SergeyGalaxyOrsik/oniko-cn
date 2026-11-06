@@ -5,11 +5,12 @@
 use dioxus::prelude::*;
 use oniko_cn::{cn, take_class};
 
-const SKELETON_BASE: &str = "bg-muted rounded-md animate-pulse motion-reduce:animate-none";
+const SKELETON_BASE: &str = "bg-muted rounded-md animate-pulse";
 
 #[component]
 pub fn Skeleton(
     #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,
+    children: Element,
 ) -> Element {
     let mut attributes = attributes;
     let class = cn!(SKELETON_BASE, take_class(&mut attributes).as_deref());
@@ -19,6 +20,7 @@ pub fn Skeleton(
             "data-slot": "skeleton",
             class: class,
             ..attributes,
+            {children}
         }
     }
 }

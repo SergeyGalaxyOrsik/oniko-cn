@@ -976,6 +976,9 @@
     @apply bg-muted h-0.5 rounded-none;
   }
 
+  .cn-progress-root {
+  }
+
   .cn-progress-track {
     @apply bg-muted h-0.5 rounded-none;
   }
