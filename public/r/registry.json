@@ -78,7 +78,7 @@
     {
       "name": "calendar",
       "type": "registry:ui",
-      "description": "A month grid for picking a single day, with disabled days and a today marker."
+      "description": "A calendar for picking a day, several days or a range, with month and year dropdowns, week numbers and keyboard navigation."
     },
     {
       "name": "card",
@@ -303,7 +303,7 @@
     {
       "name": "navigation-menu",
       "type": "registry:ui",
-      "description": "A horizontal bar of links and disclosure panels for site navigation."
+      "description": "A collection of links for navigating a website, with content that opens in one shared, animated popup."
     },
     {
       "name": "pagination",

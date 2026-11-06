@@ -9,7 +9,9 @@ use dioxus::prelude::*;
 use oniko_cn::{cn, take_class};
 
 use super::button::{ButtonSize, ButtonVariant, button_variants};
-use super::calendar::{Calendar, CalendarDate};
+use super::calendar::{
+    Calendar, CalendarDate, CalendarMatcher, CalendarMode, CalendarSelection,
+};
 use super::popover::{Popover, PopoverContent, PopoverTrigger};
 
 const MONTH_NAMES: [&str; 12] = [
@@ -75,6 +77,16 @@ pub fn DatePicker(
         ),
     );
 
+    let mut blocked: Vec<CalendarMatcher> = disabled_dates
+        .into_iter()
+        .map(CalendarMatcher::Date)
+        .collect();
+    if let Some(min) = min {
+        blocked.push(CalendarMatcher::Before(min));
+    }
+    if let Some(max) = max {
+        blocked.push(CalendarMatcher::After(max));
+    }
     rsx! {
         Popover {
             open: open(),
@@ -94,17 +106,18 @@ pub fn DatePicker(
             }
             PopoverContent {
                 Calendar {
-                    selected: current,
+                    mode: CalendarMode::Single,
+                    selected: CalendarSelection::Single(current),
                     default_month: default_month,
                     today: today,
-                    min: min,
-                    max: max,
-                    disabled_dates: disabled_dates,
-                    on_select: move |date: CalendarDate| {
-                        internal.set(Some(date));
-                        open.set(false);
-                        if let Some(handler) = on_select {
-                            handler.call(date);
+                    disabled: blocked,
+                    on_select: move |selection: CalendarSelection| {
+                        if let CalendarSelection::Single(Some(date)) = selection {
+                            internal.set(Some(date));
+                            open.set(false);
+                            if let Some(handler) = on_select {
+                                handler.call(date);
+                            }
                         }
                     },
                 }
