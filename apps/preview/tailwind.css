@@ -637,6 +637,60 @@
   }
 }
 
+/* Enter and exit animations for overlays: the subset of tw-animate-css that the
+   styles use (`animate-in`, `animate-out`, `fade-*`, `zoom-*`). */
+@keyframes enter {
+  from {
+    opacity: var(--tw-enter-opacity, 1);
+    transform: scale3d(
+      var(--tw-enter-scale, 1),
+      var(--tw-enter-scale, 1),
+      var(--tw-enter-scale, 1)
+    );
+  }
+}
+
+@keyframes exit {
+  to {
+    opacity: var(--tw-exit-opacity, 1);
+    transform: scale3d(
+      var(--tw-exit-scale, 1),
+      var(--tw-exit-scale, 1),
+      var(--tw-exit-scale, 1)
+    );
+  }
+}
+
+@utility animate-in {
+  animation-name: enter;
+  animation-duration: var(--tw-duration, 150ms);
+  animation-timing-function: ease;
+  animation-fill-mode: both;
+}
+
+@utility animate-out {
+  animation-name: exit;
+  animation-duration: var(--tw-duration, 150ms);
+  animation-timing-function: ease;
+  animation-fill-mode: both;
+}
+
+@utility fade-in-* {
+  --tw-enter-opacity: calc(--value(integer) / 100);
+}
+
+@utility fade-out-* {
+  --tw-exit-opacity: calc(--value(integer) / 100);
+}
+
+@utility zoom-in-* {
+  --tw-enter-scale: calc(--value(integer) / 100);
+}
+
+@utility zoom-out-* {
+  --tw-exit-scale: calc(--value(integer) / 100);
+}
+
 :root {
   --accent: oklch(0.97 0 0);
   --accent-foreground: oklch(0.205 0 0);

@@ -118,12 +118,12 @@
     {
       "name": "dialog",
       "type": "registry:ui",
-      "description": "A window overlaid on the page that shows content and can be dismissed."
+      "description": "A window overlaid on either the primary window or another dialog window, rendering the content underneath inert."
     },
     {
       "name": "drawer",
       "type": "registry:ui",
-      "description": "A panel that slides in from an edge of the screen."
+      "description": "A drawer component built on Base UI that slides in from the edge of the screen, with swipe to dismiss, snap points and nested stacking."
     },
     {
       "name": "table",
@@ -333,7 +333,7 @@
     {
       "name": "sheet",
       "type": "registry:ui",
-      "description": "A panel that slides in from any edge of the screen to show content beside the page."
+      "description": "Extends the Dialog component to display content that complements the main content of the screen."
     },
     {
       "name": "sidebar",

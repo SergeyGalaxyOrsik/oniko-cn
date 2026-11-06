@@ -121,10 +121,16 @@
 ### Alert Dialog
 
 - Части: `AlertDialog`, `AlertDialogTrigger`, `AlertDialogContent`, `AlertDialogHeader`, `AlertDialogFooter`, `AlertDialogMedia`, `AlertDialogTitle`, `AlertDialogDescription`, `AlertDialogAction`, `AlertDialogCancel`
-- Размеры `AlertDialogContent` (`AlertDialogSize`): `Default`, `Sm`
+- Размеры `AlertDialogContent` (`AlertDialogSize`): `Default`, `Sm` (попадает в `data-size`, футер в `sm` становится сеткой из двух колонок)
 - Состояние: `default_open`, либо управляемое через `open` и `on_open_change`
-- Построен на нативном `<dialog>` с `showModal()`: фокус-ловушку и `Escape` даёт браузер или webview, а не `dioxus-primitives`, потому что реестр не умеет git-зависимости
-- `AlertDialogAction` и `AlertDialogCancel` вызывают `onclick` и закрывают диалог; закрытие кликом по фону не поддерживается
+- `role="alertdialog"`; клик по затемнению не закрывает диалог (как в Base UI), закрывают `Escape`, `AlertDialogCancel` и `AlertDialogAction`
+- `AlertDialogAction` и `AlertDialogCancel` вызывают `onclick` и закрывают диалог. В upstream `AlertDialogAction` просто кнопка и сама диалог не закрывает; здесь закрывает, чтобы пример с «Continue» работал без обработчика
+- `AlertDialogCancel` по умолчанию `Outline`; `AlertDialogAction` принимает `variant` и `size`
+- Построен на нативном `<dialog>`, открытом через `showModal()`: top layer, инертную страницу и фокус-ловушку даёт браузер или webview; `dioxus-primitives` не используется (на crates.io пустышка 0.0.0)
+- Закрытие с анимацией как в Base UI: попап получает `data-closed` и `data-ending-style`, остаётся в DOM, пока не закончатся CSS-анимации и переходы (`getAnimations()`), потом размонтируется; при открытии есть `data-open` и `data-starting-style`
+- `Escape` обрабатывается самим компонентом (нативный `cancel` отменяется), чтобы успела проиграться анимация выхода; после закрытия фокус возвращается на триггер
+- Пока открыт модальный диалог, прокрутка страницы заблокирована (`overflow: hidden` на `html` с компенсацией ширины скроллбара)
+- У триггера и кнопок закрытия внешнего вида нет: чтобы получить вид кнопки, передайте `variant` и/или `size` (аналог `render={{<Button variant=... />}}`)
 - Зависит от `button` (ставится автоматически)
 - Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
 
@@ -264,20 +270,47 @@
 ### Dialog
 
 - Части: `Dialog`, `DialogTrigger`, `DialogContent`, `DialogHeader`, `DialogFooter`, `DialogTitle`, `DialogDescription`, `DialogClose`
-- Состояние: `default_open`, либо управляемое через `open` и `on_open_change`
-- `DialogContent`: `show_close_button` (по умолчанию `true`) показывает крестик в углу
-- Построен на нативном `<dialog>` с `showModal()`: фокус-ловушку и `Escape` даёт браузер или webview, а не `dioxus-primitives`, потому что реестр не умеет git-зависимости
-- Закрытие кликом по затемнённому фону за окном, по `Escape`, по крестику и по `DialogClose`
+- `Dialog`: `default_open`, либо управляемое через `open` и `on_open_change`; `modal` (`DialogModal`: `True` по умолчанию, `False`, `TrapFocus`); `disable_pointer_dismissal`
+- `DialogContent`: `show_close_button` (по умолчанию `true`) показывает крестик в углу; `DialogFooter`: `show_close_button` добавляет кнопку «Close»
+- Закрытие кликом по затемнению (если не `disable_pointer_dismissal`), по `Escape`, по крестику и по `DialogClose`
+- `aria-labelledby` и `aria-describedby` попапа ссылаются на `DialogTitle` и `DialogDescription`, если они отрисованы
+- `modal: False` и `TrapFocus`: без затемнения, страница остаётся интерактивной (`show()` вместо `showModal()`), клик снаружи закрывает; в `TrapFocus` `Tab` циклически ходит внутри диалога. Фокус-ловушка `TrapFocus` самописная и считает фокусируемыми только `a[href]`, `button`, `input`, `select`, `textarea` и `[tabindex]`
+- Построен на нативном `<dialog>`, открытом через `showModal()`: top layer, инертную страницу и фокус-ловушку даёт браузер или webview; `dioxus-primitives` не используется (на crates.io пустышка 0.0.0)
+- Закрытие с анимацией как в Base UI: попап получает `data-closed` и `data-ending-style`, остаётся в DOM, пока не закончатся CSS-анимации и переходы (`getAnimations()`), потом размонтируется; при открытии есть `data-open` и `data-starting-style`
+- `Escape` обрабатывается самим компонентом (нативный `cancel` отменяется), чтобы успела проиграться анимация выхода; после закрытия фокус возвращается на триггер
+- Пока открыт модальный диалог, прокрутка страницы заблокирована (`overflow: hidden` на `html` с компенсацией ширины скроллбара)
+- У триггера и кнопок закрытия внешнего вида нет: чтобы получить вид кнопки, передайте `variant` и/или `size` (аналог `render={{<Button variant=... />}}`)
 - Зависит от `button` (ставится автоматически)
 - Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
 
 ### Drawer
 
-- Части: `Drawer`, `DrawerTrigger`, `DrawerContent`, `DrawerHeader`, `DrawerFooter`, `DrawerTitle`, `DrawerDescription`, `DrawerClose`
-- `Drawer`: `direction` (`DrawerDirection`: `Down` по умолчанию, `Up`, `Left`, `Right`), `show_handle` (полоска-ручка сверху панели), `default_open`, либо управляемое через `open` и `on_open_change`
-- Построен на нативном `<dialog>` с `showModal()`, как `AlertDialog`: фокус-ловушку и `Escape` даёт браузер или webview
-- Закрытие по `Escape`, по затемнённому фону и по `DrawerClose`
-- Жестов свайпа и точек фиксации (snap points) нет
+- Части: `Drawer`, `DrawerTrigger`, `DrawerContent`, `DrawerHeader`, `DrawerFooter`, `DrawerTitle`, `DrawerDescription`, `DrawerClose`, `DrawerSwipeHandle`
+- `Drawer`: `swipe_direction` (`DrawerSwipeDirection`: `Down` по умолчанию, `Up`, `Left`, `Right`), `show_swipe_handle`, `modal` (`DrawerModal`: `True`, `False`, `TrapFocus`), `disable_pointer_dismissal`, `snap_points: Vec<DrawerSnapPoint>` (`Fraction`, `Px`, `Rem`), `on_snap_point_change`; состояние: `default_open`, либо `open` и `on_open_change`
+- Свайп для закрытия работает мышью и касанием: скрипт пишет `--drawer-swipe-movement-x/y`, `--drawer-swipe-progress`, `--drawer-swipe-strength` и `data-swiping` на попап и оверлей, как ждут стили; решение о закрытии принимается по пройденной доле и скорости
+- Точки фиксации (`snap_points`) работают для `Down`: попап растягивается на `100dvh`, смещение задаёт `--drawer-snap-point-offset`; при отпускании выбирается ближайшая точка с учётом скорости, либо закрытие
+- Вложенные drawer: `Drawer` внутри `DrawerContent` родителя; родитель получает `data-nested-drawer-open`, `--nested-drawers` и `--drawer-frontmost-height` и стекается позади
+- Нет: `data-nested-drawer-swiping` на родителе во время свайпа вложенного, управляемого `snap_point`, `initial_focus`/`final_focus`; на касаниях прокрутка внутри попапа и свайп конкурируют (скроллируемым потомкам выдан `touch-action: pan-x pan-y`, остальное попап отдаёт свайпу)
+- Построен на нативном `<dialog>`, открытом через `showModal()`: top layer, инертную страницу и фокус-ловушку даёт браузер или webview; `dioxus-primitives` не используется (на crates.io пустышка 0.0.0)
+- Закрытие с анимацией как в Base UI: попап получает `data-closed` и `data-ending-style`, остаётся в DOM, пока не закончатся CSS-анимации и переходы (`getAnimations()`), потом размонтируется; при открытии есть `data-open` и `data-starting-style`
+- `Escape` обрабатывается самим компонентом (нативный `cancel` отменяется), чтобы успела проиграться анимация выхода; после закрытия фокус возвращается на триггер
+- Пока открыт модальный drawer, прокрутка страницы заблокирована (`overflow: hidden` на `html` с компенсацией ширины скроллбара)
+- У триггера и кнопок закрытия внешнего вида нет: чтобы получить вид кнопки, передайте `variant` и/или `size` (аналог `render={{<Button variant=... />}}`)
+- Зависит от `button` (ставится автоматически)
+- Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
+
+### Sheet
+
+- Части: `Sheet`, `SheetTrigger`, `SheetClose`, `SheetContent`, `SheetHeader`, `SheetFooter`, `SheetTitle`, `SheetDescription`
+- `Sheet`: `default_open`, либо управляемое через `open` и `on_open_change`; `modal` (`SheetModal`: `True`, `False`, `TrapFocus`); `disable_pointer_dismissal`
+- `SheetContent`: `side` (`SheetSide`: `Right` по умолчанию, `Top`, `Bottom`, `Left`, попадает в `data-side`), `show_close_button` (по умолчанию `true`)
+- Анимация входа и выхода — переходы по `data-starting-style` и `data-ending-style` (сдвиг на 2.5rem и прозрачность)
+- Закрытие кликом по затемнению, по `Escape`, по крестику и по `SheetClose`
+- Построен на нативном `<dialog>`, открытом через `showModal()`: top layer, инертную страницу и фокус-ловушку даёт браузер или webview; `dioxus-primitives` не используется (на crates.io пустышка 0.0.0)
+- Закрытие с анимацией как в Base UI: попап получает `data-closed` и `data-ending-style`, остаётся в DOM, пока не закончатся CSS-анимации и переходы (`getAnimations()`), потом размонтируется; при открытии есть `data-open` и `data-starting-style`
+- `Escape` обрабатывается самим компонентом (нативный `cancel` отменяется), чтобы успела проиграться анимация выхода; после закрытия фокус возвращается на триггер
+- Пока открыт модальный sheet, прокрутка страницы заблокирована (`overflow: hidden` на `html` с компенсацией ширины скроллбара)
+- У триггера и кнопок закрытия внешнего вида нет: чтобы получить вид кнопки, передайте `variant` и/или `size` (аналог `render={{<Button variant=... />}}`)
 - Зависит от `button` (ставится автоматически)
 - Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
 

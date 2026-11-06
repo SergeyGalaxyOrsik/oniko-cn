@@ -164,7 +164,7 @@
       "name": "dialog",
       "type": "registry:ui",
       "title": "Dialog",
-      "description": "A window overlaid on the page that shows content and can be dismissed.",
+      "description": "A window overlaid on either the primary window or another dialog window, rendering the content underneath inert.",
       "dependencies": ["oniko-cn@0.1"],
       "registryDependencies": ["button"],
       "files": [{ "path": "ui/dialog.rs", "type": "registry:ui" }]
@@ -173,7 +173,7 @@
       "name": "drawer",
       "type": "registry:ui",
       "title": "Drawer",
-      "description": "A panel that slides in from an edge of the screen.",
+      "description": "A drawer component built on Base UI that slides in from the edge of the screen, with swipe to dismiss, snap points and nested stacking.",
       "dependencies": ["oniko-cn@0.1"],
       "registryDependencies": ["button"],
       "files": [{ "path": "ui/drawer.rs", "type": "registry:ui" }]
@@ -531,7 +531,7 @@
       "name": "sheet",
       "type": "registry:ui",
       "title": "Sheet",
-      "description": "A panel that slides in from any edge of the screen to show content beside the page.",
+      "description": "Extends the Dialog component to display content that complements the main content of the screen.",
       "dependencies": ["oniko-cn@0.1"],
       "registryDependencies": ["button"],
       "files": [{ "path": "ui/sheet.rs", "type": "registry:ui" }]

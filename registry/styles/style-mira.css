@@ -45,6 +45,18 @@
     @apply text-muted-foreground *:[a]:hover:text-foreground text-xs/relaxed text-balance md:text-pretty *:[a]:underline *:[a]:underline-offset-3;
   }
 
+  .cn-alert-dialog-action {
+  }
+
+  .cn-alert-dialog-cancel {
+  }
+
+  .cn-alert-dialog-footer {
+  }
+
+  .cn-font-heading {
+  }
+
   /* MARK: Alert */
   .cn-alert {
     @apply grid gap-0.5 rounded-lg border px-2 py-1.5 text-left text-xs/relaxed has-data-[slot=alert-action]:relative has-data-[slot=alert-action]:pr-18 has-[>svg]:grid-cols-[auto_1fr] has-[>svg]:gap-x-1.5 *:[svg]:row-span-2 *:[svg]:translate-y-0.5 *:[svg]:text-current *:[svg:not([class*='size-'])]:size-3.5;
@@ -520,6 +532,9 @@
 
   .cn-drawer-content {
     @apply before:bg-popover text-popover-foreground before:border-border relative flex h-auto flex-col bg-transparent p-2 text-xs/relaxed before:absolute before:inset-2 before:-z-10 before:rounded-xl before:border;
+  }
+
+  .cn-drawer-content-base {
   }
 
   .cn-drawer-popup {

@@ -19,6 +19,18 @@
     @apply pt-0 pb-2.5;
   }
 
+  .cn-alert-dialog-action {
+  }
+
+  .cn-alert-dialog-cancel {
+  }
+
+  .cn-alert-dialog-footer {
+  }
+
+  .cn-font-heading {
+  }
+
   /* MARK: Alert */
   .cn-alert {
     @apply grid gap-0.5 rounded-none border px-2.5 py-2 text-left text-xs has-data-[slot=alert-action]:relative has-data-[slot=alert-action]:pr-18 has-[>svg]:grid-cols-[auto_1fr] has-[>svg]:gap-x-2 *:[svg]:row-span-2 *:[svg]:translate-y-0 *:[svg]:text-current *:[svg:not([class*='size-'])]:size-4;
@@ -519,6 +531,9 @@
 
   .cn-drawer-content {
     @apply bg-popover text-popover-foreground flex h-auto flex-col text-xs/relaxed data-[vaul-drawer-direction=bottom]:rounded-none data-[vaul-drawer-direction=bottom]:border-t data-[vaul-drawer-direction=left]:rounded-none data-[vaul-drawer-direction=left]:border-r data-[vaul-drawer-direction=right]:rounded-none data-[vaul-drawer-direction=right]:border-l data-[vaul-drawer-direction=top]:rounded-none data-[vaul-drawer-direction=top]:border-b;
+  }
+
+  .cn-drawer-content-base {
   }
 
   .cn-drawer-popup {
