@@ -1,15 +1,18 @@
 //! Progress: displays how far a task has come, as a bar with an optional label and value.
-//! ProgressTrack, ProgressIndicator, ProgressLabel and ProgressValue are its parts.
-//! Pass `value: None` for an indeterminate task.
+//! `Progress` renders its children, then the track and indicator. Add `ProgressLabel` and
+//! `ProgressValue` as children. Pass `value: None` for an indeterminate task.
 //!
 //! Installed by oniko-cn. This file is yours: edit it freely.
+
+use std::sync::atomic::{AtomicUsize, Ordering};
 
 use dioxus::prelude::*;
 use oniko_cn::{cn, take_class};
 
-const PROGRESS_BASE: &str = "relative flex w-full flex-wrap items-center gap-3";
-const PROGRESS_TRACK_BASE: &str =
-    "cn-progress-track relative flex w-full items-center overflow-hidden";
+static NEXT_ID: AtomicUsize = AtomicUsize::new(0);
+
+const PROGRESS_BASE: &str = "cn-progress-root flex flex-wrap gap-3";
+const PROGRESS_TRACK_BASE: &str = "cn-progress-track relative flex w-full items-center overflow-x-hidden";
 const PROGRESS_INDICATOR_BASE: &str = "cn-progress-indicator h-full transition-all";
 const PROGRESS_LABEL_BASE: &str = "cn-progress-label";
 const PROGRESS_VALUE_BASE: &str = "cn-progress-value";
@@ -17,56 +20,91 @@ const PROGRESS_VALUE_BASE: &str = "cn-progress-value";
 #[derive(Clone, Copy, Debug, PartialEq)]
 struct ProgressState {
     value: Option<f64>,
+    min: f64,
     max: f64,
 }
 
 impl ProgressState {
+    fn value(self) -> Option<f64> {
+        self.value.map(|value| value.clamp(self.min, self.max))
+    }
+
     fn percent(self) -> Option<f64> {
-        let value = self.value?;
-        let percent = value / self.max * 100.0;
-        if self.max > 0.0 && percent.is_finite() {
-            Some(percent.clamp(0.0, 100.0))
+        let span = self.max - self.min;
+        let value = self.value()?;
+        if span > 0.0 {
+            Some(((value - self.min) / span * 100.0).clamp(0.0, 100.0))
         } else {
             Some(0.0)
         }
     }
 
     fn status(self) -> &'static str {
-        match self.percent() {
+        match self.value() {
             None => "indeterminate",
-            Some(percent) if percent >= 100.0 => "complete",
+            Some(value) if value >= self.max => "complete",
             Some(_) => "progressing",
         }
     }
+
+    fn text(self) -> String {
+        self.value()
+            .map(|value| format!("{value:.0}%"))
+            .unwrap_or_default()
+    }
+}
+
+#[derive(Clone, Copy)]
+struct ProgressContext {
+    id: usize,
+    state: Signal<ProgressState>,
+    has_label: Signal<bool>,
 }
 
 #[component]
 pub fn Progress(
     value: Option<f64>,
+    #[props(default = 0.0)] min: f64,
     #[props(default = 100.0)] max: f64,
     #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,
     children: Element,
 ) -> Element {
-    let next = ProgressState { value, max };
-    let mut state = use_context_provider(|| Signal::new(next));
+    let id = use_hook(|| NEXT_ID.fetch_add(1, Ordering::Relaxed));
+    let next = ProgressState { value, min, max };
+    let mut state = use_signal(|| next);
     if *state.peek() != next {
         state.set(next);
     }
+    let has_label = use_signal(|| false);
+    use_context_provider(|| ProgressContext {
+        id,
+        state,
+        has_label,
+    });
 
     let mut attributes = attributes;
     let class = cn!(PROGRESS_BASE, take_class(&mut attributes).as_deref());
+    let value_text = match next.value() {
+        Some(_) => next.text(),
+        None => "indeterminate progress".to_string(),
+    };
 
     rsx! {
         div {
             "data-slot": "progress",
             "data-status": next.status(),
             role: "progressbar",
-            "aria-valuemin": "0",
+            "aria-valuemin": "{min}",
             "aria-valuemax": "{max}",
-            "aria-valuenow": value,
+            "aria-valuenow": next.value().map(|value| value.to_string()),
+            "aria-valuetext": value_text,
+            "aria-labelledby": has_label().then(|| format!("progress-label-{id}")),
             class: class,
             ..attributes,
             {children}
+            ProgressTrack {
+                ProgressIndicator {}
+            }
         }
     }
 }
@@ -76,12 +114,14 @@ pub fn ProgressTrack(
     #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,
     children: Element,
 ) -> Element {
+    let context = use_context::<ProgressContext>();
     let mut attributes = attributes;
     let class = cn!(PROGRESS_TRACK_BASE, take_class(&mut attributes).as_deref());
 
     rsx! {
         div {
             "data-slot": "progress-track",
+            "data-status": context.state.read().status(),
             class: class,
             ..attributes,
             {children}
@@ -92,32 +132,26 @@ pub fn ProgressTrack(
 #[component]
 pub fn ProgressIndicator(
     #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,
+    children: Element,
 ) -> Element {
-    let state = use_context::<Signal<ProgressState>>();
-    let progress = *state.read();
-    let width = match progress.percent() {
-        Some(percent) => format!("{percent}%"),
-        None => "30%".to_string(),
-    };
-    let pulse = if progress.value.is_none() {
-        "animate-pulse"
-    } else {
-        ""
-    };
+    let context = use_context::<ProgressContext>();
+    let state = *context.state.read();
+    let width = state.percent().map(|percent| format!("width: {percent}%"));
 
     let mut attributes = attributes;
     let class = cn!(
         PROGRESS_INDICATOR_BASE,
-        pulse,
         take_class(&mut attributes).as_deref()
     );
 
     rsx! {
         div {
             "data-slot": "progress-indicator",
-            style: "width: {width}",
+            "data-status": state.status(),
+            style: width,
             class: class,
             ..attributes,
+            {children}
         }
     }
 }
@@ -127,12 +161,19 @@ pub fn ProgressLabel(
     #[props(extends = GlobalAttributes, extends = span)] attributes: Vec<Attribute>,
     children: Element,
 ) -> Element {
+    let context = use_context::<ProgressContext>();
+    let mut has_label = context.has_label;
+    use_effect(move || has_label.set(true));
+    use_drop(move || has_label.set(false));
+
     let mut attributes = attributes;
     let class = cn!(PROGRESS_LABEL_BASE, take_class(&mut attributes).as_deref());
 
     rsx! {
         span {
+            id: "progress-label-{context.id}",
             "data-slot": "progress-label",
+            "data-status": context.state.read().status(),
             class: class,
             ..attributes,
             {children}
@@ -140,17 +181,14 @@ pub fn ProgressLabel(
     }
 }
 
+/// The formatted value, such as `56%`. Children replace the default text.
 #[component]
 pub fn ProgressValue(
     #[props(extends = GlobalAttributes, extends = span)] attributes: Vec<Attribute>,
     children: Option<Element>,
 ) -> Element {
-    let state = use_context::<Signal<ProgressState>>();
-    let progress = *state.read();
-    let text = match progress.percent() {
-        Some(percent) => format!("{percent:.0}%"),
-        None => String::new(),
-    };
+    let context = use_context::<ProgressContext>();
+    let state = *context.state.read();
 
     let mut attributes = attributes;
     let class = cn!(PROGRESS_VALUE_BASE, take_class(&mut attributes).as_deref());
@@ -158,9 +196,11 @@ pub fn ProgressValue(
     rsx! {
         span {
             "data-slot": "progress-value",
+            "data-status": state.status(),
+            "aria-hidden": "true",
             class: class,
             ..attributes,
-            {children.unwrap_or_else(|| rsx! { "{text}" })}
+            {children.unwrap_or_else(|| rsx! { "{state.text()}" })}
         }
     }
 }

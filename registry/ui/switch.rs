@@ -21,9 +21,9 @@ impl SwitchSize {
     }
 }
 
-fn state(checked: bool) -> &'static str {
-    if checked { "checked" } else { "unchecked" }
-}
+const SWITCH_BASE: &str = "cn-switch peer group/switch relative inline-flex items-center transition-all outline-none after:absolute after:-inset-x-3 after:-inset-y-2 data-disabled:cursor-not-allowed data-disabled:opacity-50";
+
+const THUMB_BASE: &str = "cn-switch-thumb pointer-events-none block ring-0 transition-transform";
 
 /// A two-state switch. Pass `checked` to control it, or leave it out and use `default_checked`.
 #[component]
@@ -41,10 +41,7 @@ pub fn Switch(
     #[props(extends = GlobalAttributes, extends = button)] attributes: Vec<Attribute>,
 ) -> Element {
     let mut attributes = attributes;
-    let class = cn!(
-        "cn-switch group/switch peer inline-flex items-center outline-none disabled:pointer-events-none disabled:opacity-50",
-        take_class(&mut attributes).as_deref()
-    );
+    let class = cn!(SWITCH_BASE, take_class(&mut attributes).as_deref());
     let mut internal = use_signal(|| default_checked);
     let is_checked = checked.unwrap_or(internal());
 
@@ -52,13 +49,12 @@ pub fn Switch(
         button {
             "data-slot": "switch",
             "data-size": size.data_size(),
-            "data-state": state(is_checked),
             "data-checked": is_checked.then_some(""),
             "data-unchecked": (!is_checked).then_some(""),
-            "data-disabled": disabled.then_some("true"),
+            "data-disabled": disabled.then_some(""),
             r#type: "button",
             role: "switch",
-            aria_checked: is_checked,
+            "aria-checked": if is_checked { "true" } else { "false" },
             disabled: disabled,
             class: class,
             onclick: move |event| {
@@ -80,10 +76,10 @@ pub fn Switch(
             ..attributes,
             span {
                 "data-slot": "switch-thumb",
-                "data-state": state(is_checked),
                 "data-checked": is_checked.then_some(""),
                 "data-unchecked": (!is_checked).then_some(""),
-                class: "cn-switch-thumb pointer-events-none block",
+                "data-disabled": disabled.then_some(""),
+                class: THUMB_BASE,
             }
         }
     }

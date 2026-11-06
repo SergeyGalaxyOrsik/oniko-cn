@@ -192,6 +192,8 @@
 - Проп `checked: Option<bool>` делает компонент управляемым; без него состояние хранится внутри, начальное значение задаёт `default_checked`
 - `on_checked_change: EventHandler<bool>` получает новое значение; `disabled` блокирует переключение
 - Построен на `<button role="checkbox">` с `aria-checked`: Space и Enter переключают через нативное поведение кнопки; `dioxus-primitives` не используется (на crates.io пустышка 0.0.0)
+- `indeterminate` показывает смешанное состояние (`aria-checked="mixed"`, `data-indeterminate`); следующий клик ставит галочку
+- Состояние отдаётся атрибутами Base UI: `data-checked`, `data-unchecked`, `data-disabled`; индикатор (`checkbox-indicator`) в DOM только пока флажок отмечен
 - Скрытого `<input>` для форм нет: значение не уходит в `FormData`, его нужно передавать вручную через `on_checked_change`
 
 ### Code Block
@@ -564,3 +566,47 @@
 - `ToolHeader` не передаёт `..attributes` на кнопку, поэтому его атрибуты попадают на обёртку `div`
 - Зависит от `collapsible` и `badge`, которые ставятся автоматически
 - Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
+
+### Radio Group
+
+- Части: `RadioGroup` (`value`/`default_value`, `on_value_change`, `disabled`), `RadioGroupItem` (`value`, `disabled`); индикатор рисуется только у выбранного пункта
+- Построен на `<button role="radio">`; стрелки переносят фокус на следующий или предыдущий доступный пункт по кругу и выбирают его (в RTL левая и правая стрелки меняются местами); в Tab-порядок входит выбранный пункт, а если ничего не выбрано, первый доступный
+- Состояние отдаётся атрибутами Base UI: `data-checked`, `data-unchecked`, `data-disabled`
+- Скрытого `<input>` для форм нет
+
+### Switch
+
+- Проп `checked` делает компонент управляемым, `default_checked` задаёт начальное значение, `on_checked_change` получает новое; `size` (`SwitchSize`: `Default`, `Sm`) попадает в `data-size`
+- Построен на `<button role="switch">`; бегунок (`switch-thumb`) получает те же `data-checked`/`data-unchecked`
+- Скрытого `<input>` для форм нет
+
+### Slider
+
+- `value`/`default_value` хранят `Vec<f64>`: одно значение даёт один бегунок, несколько дают диапазон; `min`, `max`, `step`, `large_step` (для Shift+стрелки и PageUp/PageDown), `min_steps_between_values`, `orientation`, `disabled`
+- `on_value_change` срабатывает при каждом изменении, `on_value_committed` по окончании перетаскивания или нажатия клавиши
+- Бегунки (`role="slider"`) выровнены по краям дорожки, как `thumbAlignment="edge"` у Base UI, и не пересекаются; Home/End ставят крайние значения
+- Для RTL задайте `dir: "rtl"` на самом слайдере: направление от родителей не читается
+- Перетаскивание отслеживается только пока указатель над слайдером; скрытого `<input>` нет
+
+### Toggle
+
+- Проп `pressed` делает компонент управляемым, `default_pressed` задаёт начальное значение, `on_pressed_change` получает новое; варианты `ToggleVariant` (`Default`, `Outline`), размеры `ToggleSize` (`Default`, `Sm`, `Lg`)
+- Отдаёт `aria-pressed` и `data-pressed`; хелпер `toggle_variants(variant, size, class)` даёт классы для любого другого элемента
+
+### Toggle Group
+
+- Части: `ToggleGroup`, `ToggleGroupItem`; `multiple` разрешает нажимать несколько пунктов, иначе нажат не больше одного (повторный клик снимает его)
+- `value`/`default_value` хранят `Vec<String>`; `variant` и `size` группы перекрывают значения пунктов; `spacing` (по умолчанию 2) задаёт зазор, `0` склеивает пункты; `orientation`, `disabled`, `loop_focus`
+- Стрелки по оси группы, Home и End переносят фокус без изменения состояния; в Tab-порядке один пункт: тот, где был фокус, или первый доступный
+- Зависит от `toggle`, который ставится автоматически
+
+### Progress
+
+- Части: `Progress` (`value: Option<f64>`, `min`, `max`), `ProgressLabel`, `ProgressValue`, `ProgressTrack`, `ProgressIndicator`; сам `Progress` выводит свои `children`, а затем дорожку с индикатором
+- `value: None` означает неопределённый прогресс (`data-status="indeterminate"`); остальные состояния: `progressing`, `complete`
+- `ProgressValue` по умолчанию печатает значение с `%`; `children` заменяют этот текст (замена `render`-функции из Base UI)
+- Корень получает `aria-labelledby`, когда внутри есть `ProgressLabel`
+
+### Skeleton
+
+- Один компонент `Skeleton`: `div` с `animate-pulse`; размеры и скругление задаются через `class`

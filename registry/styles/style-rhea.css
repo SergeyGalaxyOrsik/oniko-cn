@@ -1228,6 +1228,9 @@
     @apply bg-muted h-2 rounded-2xl;
   }
 
+  .cn-progress-root {
+  }
+
   .cn-progress-track {
     @apply bg-muted h-2 rounded-2xl;
   }
