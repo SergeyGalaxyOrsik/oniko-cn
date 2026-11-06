@@ -476,6 +476,12 @@
   }
 
   /* MARK: Card */
+  .cn-card-action {
+  }
+
+  .cn-font-heading {
+  }
+
   .cn-card {
     @apply bg-card text-card-foreground ring-foreground/5 dark:ring-foreground/10 gap-(--card-spacing) overflow-hidden rounded-4xl py-(--card-spacing) text-sm shadow-md ring-1 [--card-spacing:--spacing(6)] has-[>img:first-child]:pt-0 data-[size=sm]:[--card-spacing:--spacing(4)] *:[img:first-child]:rounded-t-4xl *:[img:last-child]:rounded-b-4xl;
   }
@@ -572,6 +578,9 @@
   }
 
   /* MARK: Avatar */
+  .cn-avatar-group {
+  }
+
   .cn-avatar {
     @apply size-8 rounded-full after:rounded-full data-[size=lg]:size-10 data-[size=sm]:size-6;
   }
@@ -622,6 +631,13 @@
   }
 
   /* MARK: Breadcrumb */
+  .cn-breadcrumb {
+  }
+
+  .cn-rtl-flip {
+    @apply rtl:rotate-180;
+  }
+
   .cn-breadcrumb-list {
     @apply text-muted-foreground gap-1.5 text-sm sm:gap-2.5;
   }
@@ -1073,6 +1089,18 @@
   }
 
   /* MARK: Pagination */
+  .cn-pagination {
+  }
+
+  .cn-pagination-link {
+  }
+
+  .cn-pagination-previous-text {
+  }
+
+  .cn-pagination-next-text {
+  }
+
   .cn-pagination-content {
     @apply gap-1;
   }
@@ -1629,6 +1657,9 @@
   }
 
   /* MARK: Marker */
+  .cn-marker-variant-default {
+  }
+
   .cn-marker {
     @apply gap-2 text-sm text-muted-foreground [a]:hover:text-foreground [a]:underline-offset-3 [a]:underline [&_svg:not([class*='size-'])]:size-4 min-h-4 text-left;
   }

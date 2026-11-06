@@ -37,7 +37,7 @@ impl MarkerVariant {
 /// Marker classes for any element, e.g. a link that should look like a marker.
 pub fn marker_variants(variant: MarkerVariant, class: Option<&str>) -> String {
     cn!(
-        "gap-2 text-sm text-muted-foreground [a]:hover:text-foreground [a]:underline-offset-3 [a]:underline [&_svg:not([class*='size-'])]:size-4 min-h-4 text-left group/marker flex items-center",
+        "gap-2 text-sm text-muted-foreground [a]:hover:text-foreground [a]:underline-offset-3 [a]:underline [&_svg:not([class*='size-'])]:size-4 min-h-4 text-left group/marker relative flex w-full items-center",
         variant.class(),
         class
     )
@@ -70,7 +70,7 @@ pub fn MarkerIcon(
 ) -> Element {
     let mut attributes = attributes;
     let class = cn!(
-        "size-4 [&_svg:not([class*='size-'])]:size-4 flex shrink-0 items-center justify-center",
+        "size-4 [&_svg:not([class*='size-'])]:size-4 shrink-0",
         take_class(&mut attributes).as_deref()
     );
 
@@ -92,7 +92,7 @@ pub fn MarkerContent(
 ) -> Element {
     let mut attributes = attributes;
     let class = cn!(
-        "group-data-[variant=separator]/marker:flex-none group-data-[variant=separator]/marker:text-center *:[a]:hover:text-foreground *:[a]:underline *:[a]:underline-offset-3 min-w-0",
+        "group-data-[variant=separator]/marker:flex-none group-data-[variant=separator]/marker:text-center *:[a]:hover:text-foreground *:[a]:underline *:[a]:underline-offset-3 min-w-0 wrap-break-word",
         take_class(&mut attributes).as_deref()
     );
 

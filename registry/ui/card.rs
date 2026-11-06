@@ -52,7 +52,7 @@ pub fn CardHeader(
 ) -> Element {
     let mut attributes = attributes;
     let class = cn!(
-        "cn-card-header grid auto-rows-min items-start has-data-[slot=card-action]:grid-cols-[1fr_auto]",
+        "cn-card-header group/card-header @container/card-header grid auto-rows-min items-start has-data-[slot=card-action]:grid-cols-[1fr_auto] has-data-[slot=card-description]:grid-rows-[auto_auto]",
         take_class(&mut attributes).as_deref()
     );
 
@@ -72,7 +72,10 @@ pub fn CardTitle(
     children: Element,
 ) -> Element {
     let mut attributes = attributes;
-    let class = cn!("cn-card-title", take_class(&mut attributes).as_deref());
+    let class = cn!(
+        "cn-card-title cn-font-heading",
+        take_class(&mut attributes).as_deref()
+    );
 
     rsx! {
         div {
@@ -102,7 +105,6 @@ pub fn CardDescription(
     }
 }
 
-/// Places its content in the top right corner of `CardHeader`.
 #[component]
 pub fn CardAction(
     #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,
@@ -110,7 +112,7 @@ pub fn CardAction(
 ) -> Element {
     let mut attributes = attributes;
     let class = cn!(
-        "col-start-2 row-span-2 row-start-1 self-start justify-self-end",
+        "cn-card-action col-start-2 row-span-2 row-start-1 self-start justify-self-end",
         take_class(&mut attributes).as_deref()
     );
 

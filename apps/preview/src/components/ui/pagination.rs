@@ -37,7 +37,7 @@ pub fn PaginationContent(
 ) -> Element {
     let mut attributes = attributes;
     let class = cn!(
-        "gap-1 flex flex-row items-center",
+        "gap-1 flex items-center",
         take_class(&mut attributes).as_deref()
     );
 
@@ -78,18 +78,94 @@ pub fn PaginationLink(
     onclick: Option<EventHandler<MouseEvent>>,
     children: Element,
 ) -> Element {
-    let mut attributes = attributes;
+    link(is_active, size, None, None, attributes, onclick, children)
+}
+
+#[component]
+pub fn PaginationPrevious(
+    #[props(default)] is_active: bool,
+    #[props(into, default = "Previous".to_string())] text: String,
+    #[props(extends = GlobalAttributes, extends = a)] attributes: Vec<Attribute>,
+    onclick: Option<EventHandler<MouseEvent>>,
+) -> Element {
+    link(
+        is_active,
+        ButtonSize::Default,
+        Some("pl-2!"),
+        Some("Go to previous page"),
+        attributes,
+        onclick,
+        rsx! {
+            svg {
+                "data-icon": "inline-start",
+                class: "rtl:rotate-180",
+                view_box: "0 0 24 24",
+                fill: "none",
+                stroke: "currentColor",
+                stroke_width: "2",
+                stroke_linecap: "round",
+                stroke_linejoin: "round",
+                path { d: "m15 18-6-6 6-6" }
+            }
+            span { class: "hidden sm:block", "{text}" }
+        },
+    )
+}
+
+#[component]
+pub fn PaginationNext(
+    #[props(default)] is_active: bool,
+    #[props(into, default = "Next".to_string())] text: String,
+    #[props(extends = GlobalAttributes, extends = a)] attributes: Vec<Attribute>,
+    onclick: Option<EventHandler<MouseEvent>>,
+) -> Element {
+    link(
+        is_active,
+        ButtonSize::Default,
+        Some("pr-2!"),
+        Some("Go to next page"),
+        attributes,
+        onclick,
+        rsx! {
+            span { class: "hidden sm:block", "{text}" }
+            svg {
+                "data-icon": "inline-end",
+                class: "rtl:rotate-180",
+                view_box: "0 0 24 24",
+                fill: "none",
+                stroke: "currentColor",
+                stroke_width: "2",
+                stroke_linecap: "round",
+                stroke_linejoin: "round",
+                path { d: "m9 18 6-6-6-6" }
+            }
+        },
+    )
+}
+
+fn link(
+    is_active: bool,
+    size: ButtonSize,
+    part_class: Option<&str>,
+    label: Option<&'static str>,
+    mut attributes: Vec<Attribute>,
+    onclick: Option<EventHandler<MouseEvent>>,
+    children: Element,
+) -> Element {
     let variant = if is_active {
         ButtonVariant::Outline
     } else {
         ButtonVariant::Ghost
     };
-    let class = button_variants(variant, size, take_class(&mut attributes).as_deref());
+    let extra = cn!("", part_class, take_class(&mut attributes).as_deref());
+    let class = button_variants(variant, size, Some(extra.as_str()));
 
     rsx! {
         a {
             "data-slot": "pagination-link",
+            "data-active": is_active.then_some("true"),
             aria_current: if is_active { "page" },
+            aria_label: label,
             class: class,
             onclick: move |event| {
                 if let Some(handler) = onclick {
@@ -98,66 +174,6 @@ pub fn PaginationLink(
             },
             ..attributes,
             {children}
-        }
-    }
-}
-
-#[component]
-pub fn PaginationPrevious(
-    #[props(extends = GlobalAttributes, extends = a)] attributes: Vec<Attribute>,
-    onclick: Option<EventHandler<MouseEvent>>,
-) -> Element {
-    let mut attributes = attributes;
-    let extra = cn!("pl-2!", take_class(&mut attributes).as_deref());
-    let class = button_variants(
-        ButtonVariant::Ghost,
-        ButtonSize::Default,
-        Some(extra.as_str()),
-    );
-
-    rsx! {
-        a {
-            "data-slot": "pagination-previous",
-            aria_label: "Go to previous page",
-            class: class,
-            onclick: move |event| {
-                if let Some(handler) = onclick {
-                    handler.call(event);
-                }
-            },
-            ..attributes,
-            ChevronIcon { d: "m15 18-6-6 6-6" }
-            span { class: "hidden sm:block", "Previous" }
-        }
-    }
-}
-
-#[component]
-pub fn PaginationNext(
-    #[props(extends = GlobalAttributes, extends = a)] attributes: Vec<Attribute>,
-    onclick: Option<EventHandler<MouseEvent>>,
-) -> Element {
-    let mut attributes = attributes;
-    let extra = cn!("pr-2!", take_class(&mut attributes).as_deref());
-    let class = button_variants(
-        ButtonVariant::Ghost,
-        ButtonSize::Default,
-        Some(extra.as_str()),
-    );
-
-    rsx! {
-        a {
-            "data-slot": "pagination-next",
-            aria_label: "Go to next page",
-            class: class,
-            onclick: move |event| {
-                if let Some(handler) = onclick {
-                    handler.call(event);
-                }
-            },
-            ..attributes,
-            span { class: "hidden sm:block", "Next" }
-            ChevronIcon { d: "m9 18 6-6-6-6" }
         }
     }
 }
@@ -179,7 +195,6 @@ pub fn PaginationEllipsis(
             class: class,
             ..attributes,
             svg {
-                class: "pointer-events-none",
                 view_box: "0 0 24 24",
                 fill: "none",
                 stroke: "currentColor",
@@ -191,22 +206,6 @@ pub fn PaginationEllipsis(
                 circle { cx: "5", cy: "12", r: "1" }
             }
             span { class: "sr-only", "More pages" }
-        }
-    }
-}
-
-#[component]
-fn ChevronIcon(d: &'static str) -> Element {
-    rsx! {
-        svg {
-            class: "pointer-events-none size-4 shrink-0",
-            view_box: "0 0 24 24",
-            fill: "none",
-            stroke: "currentColor",
-            stroke_width: "2",
-            stroke_linecap: "round",
-            stroke_linejoin: "round",
-            path { d: d }
         }
     }
 }

@@ -95,7 +95,7 @@ pub fn TableRow(
 ) -> Element {
     let mut attributes = attributes;
     let class = cn!(
-        "hover:bg-muted/50 data-[state=selected]:bg-muted border-b transition-colors",
+        "hover:bg-muted/50 data-[state=selected]:bg-muted border-b transition-colors has-aria-expanded:bg-muted/50",
         take_class(&mut attributes).as_deref()
     );
 

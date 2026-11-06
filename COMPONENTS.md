@@ -62,6 +62,7 @@
 | Tool | `registry/ui/tool.rs` | `oniko add tool` | web, desktop |
 | Kbd | `registry/ui/kbd.rs` | `oniko add kbd` | web, desktop |
 | Label | `registry/ui/label.rs` | `oniko add label` | web, desktop |
+| Direction | `registry/ui/direction.rs` | `oniko add direction` | web, desktop |
 | Marker | `registry/ui/marker.rs` | `oniko add marker` | web, desktop |
 | Menubar | `registry/ui/menubar.rs` | `oniko add menubar` | web, desktop |
 | Message Scroller | `registry/ui/message_scroller.rs` | `oniko add message-scroller` | web, desktop |
@@ -148,7 +149,8 @@
 
 - Части: `Breadcrumb`, `BreadcrumbList`, `BreadcrumbItem`, `BreadcrumbLink`, `BreadcrumbPage`, `BreadcrumbSeparator`, `BreadcrumbEllipsis`
 - `BreadcrumbSeparator`: по умолчанию рисует шеврон (в RTL он разворачивается), либо любые дочерние элементы
-- `BreadcrumbLink` — обычный `<a>`; у shadcn есть проп `render`, здесь его нет: чтобы подставить роутер-ссылку, отредактируйте файл
+- `BreadcrumbLink` — обычный `<a>`; вместо `render` из React хелпер `breadcrumb_link_variants(class)` даёт классы для роутер-ссылки или другого элемента
+- Шеврон и многоточие рисуются встроенным SVG; шеврон получает `cn-rtl-flip`
 - `BreadcrumbPage` помечает текущую страницу: `aria-current="page"`
 - Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
 
@@ -241,7 +243,7 @@
 
 - Размеры (`CardSize`): `Default`, `Sm` (попадает в `data-size`, стили уменьшают отступы)
 - Части: `Card`, `CardHeader`, `CardTitle`, `CardDescription`, `CardAction`, `CardContent`, `CardFooter`
-- `CardAction` встаёт в правый верхний угол `CardHeader`
+- `CardAction` встаёт в правый верхний угол `CardHeader`; `CardTitle` несёт маркер `cn-font-heading`, у которого нет стилевого правила (как у shadcn)
 - Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
 
 ### Calendar
@@ -325,7 +327,7 @@
 
 ### Empty
 
-- Части: `Empty`, `EmptyHeader`, `EmptyMedia`, `EmptyTitle`, `EmptyDescription`, `EmptyContent`
+- Части: `Empty`, `EmptyHeader`, `EmptyMedia` (`data-slot="empty-icon"`, как у shadcn), `EmptyTitle`, `EmptyDescription` (`<div>`), `EmptyContent`
 - Варианты медиа (`EmptyMediaVariant`): `Default`, `Icon` (попадает в `data-variant`, иконка в квадрате с фоном)
 - `EmptyContent` для кнопок, полей ввода и ссылок
 - Не зависит от других компонентов
@@ -377,6 +379,26 @@
 - Вместо `render` из React хелпер `item_variants(variant, size, class)` даёт классы для ссылки или другого элемента, который должен выглядеть как `Item`
 - `ItemSeparator` делит элементы внутри `ItemGroup`; зависит от `separator` (ставится автоматически)
 - Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
+
+### Marker
+
+- Варианты (`MarkerVariant`): `Default`, `Border`, `Separator` (попадает в `data-variant`)
+- Части: `Marker`, `MarkerIcon`, `MarkerContent`; хелпер `marker_variants(variant, class)` даёт классы для ссылки или другого элемента, который должен выглядеть как `Marker` (вместо `render` из React)
+- Не зависит от других компонентов
+- Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
+
+### Pagination
+
+- Части: `Pagination`, `PaginationContent`, `PaginationItem`, `PaginationLink`, `PaginationPrevious`, `PaginationNext`, `PaginationEllipsis`
+- `PaginationLink`: `is_active` (вариант `Outline`, `aria-current="page"`, `data-active`), `size` (`ButtonSize`, по умолчанию `Icon`); `PaginationPrevious` и `PaginationNext` принимают `text`
+- Зависит от `button` (ставится автоматически)
+- Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
+
+### Direction
+
+- `DirectionProvider { direction: Direction }` (`Ltr` по умолчанию, `Rtl`) кладёт направление в контекст и не рисует свой элемент; атрибут `dir` ставится на документ или обёртку отдельно, как у Base UI
+- `use_direction()` возвращает направление ближайшего провайдера, без провайдера — `Ltr`
+- Стилей нет
 
 ### Separator
 

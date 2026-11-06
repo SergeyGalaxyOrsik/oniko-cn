@@ -11,7 +11,7 @@ pub fn Breadcrumb(
     children: Element,
 ) -> Element {
     let mut attributes = attributes;
-    let class = cn!(take_class(&mut attributes).as_deref());
+    let class = cn!("cn-breadcrumb", take_class(&mut attributes).as_deref());
 
     rsx! {
         nav {
@@ -66,6 +66,11 @@ pub fn BreadcrumbItem(
     }
 }
 
+/// Classes for an element that should look like a [`BreadcrumbLink`], such as a router link.
+pub fn breadcrumb_link_variants(class: Option<&str>) -> String {
+    cn!("cn-breadcrumb-link", class)
+}
+
 #[component]
 pub fn BreadcrumbLink(
     #[props(extends = GlobalAttributes, extends = a)] attributes: Vec<Attribute>,
@@ -73,7 +78,7 @@ pub fn BreadcrumbLink(
     children: Element,
 ) -> Element {
     let mut attributes = attributes;
-    let class = cn!("cn-breadcrumb-link", take_class(&mut attributes).as_deref());
+    let class = breadcrumb_link_variants(take_class(&mut attributes).as_deref());
 
     rsx! {
         a {
@@ -134,7 +139,7 @@ pub fn BreadcrumbSeparator(
                 {children}
             } else {
                 svg {
-                    class: "rtl:rotate-180",
+                    class: "cn-rtl-flip",
                     view_box: "0 0 24 24",
                     fill: "none",
                     stroke: "currentColor",

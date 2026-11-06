@@ -66,15 +66,16 @@ pub fn Avatar(
 /// Stays hidden until the image has loaded, so `AvatarFallback` shows meanwhile and on error.
 #[component]
 pub fn AvatarImage(
+    /// Explicit because `GlobalAttributes` and `img` both define `alt`, which makes the spread ambiguous.
+    class: Option<String>,
     #[props(extends = img)] attributes: Vec<Attribute>,
     onload: Option<EventHandler<Event<ImageData>>>,
     onerror: Option<EventHandler<Event<ImageData>>>,
 ) -> Element {
     let mut state = use_context::<AvatarContext>().image;
-    let mut attributes = attributes;
     let class = cn!(
         "rounded-full aspect-square size-full object-cover",
-        take_class(&mut attributes).as_deref()
+        class.as_deref()
     );
 
     rsx! {
