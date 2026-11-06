@@ -26,6 +26,10 @@ fn App() -> Element {
         .iter()
         .find(|p| p.slug == current())
         .map_or("", |p| p.title);
+    use_effect(move || {
+        current.read();
+        document::eval("document.getElementById('page')?.scrollTo(0, 0)");
+    });
 
     rsx! {
         document::Stylesheet { href: TAILWIND }
@@ -62,7 +66,7 @@ fn App() -> Element {
                         }
                     }
                 }
-                main { class: "min-w-0 flex-1 overflow-y-auto",
+                main { id: "page", class: "min-w-0 flex-1 overflow-y-auto",
                     div { class: "mx-auto flex max-w-3xl flex-col gap-10 px-6 py-10",
                         h1 { class: "text-2xl font-semibold tracking-tight", "{title}" }
                         PageExamples { key: "{current}", slug: current() }
