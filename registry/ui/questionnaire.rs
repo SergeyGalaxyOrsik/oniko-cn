@@ -1531,7 +1531,7 @@ pub fn QuestionnaireTitle(
     use_item();
     let mut attributes = attributes;
     let class = cn!(
-        "cn-questionnaire-title text-pretty",
+        "cn-questionnaire-title cn-font-heading text-pretty",
         take_class(&mut attributes).as_deref()
     );
     if let Some(render) = render {
