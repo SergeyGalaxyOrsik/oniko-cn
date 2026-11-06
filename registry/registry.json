@@ -310,29 +310,30 @@
     },
     {
       "name": "chat",
-      "type": "registry:ui",
+      "type": "registry:block",
       "title": "Chat",
-      "description": "A full-height conversation layout: a scrolling message log above a composer.",
+      "description": "The thread of a conversation: Message turns inside a Message Scroller that keeps your place while the reply streams.",
       "dependencies": ["oniko-cn@0.1"],
-      "files": [{ "path": "ui/chat.rs", "type": "registry:ui" }]
+      "registryDependencies": ["message-scroller", "message", "bubble"],
+      "files": [{ "path": "blocks/chat.rs", "type": "registry:block" }]
     },
     {
       "name": "checkpoint",
-      "type": "registry:ui",
+      "type": "registry:block",
       "title": "Checkpoint",
-      "description": "A marker after a point in a conversation, with a restore button you can return to.",
+      "description": "A point in the conversation you can return to: a separator Marker with a Restore button.",
       "dependencies": ["oniko-cn@0.1"],
-      "registryDependencies": ["button", "separator"],
-      "files": [{ "path": "ui/checkpoint.rs", "type": "registry:ui" }]
+      "registryDependencies": ["marker", "button"],
+      "files": [{ "path": "blocks/checkpoint.rs", "type": "registry:block" }]
     },
     {
       "name": "confirmation",
-      "type": "registry:ui",
+      "type": "registry:block",
       "title": "Confirmation",
-      "description": "An approval prompt for a tool call, with approve and deny actions and the answer once given.",
+      "description": "Asks for a yes or no before a tool runs: an Item with Deny and Approve buttons.",
       "dependencies": ["oniko-cn@0.1"],
       "registryDependencies": ["item", "button"],
-      "files": [{ "path": "ui/confirmation.rs", "type": "registry:ui" }]
+      "files": [{ "path": "blocks/confirmation.rs", "type": "registry:block" }]
     },
     {
       "name": "chain-of-thought",
@@ -416,12 +417,12 @@
     },
     {
       "name": "prompt-input",
-      "type": "registry:ui",
+      "type": "registry:block",
       "title": "Prompt Input",
-      "description": "A message box with a textarea that sends on Enter, header and footer rows, and a submit button that shows the request status.",
+      "description": "The field the person types into to message the agent: an Input Group with a textarea, an attach button and a send button.",
       "dependencies": ["oniko-cn@0.1"],
-      "registryDependencies": ["button", "input-group"],
-      "files": [{ "path": "ui/prompt_input.rs", "type": "registry:ui" }]
+      "registryDependencies": ["input-group", "button"],
+      "files": [{ "path": "blocks/prompt_input.rs", "type": "registry:block" }]
     },
     {
       "name": "sources",
@@ -684,12 +685,12 @@
     },
     {
       "name": "suggestion",
-      "type": "registry:ui",
+      "type": "registry:block",
       "title": "Suggestion",
-      "description": "A horizontal row of pill buttons that offer follow-up prompts, scrolling sideways when they overflow.",
+      "description": "A row of buttons that send a prompt in one click, scrolling sideways when they do not fit.",
       "dependencies": ["oniko-cn@0.1"],
       "registryDependencies": ["button"],
-      "files": [{ "path": "ui/suggestion.rs", "type": "registry:ui" }]
+      "files": [{ "path": "blocks/suggestion.rs", "type": "registry:block" }]
     },
     {
       "name": "subagent",

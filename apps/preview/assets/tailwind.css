@@ -884,6 +884,9 @@
   .h-140 {
     height: calc(var(--spacing) * 140);
   }
+  .h-200 {
+    height: calc(var(--spacing) * 200);
+  }
   .h-\[22rem\] {
     height: 22rem;
   }
@@ -1015,6 +1018,9 @@
   }
   .min-h-11 {
     min-height: calc(var(--spacing) * 11);
+  }
+  .min-h-14 {
+    min-height: calc(var(--spacing) * 14);
   }
   .min-h-16 {
     min-height: calc(var(--spacing) * 16);
@@ -1698,9 +1704,6 @@
   .flex-row {
     flex-direction: row;
   }
-  .flex-nowrap {
-    flex-wrap: nowrap;
-  }
   .flex-wrap {
     flex-wrap: wrap;
   }
@@ -2272,6 +2275,9 @@
   .p-6 {
     padding: calc(var(--spacing) * 6);
   }
+  .p-8 {
+    padding: calc(var(--spacing) * 8);
+  }
   .p-12 {
     padding: calc(var(--spacing) * 12);
   }
@@ -2313,6 +2319,9 @@
   }
   .px-6 {
     padding-inline: calc(var(--spacing) * 6);
+  }
+  .px-8 {
+    padding-inline: calc(var(--spacing) * 8);
   }
   .px-\[0\.3rem\] {
     padding-inline: 0.3rem;
@@ -2358,6 +2367,9 @@
   }
   .py-\[0\.2rem\] {
     padding-block: 0.2rem;
+  }
+  .ps-5 {
+    padding-inline-start: calc(var(--spacing) * 5);
   }
   .pt-0 {
     padding-top: calc(var(--spacing) * 0);
@@ -3015,6 +3027,10 @@
   .contain-content {
     contain: content;
   }
+  .fade-in-0 {
+    --tw-enter-opacity: calc(0/100);
+    --tw-enter-opacity: 0;
+  }
   .outline-none {
     --tw-outline-style: none;
     outline-style: none;
@@ -3132,9 +3148,6 @@
   .\[interpolate-size\:allow-keywords\] {
     interpolate-size: allow-keywords;
   }
-  .\[scrollbar-width\:none\] {
-    scrollbar-width: none;
-  }
   .\[transition\:transform_0\.4s\,opacity_0\.4s\,height_0\.4s\,box-shadow_0\.2s\] {
     transition: transform 0.4s,opacity 0.4s,height 0.4s,box-shadow 0.2s;
   }
@@ -3155,6 +3168,9 @@
   }
   .scrollbar-thin {
     scrollbar-width: thin;
+  }
+  .slide-in-from-bottom-2 {
+    --tw-enter-translate-y: calc(2*var(--spacing));
   }
   .\*\:pointer-events-auto {
     :is(& > *) {
@@ -4706,12 +4722,6 @@
     }
   }
   .focus-within\:ring-3 {
-    &:focus-within {
-      --tw-ring-shadow: var(--tw-ring-inset,) 0 0 0 calc(3px + var(--tw-ring-offset-width)) var(--tw-ring-color, currentcolor);
-      box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
-    }
-  }
-  .focus-within\:ring-\[3px\] {
     &:focus-within {
       --tw-ring-shadow: var(--tw-ring-inset,) 0 0 0 calc(3px + var(--tw-ring-offset-width)) var(--tw-ring-color, currentcolor);
       box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
@@ -8255,6 +8265,11 @@
       }
     }
   }
+  .motion-safe\:animate-in {
+    @media (prefers-reduced-motion: no-preference) {
+      animation: enter var(--tw-animation-duration,var(--tw-duration,.15s))var(--tw-ease,ease)var(--tw-animation-delay,0s)var(--tw-animation-iteration-count,1)var(--tw-animation-direction,normal)var(--tw-animation-fill-mode,none);
+    }
+  }
   .motion-reduce\:animate-none {
     @media (prefers-reduced-motion: reduce) {
       animation: none;
@@ -9863,11 +9878,6 @@
   .\[\&\:\:-webkit-calendar-picker-indicator\]\:appearance-none {
     &::-webkit-calendar-picker-indicator {
       appearance: none;
-    }
-  }
-  .\[\&\:\:-webkit-scrollbar\]\:hidden {
-    &::-webkit-scrollbar {
-      display: none;
     }
   }
   .\[\&\:first-child\[data-selected\=true\]_button\]\:rounded-l-\(--cell-radius\) {
