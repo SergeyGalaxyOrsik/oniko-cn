@@ -1526,7 +1526,7 @@ pub fn QuestionnaireTitle(
     use_item();
     let mut attributes = attributes;
     let class = cn!(
-        "text-base font-semibold [&:not(:has(~[data-slot=questionnaire-description]))]:mb-5 text-pretty",
+        "text-base font-semibold [&:not(:has(~[data-slot=questionnaire-description]))]:mb-5 font-heading text-pretty",
         take_class(&mut attributes).as_deref()
     );
     if let Some(render) = render {

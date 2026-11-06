@@ -625,7 +625,7 @@ pub fn DialogTitle(
     use_drop(move || has_title.set(false));
     let mut attributes = attributes;
     let class = cn!(
-        "leading-none font-medium",
+        "leading-none font-medium font-heading",
         take_class(&mut attributes).as_deref()
     );
 

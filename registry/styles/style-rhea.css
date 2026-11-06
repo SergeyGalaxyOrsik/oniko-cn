@@ -503,6 +503,7 @@
   }
 
   .cn-font-heading {
+    @apply font-heading;
   }
 
   .cn-card {
@@ -584,8 +585,6 @@
   .cn-alert-dialog-footer {
   }
 
-  .cn-font-heading {
-  }
 
   /* MARK: Alert */
   .cn-alert {

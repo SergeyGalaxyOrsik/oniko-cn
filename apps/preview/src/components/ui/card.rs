@@ -73,7 +73,7 @@ pub fn CardTitle(
 ) -> Element {
     let mut attributes = attributes;
     let class = cn!(
-        "text-base leading-normal font-medium group-data-[size=sm]/card:text-sm",
+        "text-base leading-normal font-medium group-data-[size=sm]/card:text-sm font-heading",
         take_class(&mut attributes).as_deref()
     );
 

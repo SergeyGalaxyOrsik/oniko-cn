@@ -104,7 +104,7 @@ pub fn EmptyTitle(
 ) -> Element {
     let mut attributes = attributes;
     let class = cn!(
-        "text-lg font-medium tracking-tight",
+        "text-lg font-medium tracking-tight font-heading",
         take_class(&mut attributes).as_deref()
     );
 

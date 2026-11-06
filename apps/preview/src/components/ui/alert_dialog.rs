@@ -554,7 +554,7 @@ pub fn AlertDialogTitle(
     use_drop(move || has_title.set(false));
     let mut attributes = attributes;
     let class = cn!(
-        "text-lg font-medium sm:group-data-[size=default]/alert-dialog-content:group-has-data-[slot=alert-dialog-media]/alert-dialog-content:col-start-2",
+        "text-lg font-medium sm:group-data-[size=default]/alert-dialog-content:group-has-data-[slot=alert-dialog-media]/alert-dialog-content:col-start-2 font-heading",
         take_class(&mut attributes).as_deref()
     );
 

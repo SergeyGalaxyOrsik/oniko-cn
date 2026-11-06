@@ -49,6 +49,7 @@
   }
 
   .cn-font-heading {
+    @apply font-heading;
   }
 
   /* MARK: Alert */
@@ -297,8 +298,6 @@
   .cn-card-action {
   }
 
-  .cn-font-heading {
-  }
 
   .cn-card {
     @apply bg-card text-card-foreground ring-foreground/5 gap-(--card-spacing) overflow-hidden py-(--card-spacing) text-sm shadow-sm ring-1 [--card-spacing:--spacing(8)] has-[>img:first-child]:pt-0 data-[size=sm]:[--card-spacing:--spacing(5)] *:[img:first-child]:rounded-none *:[img:last-child]:rounded-none;

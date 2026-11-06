@@ -1008,7 +1008,7 @@ pub fn DrawerTitle(
     use_drop(move || has_title.set(false));
     let mut attributes = attributes;
     let class = cn!(
-        "text-foreground font-medium",
+        "text-foreground font-medium font-heading",
         take_class(&mut attributes).as_deref()
     );
 

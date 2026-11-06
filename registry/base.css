@@ -9,6 +9,9 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  /* As in shadcn/ui: headings use --font-heading when the app defines it,
+     and inherit the body font otherwise. */
+  --font-heading: var(--font-heading);
   @keyframes accordion-down {
     from {
       height: 0;
