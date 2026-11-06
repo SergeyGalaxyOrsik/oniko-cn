@@ -1414,7 +1414,11 @@ fn MessageScrollerAnimation() -> Element {
                 CardFooter { class: "border-t",
                     Select {
                         value: preset.id.to_string(),
-                        on_value_change: move |value: String| preset_id.set(value),
+                        on_value_change: move |value: Option<String>| {
+                            if let Some(value) = value {
+                                preset_id.set(value);
+                            }
+                        },
                         SelectTrigger { aria_label: "Animation preset",
                             SelectValue {}
                         }

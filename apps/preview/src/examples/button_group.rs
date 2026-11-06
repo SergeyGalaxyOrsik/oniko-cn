@@ -341,7 +341,11 @@ fn ButtonGroupSelect() -> Element {
             ButtonGroup {
                 Select {
                     value: currency(),
-                    on_value_change: move |value| currency.set(value),
+                    on_value_change: move |value: Option<String>| {
+                        if let Some(value) = value {
+                            currency.set(value);
+                        }
+                    },
                     SelectTrigger { class: "font-mono", SelectValue {} }
                     SelectContent {
                         SelectGroup {

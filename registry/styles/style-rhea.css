@@ -694,6 +694,27 @@
     @apply size-5 [&>svg]:size-4;
   }
 
+  .cn-combobox-chip-indicator-icon {
+  }
+
+  .cn-combobox-chip-input {
+  }
+
+  .cn-combobox-clear {
+  }
+
+  .cn-combobox-clear-icon {
+  }
+
+  .cn-combobox-group {
+  }
+
+  .cn-combobox-input {
+  }
+
+  .cn-combobox-item-indicator-icon {
+  }
+
   /* MARK: Command */
   .cn-command {
     @apply bg-popover text-popover-foreground rounded-3xl p-1;
@@ -749,6 +770,9 @@
 
   .cn-command-shortcut-aria {
     @apply group-data-focused/command-item:text-foreground;
+  }
+
+  .cn-command-item-indicator {
   }
 
   /* MARK: Context Menu */
@@ -1328,6 +1352,9 @@
     @apply rounded-full;
   }
 
+  .cn-select-item-indicator-icon {
+  }
+
   /* MARK: Separator */
   .cn-separator {
     @apply bg-border shrink-0;
@@ -1556,6 +1583,9 @@
 
   .cn-hover-card-content-logical {
     @apply data-[side=inline-start]:slide-in-from-right-2 data-[side=inline-end]:slide-in-from-left-2;
+  }
+
+  .cn-menu-target {
   }
 
   /* MARK: Menu Translucent */
