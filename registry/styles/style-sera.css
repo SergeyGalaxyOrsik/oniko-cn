@@ -351,6 +351,9 @@
   }
 
   /* MARK: Chart */
+  .cn-chart {
+  }
+
   .cn-chart-tooltip {
     @apply bg-popover text-popover-foreground ring-foreground/10 gap-1.5 px-2.5 py-1.5 text-xs shadow-sm ring-1;
   }
