@@ -81,14 +81,14 @@ pub fn EmptyMedia(
 ) -> Element {
     let mut attributes = attributes;
     let class = cn!(
-        "mb-2 flex shrink-0 items-center justify-center",
+        "mb-2 flex shrink-0 items-center justify-center [&_svg]:pointer-events-none [&_svg]:shrink-0",
         variant.class(),
         take_class(&mut attributes).as_deref()
     );
 
     rsx! {
         div {
-            "data-slot": "empty-media",
+            "data-slot": "empty-icon",
             "data-variant": variant.as_str(),
             class: class,
             ..attributes,
@@ -120,14 +120,17 @@ pub fn EmptyTitle(
 
 #[component]
 pub fn EmptyDescription(
-    #[props(extends = GlobalAttributes, extends = p)] attributes: Vec<Attribute>,
+    #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,
     children: Element,
 ) -> Element {
     let mut attributes = attributes;
-    let class = cn!("text-sm/relaxed", take_class(&mut attributes).as_deref());
+    let class = cn!(
+        "text-sm/relaxed text-muted-foreground [&>a]:underline [&>a]:underline-offset-4 [&>a:hover]:text-primary",
+        take_class(&mut attributes).as_deref()
+    );
 
     rsx! {
-        p {
+        div {
             "data-slot": "empty-description",
             class: class,
             ..attributes,

@@ -1,0 +1,17 @@
+{
+  "$schema": "https://oniko.dev/schema/registry-item.json",
+  "name": "direction",
+  "type": "registry:ui",
+  "title": "Direction",
+  "description": "A provider component that sets the text direction for your application.",
+  "dependencies": [
+    "oniko-cn@0.1"
+  ],
+  "files": [
+    {
+      "path": "ui/direction.rs",
+      "type": "registry:ui",
+      "content": "//! Direction: a provider that sets the text direction (`ltr` or `rtl`) for the components below it.\n//!\n//! Installed by oniko-cn. This file is yours: edit it freely.\n\nuse dioxus::prelude::*;\n\n#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]\npub enum Direction {\n    #[default]\n    Ltr,\n    Rtl,\n}\n\nimpl Direction {\n    /// Value of the HTML `dir` attribute.\n    pub fn as_str(self) -> &'static str {\n        match self {\n            Self::Ltr => \"ltr\",\n            Self::Rtl => \"rtl\",\n        }\n    }\n}\n\n/// Provides `direction` to `use_direction` in the subtree. It renders no element, so set `dir` on\n/// the document or a wrapper yourself.\n#[component]\npub fn DirectionProvider(#[props(default)] direction: Direction, children: Element) -> Element {\n    let mut current = use_context_provider(|| Signal::new(direction));\n    if current() != direction {\n        current.set(direction);\n    }\n\n    rsx! { {children} }\n}\n\n/// The direction set by the closest `DirectionProvider`, or `Direction::Ltr` without one.\npub fn use_direction() -> Direction {\n    try_use_context::<Signal<Direction>>()\n        .map(|direction| direction())\n        .unwrap_or_default()\n}\n"
+    }
+  ]
+}

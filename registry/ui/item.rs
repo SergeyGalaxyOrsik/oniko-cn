@@ -91,7 +91,7 @@ impl ItemMediaVariant {
 /// Classes for an element that should look like an [`Item`], such as a link.
 pub fn item_variants(variant: ItemVariant, size: ItemSize, class: Option<&str>) -> String {
     cn!(
-        "cn-item group/item flex flex-wrap items-center",
+        "cn-item group/item flex w-full flex-wrap items-center transition-colors duration-100 outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 [a]:transition-colors",
         variant.class(),
         size.class(),
         class
@@ -127,7 +127,7 @@ pub fn ItemGroup(
 ) -> Element {
     let mut attributes = attributes;
     let class = cn!(
-        "cn-item-group group/item-group flex flex-col",
+        "cn-item-group group/item-group flex w-full flex-col",
         take_class(&mut attributes).as_deref()
     );
 
@@ -173,7 +173,7 @@ pub fn ItemMedia(
 ) -> Element {
     let mut attributes = attributes;
     let class = cn!(
-        "cn-item-media group/item-media flex shrink-0 items-center justify-center",
+        "cn-item-media flex shrink-0 items-center justify-center [&_svg]:pointer-events-none",
         variant.class(),
         take_class(&mut attributes).as_deref()
     );
@@ -196,7 +196,7 @@ pub fn ItemContent(
 ) -> Element {
     let mut attributes = attributes;
     let class = cn!(
-        "cn-item-content flex flex-1 flex-col",
+        "cn-item-content flex flex-1 flex-col [&+[data-slot=item-content]]:flex-none",
         take_class(&mut attributes).as_deref()
     );
 
@@ -217,7 +217,7 @@ pub fn ItemTitle(
 ) -> Element {
     let mut attributes = attributes;
     let class = cn!(
-        "cn-item-title flex w-fit items-center",
+        "cn-item-title line-clamp-1 flex w-fit items-center",
         take_class(&mut attributes).as_deref()
     );
 
@@ -238,7 +238,7 @@ pub fn ItemDescription(
 ) -> Element {
     let mut attributes = attributes;
     let class = cn!(
-        "cn-item-description line-clamp-2 text-balance",
+        "cn-item-description line-clamp-2 font-normal [&>a]:underline [&>a]:underline-offset-4 [&>a:hover]:text-primary",
         take_class(&mut attributes).as_deref()
     );
 

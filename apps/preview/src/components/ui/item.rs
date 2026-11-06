@@ -93,7 +93,7 @@ impl ItemMediaVariant {
 /// Classes for an element that should look like an [`Item`], such as a link.
 pub fn item_variants(variant: ItemVariant, size: ItemSize, class: Option<&str>) -> String {
     cn!(
-        "[a]:hover:bg-muted rounded-md border text-sm group/item flex flex-wrap items-center",
+        "[a]:hover:bg-muted rounded-md border text-sm group/item flex w-full flex-wrap items-center transition-colors duration-100 outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 [a]:transition-colors",
         variant.class(),
         size.class(),
         class
@@ -129,7 +129,7 @@ pub fn ItemGroup(
 ) -> Element {
     let mut attributes = attributes;
     let class = cn!(
-        "gap-4 has-data-[size=sm]:gap-2.5 has-data-[size=xs]:gap-2 group/item-group flex flex-col",
+        "gap-4 has-data-[size=sm]:gap-2.5 has-data-[size=xs]:gap-2 group/item-group flex w-full flex-col",
         take_class(&mut attributes).as_deref()
     );
 
@@ -175,7 +175,7 @@ pub fn ItemMedia(
 ) -> Element {
     let mut attributes = attributes;
     let class = cn!(
-        "gap-2 group-has-data-[slot=item-description]/item:translate-y-0.5 group-has-data-[slot=item-description]/item:self-start group/item-media flex shrink-0 items-center justify-center",
+        "gap-2 group-has-data-[slot=item-description]/item:translate-y-0.5 group-has-data-[slot=item-description]/item:self-start flex shrink-0 items-center justify-center [&_svg]:pointer-events-none",
         variant.class(),
         take_class(&mut attributes).as_deref()
     );
@@ -198,7 +198,7 @@ pub fn ItemContent(
 ) -> Element {
     let mut attributes = attributes;
     let class = cn!(
-        "gap-1 group-data-[size=xs]/item:gap-0 flex flex-1 flex-col",
+        "gap-1 group-data-[size=xs]/item:gap-0 flex flex-1 flex-col [&+[data-slot=item-content]]:flex-none",
         take_class(&mut attributes).as_deref()
     );
 
@@ -219,7 +219,7 @@ pub fn ItemTitle(
 ) -> Element {
     let mut attributes = attributes;
     let class = cn!(
-        "gap-2 text-sm leading-snug font-medium underline-offset-4 flex w-fit items-center",
+        "gap-2 text-sm leading-snug font-medium underline-offset-4 line-clamp-1 flex w-fit items-center",
         take_class(&mut attributes).as_deref()
     );
 
@@ -240,7 +240,7 @@ pub fn ItemDescription(
 ) -> Element {
     let mut attributes = attributes;
     let class = cn!(
-        "text-muted-foreground text-left text-sm leading-normal group-data-[size=xs]/item:text-xs line-clamp-2 text-balance",
+        "text-muted-foreground text-left text-sm leading-normal group-data-[size=xs]/item:text-xs line-clamp-2 font-normal [&>a]:underline [&>a]:underline-offset-4 [&>a:hover]:text-primary",
         take_class(&mut attributes).as_deref()
     );
 

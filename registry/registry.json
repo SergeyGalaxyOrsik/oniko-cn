@@ -271,6 +271,14 @@
       "files": [{ "path": "ui/input_otp.rs", "type": "registry:ui" }]
     },
     {
+      "name": "direction",
+      "type": "registry:ui",
+      "title": "Direction",
+      "description": "A provider component that sets the text direction for your application.",
+      "dependencies": ["oniko-cn@0.1"],
+      "files": [{ "path": "ui/direction.rs", "type": "registry:ui" }]
+    },
+    {
       "name": "separator",
       "type": "registry:ui",
       "title": "Separator",

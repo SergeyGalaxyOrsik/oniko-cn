@@ -85,7 +85,10 @@ pub fn TableRow(
     children: Element,
 ) -> Element {
     let mut attributes = attributes;
-    let class = cn!("cn-table-row", take_class(&mut attributes).as_deref());
+    let class = cn!(
+        "cn-table-row has-aria-expanded:bg-muted/50",
+        take_class(&mut attributes).as_deref()
+    );
 
     rsx! {
         tr {

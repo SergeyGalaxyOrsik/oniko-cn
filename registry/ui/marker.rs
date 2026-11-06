@@ -25,7 +25,7 @@ impl MarkerVariant {
 
     pub fn class(self) -> &'static str {
         match self {
-            Self::Default => "",
+            Self::Default => "cn-marker-variant-default",
             Self::Border => "cn-marker-variant-border",
             Self::Separator => "cn-marker-variant-separator",
         }
@@ -35,7 +35,7 @@ impl MarkerVariant {
 /// Marker classes for any element, e.g. a link that should look like a marker.
 pub fn marker_variants(variant: MarkerVariant, class: Option<&str>) -> String {
     cn!(
-        "cn-marker group/marker flex items-center",
+        "cn-marker group/marker relative flex w-full items-center",
         variant.class(),
         class
     )
@@ -68,7 +68,7 @@ pub fn MarkerIcon(
 ) -> Element {
     let mut attributes = attributes;
     let class = cn!(
-        "cn-marker-icon flex shrink-0 items-center justify-center",
+        "cn-marker-icon shrink-0",
         take_class(&mut attributes).as_deref()
     );
 
@@ -90,7 +90,7 @@ pub fn MarkerContent(
 ) -> Element {
     let mut attributes = attributes;
     let class = cn!(
-        "cn-marker-content min-w-0",
+        "cn-marker-content min-w-0 wrap-break-word",
         take_class(&mut attributes).as_deref()
     );
 

@@ -181,6 +181,11 @@
       "description": "A row of single-character slots for one-time codes and PIN-like input."
     },
     {
+      "name": "direction",
+      "type": "registry:ui",
+      "description": "A provider component that sets the text direction for your application."
+    },
+    {
       "name": "separator",
       "type": "registry:ui",
       "description": "A thin line that divides content horizontally or vertically."
