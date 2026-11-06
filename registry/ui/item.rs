@@ -5,7 +5,7 @@
 use dioxus::prelude::*;
 use oniko_cn::{cn, take_class};
 
-use super::separator::{SeparatorOrientation, separator_variants};
+use super::separator::separator_variants;
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum ItemVariant {
@@ -148,7 +148,7 @@ pub fn ItemSeparator(
 ) -> Element {
     let mut attributes = attributes;
     let class = cn!(
-        separator_variants(SeparatorOrientation::Horizontal, None),
+        separator_variants(None),
         "cn-item-separator",
         take_class(&mut attributes).as_deref()
     );

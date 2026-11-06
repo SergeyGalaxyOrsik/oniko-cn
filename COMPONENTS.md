@@ -93,6 +93,7 @@
 - Варианты (`ButtonVariant`): `Default`, `Outline`, `Secondary`, `Ghost`, `Destructive`, `Link`
 - Размеры (`ButtonSize`): `Default`, `Xs`, `Sm`, `Lg`, `Icon`, `IconXs`, `IconSm`, `IconLg`
 - Хелпер `button_variants(variant, size, class)`: классы кнопки для любого элемента, например для ссылки
+- `type="button"` по умолчанию (можно переопределить); `disabled` ставит и атрибут, и `data-disabled`
 - Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
 
 ### Alert
@@ -131,6 +132,7 @@
 
 - Варианты (`BadgeVariant`): `Default`, `Secondary`, `Destructive`, `Outline`, `Ghost`, `Link`
 - Хелпер `badge_variants(variant, class)`: классы бейджа для любого элемента, например для ссылки
+- Вариант попадает в `data-variant`, как у shadcn
 - Иконка передаётся дочерним `svg`; отступ под неё задают `data-icon="inline-start"` / `data-icon="inline-end"` на самом `svg`
 - Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
 
@@ -170,10 +172,10 @@
 
 ### Button Group
 
-- Ориентация (`ButtonGroupOrientation`): `Horizontal` (по умолчанию), `Vertical`; попадает в `data-orientation`
-- Части: `ButtonGroup`, `ButtonGroupText`, `ButtonGroupSeparator`
-- `ButtonGroupSeparator`: по умолчанию вертикальный (`Vertical`), как у shadcn
-- Кнопки внутри группы склеиваются: у средних убираются скругления и общие границы
+- Ориентация (`ButtonGroupOrientation`): `Horizontal` (по умолчанию), `Vertical`; `orientation` необязателен, и `data-orientation` ставится только если он передан, как у shadcn
+- Части: `ButtonGroup`, `ButtonGroupText`, `ButtonGroupSeparator`; хелпер `button_group_variants(orientation, class)`
+- `ButtonGroupSeparator`: по умолчанию вертикальный (`SeparatorOrientation::Vertical`), как у shadcn; зависит от `separator`
+- Склейка идёт через `data-slot` соседей: у средних элементов убираются скругления и общие границы
 - Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
 
 ### Bubble
@@ -351,7 +353,8 @@
 ### Separator
 
 - Ориентация (`SeparatorOrientation`): `Horizontal` (по умолчанию), `Vertical`; попадает в `data-orientation`
-- `separator_variants(orientation, class)` даёт классы для собственных элементов-разделителей
+- `separator_variants(class)` даёт классы для собственных элементов-разделителей; ориентацию читают варианты `data-horizontal` / `data-vertical`, как у shadcn
+- `aria-orientation` ставится только у вертикального разделителя
 - Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
 
 ### Input OTP
