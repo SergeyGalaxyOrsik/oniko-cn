@@ -60,20 +60,18 @@ pub fn parse(css: &str) -> Result<StyleMap> {
                     bail!("unbalanced `}}` in style sheet");
                 };
                 buf.clear();
-                if applied.is_empty() {
-                    continue;
-                }
                 let classes = applied.join(" ");
                 match bare_cn_class(&selector) {
+                    // An empty `.cn-x {}` is how shadcn says "this style adds nothing",
+                    // so it still defines the placeholder.
                     Some(name) => {
-                        map.classes
-                            .entry(name.to_string())
-                            .and_modify(|existing| {
-                                existing.push(' ');
-                                existing.push_str(&classes);
-                            })
-                            .or_insert(classes);
+                        let existing = map.classes.entry(name.to_string()).or_default();
+                        if !existing.is_empty() && !classes.is_empty() {
+                            existing.push(' ');
+                        }
+                        existing.push_str(&classes);
                     }
+                    None if applied.is_empty() => {}
                     None => map.skipped.push(selector),
                 }
             }
@@ -122,6 +120,8 @@ mod tests {
                 @apply bg-primary hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)];
               }
               .cn-card:has(> [data-slot=x]) { @apply p-0; }
+              .cn-copy-button {
+              }
             }
         "#;
         let map = parse(css).unwrap();
@@ -130,6 +130,7 @@ mod tests {
             map.get("cn-button-variant-default"),
             Some("bg-primary hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)]")
         );
+        assert_eq!(map.get("cn-copy-button"), Some(""));
         assert_eq!(map.skipped, vec![".cn-card:has(> [data-slot=x])"]);
     }
 

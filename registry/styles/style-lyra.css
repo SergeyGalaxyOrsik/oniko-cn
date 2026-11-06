@@ -1,5 +1,8 @@
 .style-lyra {
   /* MARK: Accordion */
+  .cn-accordion {
+  }
+
   .cn-accordion-item {
     @apply not-last:border-b;
   }

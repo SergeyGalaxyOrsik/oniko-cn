@@ -8,6 +8,7 @@ publish = false
 
 [dependencies]
 dioxus.workspace = true
+lucide-dioxus = { version = "3.63", features = ["all-icons"] }
 oniko-cn = { path = "../../crates/oniko-cn" }
 
 [features]

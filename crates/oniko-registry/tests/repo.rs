@@ -19,14 +19,22 @@ fn registry() -> Registry {
     serde_json::from_str(&text).unwrap()
 }
 
+/// Rust sources of `registry:ui` components and of `registry:block` patterns.
 fn component_sources() -> Vec<PathBuf> {
-    let mut files: Vec<PathBuf> = fs::read_dir(root().join("registry/ui"))
-        .unwrap()
+    let mut files: Vec<PathBuf> = ["registry/ui", "registry/blocks"]
+        .iter()
+        .map(|dir| root().join(dir))
+        .filter(|dir| dir.exists())
+        .flat_map(|dir| fs::read_dir(dir).unwrap())
         .map(|e| e.unwrap().path())
         .filter(|p| p.extension().is_some_and(|e| e == "rs"))
         .collect();
     files.sort();
     files
+}
+
+fn is_installable(item: &RegistryItem) -> bool {
+    matches!(item.kind, ItemType::Ui | ItemType::Block)
 }
 
 fn files_under(dir: &Path) -> BTreeMap<PathBuf, String> {
@@ -98,7 +106,7 @@ fn preview_installs_every_component_unmodified() {
 
     let mut violations = Vec::new();
     let mut expected_files = BTreeSet::from(["mod.rs".to_string()]);
-    for item in registry().items.iter().filter(|i| i.kind == ItemType::Ui) {
+    for item in registry().items.iter().filter(|i| is_installable(i)) {
         let path = root().join(format!("public/r/styles/{style}/{}.json", item.name));
         let compiled: RegistryItem =
             serde_json::from_str(&fs::read_to_string(&path).unwrap()).unwrap();
@@ -131,7 +139,7 @@ fn preview_installs_every_component_unmodified() {
     }
     assert_no_violations(
         violations,
-        "edit registry/ui/, then `cargo run -p oniko-cli -- build` and \
+        "edit registry/ui/ or registry/blocks/, then `cargo run -p oniko-cli -- build` and \
          `cargo run -p oniko-cli -- add <name> --overwrite --cwd apps/preview`",
     );
 }
@@ -204,7 +212,7 @@ fn every_component_is_registered_and_documented() {
             ));
         }
     }
-    for item in registry.items.iter().filter(|i| i.kind == ItemType::Ui) {
+    for item in registry.items.iter().filter(|i| is_installable(i)) {
         let title = item.title.as_deref().unwrap_or(&item.name);
         if !catalog.contains(&format!("| {title} |")) {
             violations.push(format!("`{title}` has no row in COMPONENTS.md"));

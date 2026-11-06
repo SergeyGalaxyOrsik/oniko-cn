@@ -23,6 +23,7 @@ A passing `cargo check` does not prove a component renders. Look at it.
 | Path | Owner | How to change it |
 | --- | --- | --- |
 | `registry/ui/*.rs` | you | Edit directly. This is the source of every component. |
+| `registry/blocks/*.rs` | you | Edit directly. Patterns built only from components, such as the AI Elements. |
 | `registry/registry.json` | you | One entry per component. |
 | `registry/styles/*.css`, `registry/themes/*.json` | shadcn/ui | Copied from shadcn/ui. Change them only to add a missing `cn-*` rule. |
 | `public/r/` | `oniko build` | Run `cargo run -p oniko-cli -- build`. Never edit by hand. |
@@ -38,9 +39,27 @@ To change a component, edit `registry/ui/<name>.rs`, rebuild `public/r`, then re
 2. Add an entry to `registry/registry.json` with its `dependencies` (Cargo crates as `name@version`) and `registryDependencies`.
 3. If a placeholder class has no rule in a style, add the `.cn-...` rule to every file in `registry/styles/`.
 4. Run `cargo run -p oniko-cli -- build`.
-5. Run `cargo run -p oniko-cli -- add <name> --cwd apps/preview` and add a section for it in `apps/preview/src/main.rs` that shows every variant and size.
+5. Run `cargo run -p oniko-cli -- add <name> --cwd apps/preview` and port the examples of its docs page into `apps/preview/src/examples/<name>.rs`.
 6. Add a row to `COMPONENTS.md`.
 7. Run `scripts/check.sh`, then look at the component in `dx serve --web` and `dx serve --desktop`.
+
+## Port from shadcn/ui
+
+Every component and block is a port of shadcn/ui's Base UI flavor. A user who knows shadcn should find the same parts, props and look. In a checkout of github.com/shadcn-ui/ui:
+
+| What | Upstream source |
+| --- | --- |
+| Component | `apps/v4/registry/bases/base/ui/<name>.tsx` |
+| Docs page and the order of its examples | `apps/v4/content/docs/components/base/<name>.mdx`, `apps/v4/content/docs/ai-elements/base/<name>.mdx` |
+| Example code | `apps/v4/examples/base/<example>.tsx`, where `<example>` is the `name` of each `<ComponentPreview>` on the docs page |
+| Style rules | `apps/v4/registry/styles/style-*.css` |
+
+- **Keep the same parts.** Export one Rust component per exported React component, with the same name. Keep each element's `data-slot`, `cn-*` placeholders and plain Tailwind classes exactly as upstream writes them, on the same element.
+- **Emit the state attributes the styles read.** Base UI sets attributes such as `data-open`, `data-closed`, `data-checked`, `data-highlighted`, `data-disabled`, `data-popup-open`, `data-starting-style`, `data-ending-style`, `data-side`, `data-align` and `data-orientation`. Set the same ones, or `data-state`, which the custom variants in `registry/base.css` also accept for `open`, `closed`, `checked`, `unchecked` and `active`. Grep the style sheets for `data-` next to the component's placeholders to find them.
+- **Port the behavior.** Match Base UI's keyboard navigation, focus handling and ARIA roles for the part. `dioxus-primitives` has no usable release, so write the behavior in the component, as the existing overlays do.
+- **Inline icons.** Upstream renders `IconPlaceholder lucide="ChevronDownIcon"`. Write the Lucide SVG paths inline, so components need no icon crate.
+- **Port every example.** Each `<ComponentPreview>` on the docs page becomes one `#[component]` in `apps/preview/src/examples/<page>.rs`, shown in the same order inside `Example { title }`. The preview may use `lucide-dioxus` for icons.
+- **Build patterns as blocks.** An AI Elements page, Data Table, Date Picker and Typography are compositions, not components. Write them as `registry/blocks/<name>.rs` with type `registry:block` and list the components they use in `registryDependencies`. A block contains only composition of registry components and plain layout classes, never its own look.
 
 ## Write components the same way
 
