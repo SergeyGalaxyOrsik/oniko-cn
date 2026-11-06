@@ -256,11 +256,13 @@
 
 ### Calendar
 
-- Один компонент `Calendar`: сетка месяца с выбором одного дня, неделя начинается с воскресенья
-- Пропы: `selected: Option<CalendarDate>` (следует за пропом), `on_select: EventHandler<CalendarDate>`, `default_month` (какой месяц показать первым), `today` (помечает `data-today`), `min` / `max`, `disabled_dates: Vec<CalendarDate>`, `disabled`
-- `CalendarDate` (`year`, `month`, `day`) делает даты без `chrono` и без часов: сегодняшний день задаёт приложение через `today`
-- Навигация по месяцам через `button_variants` из `button.rs`; кнопки дней нативные, выбор по Enter и Space
-- Стрелочной навигации с клавиатуры по сетке нет (`dioxus-primitives` в репозитории — пустышка 0.0.0)
+- Порт `Calendar` из shadcn/ui (обёртка над react-day-picker): та же разметка `rdp-*`, те же `cn-calendar-*` плейсхолдеры и классы
+- Режимы (`CalendarMode`): `Single`, `Multiple`, `Range`; `selected` / `default_selected` / `on_select` несут `CalendarSelection` (`Single`, `Multiple`, `Range(DateRange)`)
+- Пропы: `month` / `default_month` / `on_month_change`, `number_of_months`, `caption_layout` (`Label`, `Dropdown`, `DropdownMonths`, `DropdownYears`), `show_outside_days`, `show_week_number`, `fixed_weeks`, `today`, `start_month` / `end_month`, `disabled` и `hidden` (`Vec<CalendarMatcher>`), `modifiers` (`CalendarModifier`), `button_variant`, `locale` (`CalendarLocale::en_us()`, `ar_sa()`, `he()`), `day_button` (замена кнопки дня)
+- Части: `Calendar`, `CalendarDayButton`; `CalendarDate` считает даты без `chrono`; сегодняшний день читается один раз через `document::eval` (`use_today()`) или берётся из `today`
+- Клавиатура в сетке: стрелки, `Home`, `End`, `PageUp` / `PageDown` (с `Shift` на год), RTL меняет стрелки влево и вправо
+- RTL: атрибут `dir: "rtl"` на корне
+- Не перенесено: календарные системы react-day-picker (Persian / Hijri), пример `calendar-hijri`
 - Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
 
 ### Carousel
@@ -425,6 +427,17 @@
 - Как в shadcn/ui, `InputGroupText` без `data-slot`, а `InputGroupInput` и `InputGroupTextarea` получают `data-slot="input-group-control"`
 - Клик по `InputGroupButton` не доходит до аддона, поэтому фокус не переходит на поле. В shadcn/ui проверяется `closest("button")`, здесь это работает только для `InputGroupButton`
 - Зависит от `button`, `input` и `textarea` (ставятся автоматически)
+- Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
+
+### Navigation Menu
+
+- Порт `NavigationMenu` из shadcn/ui (Base UI): части `NavigationMenu`, `NavigationMenuList`, `NavigationMenuItem`, `NavigationMenuTrigger`, `NavigationMenuContent`, `NavigationMenuLink`, `NavigationMenuIndicator`, `NavigationMenuPositioner`, функция `navigation_menu_trigger_style`
+- Содержимое всех пунктов показывается в одном общем `positioner` / `popup` / `viewport`, который корень рисует после детей; попап следует за активным триггером и меняет размер под содержимое
+- Состояния: `data-popup-open` на триггере, `data-starting-style` / `data-ending-style` на попапе и содержимом, `data-activation-direction` (`left` / `right`) для сдвига содержимого
+- Пропы корня: `align`, `value` / `default_value` / `on_value_change`, `delay` и `close_delay` (по 50 мс), `orientation`
+- Клавиатура: стрелки и `Home` / `End` по списку, `ArrowDown` открывает и переносит фокус в содержимое, `Escape` закрывает и возвращает фокус на триггер, `Tab` с открытого триггера идёт в содержимое
+- Попап позиционируется через `position: fixed` по `MountedData` триггера (flip и shift), не переносится в конец `<body>`
+- Ссылка принимает `render` для другого элемента и закрывает попап по клику; `active` ставит `data-active`
 - Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
 
 ### Native Select

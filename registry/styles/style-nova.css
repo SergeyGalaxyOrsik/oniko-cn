@@ -287,26 +287,6 @@
     @apply h-6 pr-1 pl-1.5;
   }
 
-  .cn-calendar-nav {
-    @apply gap-1;
-  }
-
-  .cn-calendar-weekday {
-    @apply text-muted-foreground text-[0.8rem] font-normal;
-  }
-
-  .cn-calendar-day {
-    @apply rounded-md text-sm font-normal hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring;
-  }
-
-  .cn-calendar-day-selected {
-    @apply bg-primary text-primary-foreground hover:bg-primary/90;
-  }
-
-  .cn-calendar-day-today {
-    @apply bg-accent text-accent-foreground;
-  }
-
   /* MARK: Card */
   .cn-card-action {
   }

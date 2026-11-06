@@ -97,7 +97,7 @@
       "name": "calendar",
       "type": "registry:ui",
       "title": "Calendar",
-      "description": "A month grid for picking a single day, with disabled days and a today marker.",
+      "description": "A calendar for picking a day, several days or a range, with month and year dropdowns, week numbers and keyboard navigation.",
       "dependencies": ["oniko-cn@0.1"],
       "registryDependencies": ["button"],
       "files": [{ "path": "ui/calendar.rs", "type": "registry:ui" }]
@@ -483,7 +483,7 @@
       "name": "navigation-menu",
       "type": "registry:ui",
       "title": "Navigation Menu",
-      "description": "A horizontal bar of links and disclosure panels for site navigation.",
+      "description": "A collection of links for navigating a website, with content that opens in one shared, animated popup.",
       "dependencies": ["oniko-cn@0.1"],
       "files": [{ "path": "ui/navigation_menu.rs", "type": "registry:ui" }]
     },
