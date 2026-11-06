@@ -91,6 +91,11 @@
       "description": "A carousel with motion and swipe built using native scroll snapping."
     },
     {
+      "name": "chart",
+      "type": "registry:ui",
+      "description": "Themeable chart container, tooltip and legend, with SVG bar charts drawn in Rust in place of recharts."
+    },
+    {
       "name": "button-group",
       "type": "registry:ui",
       "description": "A container that groups related buttons into one joined control."

@@ -28,6 +28,7 @@
 | Card | `registry/ui/card.rs` | `oniko add card` | web, desktop |
 | Calendar | `registry/ui/calendar.rs` | `oniko add calendar` | web, desktop |
 | Carousel | `registry/ui/carousel.rs` | `oniko add carousel` | web, desktop |
+| Chart | `registry/ui/chart.rs` | `oniko add chart` | web, desktop |
 | Popover | `registry/ui/popover.rs` | `oniko add popover` | web, desktop |
 | Item | `registry/ui/item.rs` | `oniko add item` | web, desktop |
 | Separator | `registry/ui/separator.rs` | `oniko add separator` | web, desktop |
@@ -285,6 +286,16 @@
 - Вместо плагина Autoplay есть проп `autoplay: CarouselAutoplay` (`delay_ms`, `stop_on_interaction`, `stop_on_mouse_enter`)
 - Для RTL задайте `dir: "rtl"` на `Carousel`; для вертикальной карусели задайте высоту на `CarouselContent`
 - Зависит от `button` (ставится автоматически)
+- Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
+
+### Chart
+
+- Части: `ChartContainer`, `ChartStyle`, `ChartTooltip`, `ChartTooltipContent`, `ChartLegend`, `ChartLegendContent`, хук `use_chart`; классы, `data-slot`, переменные `--color-<key>` и вывод `ChartStyle` те же, что у shadcn
+- recharts требует npm, поэтому в файле есть собственный SVG-график: `BarChart` (`data: Vec<Datum>`, `accessibility_layer`, `margin`) с `Bar` (`data_key`, `fill`, `radius`, `name`), `CartesianGrid` (`horizontal`, `vertical`), `XAxis` и `YAxis` (`tick_line`, `axis_line`, `tick_margin`, `tick_formatter`; у `XAxis` ещё `data_key`, `min_tick_gap`, `reversed`). Рисуется SVG с классами recharts (`recharts-cartesian-grid`, `recharts-bar-rectangle`, `recharts-tooltip-cursor`), поэтому правила `ChartContainer` работают без изменений
+- `Bar`, оси, сетка, `ChartTooltip` и `ChartLegend` сами ничего не рисуют, а регистрируют свои пропсы в `BarChart`; `ChartTooltip { content }` и `ChartLegend { content }` принимают `ChartTooltipContent` и `ChartLegendContent`
+- Данные: `Datum::new().with("month", "January").with("desktop", 186)`; конфиг: `ChartConfig::new().item("desktop", ChartConfigItem::new().label("Desktop").color("#2563eb"))`
+- Ширина следует за `ChartContainer` (`get_client_rect` плюс `ResizeObserver` через `document::eval`); с `accessibility_layer` график получает фокус, стрелки влево и вправо двигают активный столбец и подсказку
+- Нет: Line, Area, Pie, Radar, RadialBar, Scatter, `stack_id`, `YAxis` с `data_key`, `ReferenceLine`, `Brush`, анимации столбцов, `interval` у осей
 - Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
 
 ### Tabs

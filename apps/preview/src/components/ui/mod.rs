@@ -13,6 +13,7 @@ pub mod calendar;
 pub mod card;
 pub mod carousel;
 pub mod chain_of_thought;
+pub mod chart;
 pub mod chat;
 pub mod checkbox;
 pub mod checkpoint;

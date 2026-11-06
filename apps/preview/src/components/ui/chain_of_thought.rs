@@ -64,7 +64,7 @@ pub fn ChainOfThought(
                         TraceTitle { "{title}" }
                     }
                 }
-                TraceCollapsibleContent {
+                TraceCollapsibleContent { keep_mounted: true,
                     Trace { {children} }
                 }
             }

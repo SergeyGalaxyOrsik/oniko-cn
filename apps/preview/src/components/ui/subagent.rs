@@ -64,7 +64,7 @@ pub fn Subagent(
                     }
                 }
             }
-            TraceCollapsibleContent { class: "flex flex-col gap-3", {children} }
+            TraceCollapsibleContent { keep_mounted: true, class: "flex flex-col gap-3", {children} }
         }
     }
 }

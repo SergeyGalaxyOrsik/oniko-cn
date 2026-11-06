@@ -121,6 +121,14 @@
       "files": [{ "path": "ui/carousel.rs", "type": "registry:ui" }]
     },
     {
+      "name": "chart",
+      "type": "registry:ui",
+      "title": "Chart",
+      "description": "Themeable chart container, tooltip and legend, with SVG bar charts drawn in Rust in place of recharts.",
+      "dependencies": ["oniko-cn@0.1"],
+      "files": [{ "path": "ui/chart.rs", "type": "registry:ui" }]
+    },
+    {
       "name": "button-group",
       "type": "registry:ui",
       "title": "Button Group",

@@ -220,6 +220,9 @@ pub fn TraceCollapsibleTrigger(
 /// `class` goes on the inner wrapper, like upstream; every other attribute goes on the panel.
 #[component]
 pub fn TraceCollapsibleContent(
+    /// Keep the content in the DOM while it is closed, so nested state survives.
+    #[props(default)]
+    keep_mounted: bool,
     #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,
     children: Element,
 ) -> Element {
@@ -239,6 +242,7 @@ pub fn TraceCollapsibleContent(
 
     rsx! {
         CollapsibleContent {
+            keep_mounted: keep_mounted,
             attributes: attributes,
             div {
                 "data-slot": "trace-collapsible-content-inner",
