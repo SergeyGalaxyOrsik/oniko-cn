@@ -348,7 +348,7 @@
     {
       "name": "sidebar",
       "type": "registry:ui",
-      "description": "A collapsible side panel with a header, scrollable content, footer and menus."
+      "description": "A composable, themeable and customizable sidebar component."
     },
     {
       "name": "skeleton",

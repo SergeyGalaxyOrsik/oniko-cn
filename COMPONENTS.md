@@ -342,6 +342,20 @@
 - Зависит от `button` (ставится автоматически)
 - Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
 
+### Sidebar
+
+- Части: `SidebarProvider`, `Sidebar`, `SidebarTrigger`, `SidebarRail`, `SidebarInset`, `SidebarInput`, `SidebarHeader`, `SidebarFooter`, `SidebarSeparator`, `SidebarContent`, `SidebarGroup`, `SidebarGroupLabel`, `SidebarGroupAction`, `SidebarGroupContent`, `SidebarMenu`, `SidebarMenuItem`, `SidebarMenuButton`, `SidebarMenuAction`, `SidebarMenuBadge`, `SidebarMenuSkeleton`, `SidebarMenuSub`, `SidebarMenuSubItem`, `SidebarMenuSubButton`, хук `use_sidebar()`
+- `SidebarProvider`: `default_open` (по умолчанию `true`), либо управляемое через `open` и `on_open_change`; записывает состояние в cookie `sidebar_state` через `document::eval`; `Ctrl/Cmd+B` переключает сайдбар; стили `--sidebar-width` и `--sidebar-width-icon` задаются на обёртке и объединяются со `style` вызывающего
+- `Sidebar`: `side` (`Left`, `Right`), `variant` (`Sidebar`, `Floating`, `Inset`), `collapsible` (`Offcanvas`, `Icon`, `None`); атрибуты `data-state`, `data-collapsible`, `data-variant`, `data-side`
+- Ниже 768px (`matchMedia("(max-width: 767px)")`, слушается через `document::eval`, поэтому работает и на desktop) сайдбар показывается в `Sheet` шириной 18rem
+- `use_sidebar()` возвращает `state()`, `open()`, `set_open()`, `open_mobile()`, `set_open_mobile()`, `is_mobile()`, `toggle()`
+- `SidebarMenuButton`: `is_active`, `variant` (`Default`, `Outline`), `size` (`Default`, `Sm`, `Lg`), `tooltip` (строка; подсказка справа показывается только в свёрнутом до иконок сайдбаре на десктопе), `render`
+- Вместо `render={{<a />}}` из upstream у `SidebarGroupLabel`, `SidebarGroupAction`, `SidebarMenuButton`, `SidebarMenuAction`, `SidebarMenuSubButton` есть параметр `render`: колбэк, который получает вычисленные атрибуты и children и должен развернуть атрибуты на своём элементе (например `a { href, ..attributes, {children} }` или `CollapsibleTrigger { attributes, {children} }`)
+- `SidebarMenuAction`: `show_on_hover`; `SidebarMenuSubButton`: `size` (`Md`, `Sm`), `is_active`; `SidebarMenuSkeleton`: `show_icon` (ширина текста псевдослучайная, от 50% до 89%)
+- `sidebar_menu_button_variants(variant, size, class)` отдаёт классы кнопки меню для любого элемента
+- Зависит от `button`, `input`, `separator`, `sheet`, `skeleton`, `tooltip` (ставятся автоматически)
+- Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
+
 ### Popover
 
 - Части: `Popover`, `PopoverTrigger`, `PopoverContent`, `PopoverHeader`, `PopoverTitle`, `PopoverDescription`
