@@ -1,164 +1,75 @@
-//! Task: a collapsible step of an AI agent's work, with a title, a list of items and file chips.
-//!
-//! `Task` holds the open state, `TaskTrigger` shows the title and toggles the task,
-//! and `TaskContent` holds the `TaskItem` and `TaskItemFile` parts of the step.
+//! Task: a piece of work the agent is doing, with each step appearing under it as the agent takes it.
+//! `Task` is the collapsible line and `TaskStep` is one step. Put one or more tasks in a `Trace`.
+//! While `status` is `Running` the task opens by itself, until the person opens or closes it.
 //!
 //! Installed by oniko-cn. This file is yours: edit it freely.
 
 use dioxus::prelude::*;
-use oniko_cn::{cn, take_class};
 
-use super::collapsible::{Collapsible, CollapsibleContent, CollapsibleTrigger};
+use super::trace::{
+    Trace, TraceCollapsible, TraceCollapsibleContent, TraceCollapsibleTrigger, TraceIcon,
+    TraceLine, TraceStatus, TraceTitle,
+};
 
-/// Root of a task. Open by default; the trigger opens and closes it.
+/// The task. Write `title` in the present tense while it runs and in the past tense once it is done.
 #[component]
 pub fn Task(
-    /// Controlled open state. When set, `on_open_change` is the only way to change it.
-    open: Option<bool>,
-    /// Open state at first render when `open` is not controlled.
-    #[props(default = true)]
-    default_open: bool,
-    on_open_change: Option<EventHandler<bool>>,
-    #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,
-    children: Element,
-) -> Element {
-    let mut attributes = attributes;
-    let class = cn!(take_class(&mut attributes).as_deref());
-
-    rsx! {
-        div {
-            "data-slot": "task",
-            class: class,
-            ..attributes,
-            Collapsible {
-                open: open,
-                default_open: default_open,
-                on_open_change: on_open_change,
-                {children}
-            }
-        }
-    }
-}
-
-/// The row that shows the task title with a search icon and a chevron. Pass `children` to replace the row.
-#[component]
-pub fn TaskTrigger(
     title: String,
-    #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,
-    children: Option<Element>,
-) -> Element {
-    let mut attributes = attributes;
-    let class = cn!(take_class(&mut attributes).as_deref());
-    let label = children.unwrap_or_else(|| {
-        rsx! {
-            svg {
-                "data-slot": "task-trigger-icon",
-                class: "size-4 shrink-0",
-                "aria-hidden": "true",
-                view_box: "0 0 24 24",
-                fill: "none",
-                stroke: "currentColor",
-                stroke_width: "2",
-                stroke_linecap: "round",
-                stroke_linejoin: "round",
-                circle { cx: "11", cy: "11", r: "8" }
-                path { d: "m21 21-4.3-4.3" }
-            }
-            span { "data-slot": "task-trigger-title", class: "text-sm", {title} }
-            svg {
-                "data-slot": "task-trigger-chevron",
-                class: "size-4 shrink-0 transition-transform group-data-[state=open]:rotate-180",
-                "aria-hidden": "true",
-                view_box: "0 0 24 24",
-                fill: "none",
-                stroke: "currentColor",
-                stroke_width: "2",
-                stroke_linecap: "round",
-                stroke_linejoin: "round",
-                path { d: "m6 9 6 6 6-6" }
-            }
-        }
-    });
-
-    rsx! {
-        div {
-            "data-slot": "task-trigger",
-            class: class,
-            ..attributes,
-            CollapsibleTrigger {
-                class: "group flex w-full cursor-pointer items-center gap-2 text-muted-foreground text-sm transition-colors hover:text-foreground",
-                {label}
-            }
-        }
-    }
-}
-
-/// The steps of a task. Shown only while the task is open; closed content is unmounted.
-#[component]
-pub fn TaskContent(
-    #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,
+    #[props(default)] status: TraceStatus,
+    /// Open at first render. Otherwise the task is open only while `status` is `Running`.
+    #[props(default)]
+    default_open: bool,
     children: Element,
 ) -> Element {
-    let mut attributes = attributes;
-    let class = cn!(take_class(&mut attributes).as_deref());
+    let mut chosen = use_signal(|| default_open.then_some(true));
 
     rsx! {
-        div {
-            "data-slot": "task-content",
-            class: class,
-            ..attributes,
-            CollapsibleContent {
-                class: "text-popover-foreground outline-none",
-                div {
-                    "data-slot": "task-content-steps",
-                    class: "mt-4 space-y-2 border-muted border-l-2 pl-4",
-                    {children}
+        TraceCollapsible {
+            open: chosen().unwrap_or(status == TraceStatus::Running),
+            on_open_change: move |next| chosen.set(Some(next)),
+            TraceCollapsibleTrigger {
+                TraceLine { status: status,
+                    TraceIcon {
+                        svg {
+                            class: if status == TraceStatus::Running { "animate-spin" },
+                            view_box: "0 0 24 24",
+                            fill: "none",
+                            stroke: "currentColor",
+                            stroke_width: "2",
+                            stroke_linecap: "round",
+                            stroke_linejoin: "round",
+                            match status {
+                                TraceStatus::Running => rsx! {
+                                    path { d: "M21 12a9 9 0 1 1-6.219-8.56" }
+                                },
+                                TraceStatus::Error => rsx! {
+                                    circle { cx: "12", cy: "12", r: "10" }
+                                    line { x1: "12", x2: "12", y1: "8", y2: "12" }
+                                    line { x1: "12", x2: "12.01", y1: "16", y2: "16" }
+                                },
+                                _ => rsx! {
+                                    circle { cx: "12", cy: "12", r: "10" }
+                                    path { d: "m9 12 2 2 4-4" }
+                                },
+                            }
+                        }
+                    }
+                    TraceTitle { "{title}" }
                 }
             }
+            TraceCollapsibleContent {
+                Trace { {children} }
+            }
         }
     }
 }
 
-/// One line of text inside a `TaskContent`.
+/// One step of a task.
 #[component]
-pub fn TaskItem(
-    #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,
-    children: Element,
-) -> Element {
-    let mut attributes = attributes;
-    let class = cn!(
-        "text-muted-foreground text-sm",
-        take_class(&mut attributes).as_deref()
-    );
-
+pub fn TaskStep(title: String, #[props(default)] status: TraceStatus) -> Element {
     rsx! {
-        div {
-            "data-slot": "task-item",
-            class: class,
-            ..attributes,
-            {children}
-        }
-    }
-}
-
-/// A file chip shown inside a `TaskItem`.
-#[component]
-pub fn TaskItemFile(
-    #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,
-    children: Element,
-) -> Element {
-    let mut attributes = attributes;
-    let class = cn!(
-        "inline-flex items-center gap-1 rounded-md border bg-secondary px-1.5 py-0.5 text-foreground text-xs",
-        take_class(&mut attributes).as_deref()
-    );
-
-    rsx! {
-        div {
-            "data-slot": "task-item-file",
-            class: class,
-            ..attributes,
-            {children}
+        TraceLine { status: status,
+            TraceTitle { "{title}" }
         }
     }
 }

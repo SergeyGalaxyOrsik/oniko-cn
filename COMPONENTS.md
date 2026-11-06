@@ -43,20 +43,20 @@
 | Message | `registry/ui/message.rs` | `oniko add message` | web, desktop |
 | Attachment | `registry/ui/attachment.rs` | `oniko add attachment` | web, desktop |
 | Context | `registry/ui/context.rs` | `oniko add context` | web, desktop |
-| Plan | `registry/ui/plan.rs` | `oniko add plan` | web, desktop |
-| Reasoning | `registry/ui/reasoning.rs` | `oniko add reasoning` | web, desktop |
+| Plan | `registry/blocks/plan.rs` | `oniko add plan` | web, desktop |
+| Reasoning | `registry/blocks/reasoning.rs` | `oniko add reasoning` | web, desktop |
 | Queue | `registry/ui/queue.rs` | `oniko add queue` | web, desktop |
 | Prompt Input | `registry/ui/prompt_input.rs` | `oniko add prompt-input` | web, desktop |
 | Sources | `registry/ui/sources.rs` | `oniko add sources` | web, desktop |
 | Chat | `registry/ui/chat.rs` | `oniko add chat` | web, desktop |
 | Confirmation | `registry/ui/confirmation.rs` | `oniko add confirmation` | web, desktop |
-| Chain of Thought | `registry/ui/chain_of_thought.rs` | `oniko add chain-of-thought` | web, desktop |
+| Chain of Thought | `registry/blocks/chain_of_thought.rs` | `oniko add chain-of-thought` | web, desktop |
 | Inline Citation | `registry/ui/inline_citation.rs` | `oniko add inline-citation` | web, desktop |
 | Model Selector | `registry/ui/model_selector.rs` | `oniko add model-selector` | web, desktop |
-| Subagent | `registry/ui/subagent.rs` | `oniko add subagent` | web, desktop |
+| Subagent | `registry/blocks/subagent.rs` | `oniko add subagent` | web, desktop |
 | Suggestion | `registry/ui/suggestion.rs` | `oniko add suggestion` | web, desktop |
 | Stack Trace | `registry/ui/stack_trace.rs` | `oniko add stack-trace` | web, desktop |
-| Task | `registry/ui/task.rs` | `oniko add task` | web, desktop |
+| Task | `registry/blocks/task.rs` | `oniko add task` | web, desktop |
 | Test Results | `registry/ui/test_results.rs` | `oniko add test-results` | web, desktop |
 | Terminal | `registry/ui/terminal.rs` | `oniko add terminal` | web, desktop |
 | Tool | `registry/ui/tool.rs` | `oniko add tool` | web, desktop |
@@ -552,8 +552,12 @@
 
 ### Chain of Thought
 
-- Части: `ChainOfThought` (корень; `default_open` по умолчанию `true`, `open: Option<bool>` с `on_open_change`), `ChainOfThoughtHeader` (заголовок по умолчанию «Chain of Thought», с иконкой мозга и поворотной стрелкой), `ChainOfThoughtStep` (шаг; `status` (`ChainOfThoughtStepStatus`: `Complete`, `Active`, `Pending`) попадает в `data-status`; `icon: Option<Element>` по умолчанию точка; `label`, `description`), `ChainOfThoughtSearchResults` и `ChainOfThoughtSearchResult` (бейджи результатов поиска), `ChainOfThoughtContent` (скрываемая часть), `ChainOfThoughtImage` (изображение с подписью `caption`)
-- Зависит от `collapsible` и `badge`, которые ставятся автоматически
+- Блок (`registry:block`), а не компонент: собран из компонентов реестра без собственного оформления
+- Части: `ChainOfThought` (`Trace` с `TraceCollapsible`: `title`, `status`: `TraceStatus`, `default_open`; `children` попадают во вложенный `Trace`), `ChainOfThoughtStep` (шаг; `title`, `status`, `default_open`, `details: Option<Element>` делает шаг раскрываемым)
+- Пока `status` равен `Running`, строка раскрыта; выбор человека важнее
+- Установка: `oniko add chain-of-thought`; зависит от `trace`, `code-block` и `badge`, которые ставятся автоматически
+- `TraceCollapsibleContent` не поддерживает `keep_mounted`, поэтому закрытые шаги размонтируются и теряют своё открытое состояние (upstream держит их смонтированными)
+- Иконки встроены в файл как SVG, без `lucide-dioxus`
 - Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
 
 ### File Tree
@@ -622,21 +626,22 @@
 
 ### Plan
 
-- Части: `Plan` (корень; `is_streaming`, `open`, `default_open`, `on_open_change`; собирает `Collapsible` и `Card`), `PlanHeader`, `PlanTitle`, `PlanDescription` (пульсируют, пока `is_streaming` включён), `PlanAction` (правый верхний угол заголовка), `PlanTrigger` (кнопка-шеврон, раскрывает и сворачивает план), `PlanContent` (виден только в раскрытом состоянии), `PlanFooter`
-- `PlanTrigger` не принимает произвольные атрибуты: `CollapsibleTrigger` не принимает `..attributes`
-- Шиммер-эффект из оригинала не перенесён: пульсация через `animate-pulse`
-- Зависит от `button`, `card` и `collapsible`, которые ставятся автоматически
+- Блок (`registry:block`), а не компонент: собран из компонентов реестра без собственного оформления
+- Части: `Plan` (`TraceCollapsible`: `title`, `description` с прогрессом вроде «2 of 5 done», `running`, `default_open` (по умолчанию `true`); `children` внутри раскрытой части), `PlanStep` (шаг; `status`: `PlanStepStatus` с `Done`, `Running`, `Pending`; `running` включает шиммер у текущего шага)
+- `Plan` кладут в `Trace`, шаги `PlanStep` оборачивают в `Trace` внутри него
+- Установка: `oniko add plan`; зависит от `trace`, которые ставятся автоматически
+- `TraceCollapsibleContent` не поддерживает `keep_mounted`, поэтому закрытые шаги размонтируются и теряют своё открытое состояние (upstream держит их смонтированными)
+- Иконки встроены в файл как SVG, без `lucide-dioxus`
 - Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
 
 ### Reasoning
 
-- Части: `Reasoning` (корень; `is_streaming`, `open`, `default_open`, `on_open_change`, `duration: Option<u32>`; собирает `Collapsible`), `ReasoningTrigger` (заголовок с иконкой мозга, подписью и шевроном; `children` заменяют содержимое), `ReasoningContent` (текст тела, виден только в раскрытом состоянии)
-- Пока `is_streaming` включён, панель раскрывается сама (если `default_open` не задан как `false`); через секунду после окончания стрима закрывается, один раз
-- Подпись: «Thinking...» во время стрима или при `duration == 0`, «Thought for N seconds» по `duration`, «Thought for a few seconds» без него
-- Содержимое выводится как текст, без markdown
-- `ReasoningTrigger` и `ReasoningContent` принимают атрибуты на обёртку, а не на `CollapsibleTrigger` и `CollapsibleContent`, которые не принимают `..attributes`
-- Таймер закрытия работает через `document::eval` с `setTimeout`, одинаково в web и desktop
-- Зависит от `collapsible`, который ставится автоматически
+- Блок (`registry:block`), а не компонент: собран из компонентов реестра без собственного оформления
+- Части: `Reasoning` (строка `TraceCollapsible`: `text`, `running`, `duration: Option<String>`, `default_open: Option<bool>`)
+- «Thinking» и раскрыто, пока `running`; затем «Thought» и закрыто, если человек не раскрыл или не закрыл строку сам; пока `text` пуст, раскрывать нечего. Кладут в `Trace`
+- Установка: `oniko add reasoning`; зависит от `trace`, которые ставятся автоматически
+- `TraceCollapsibleContent` не поддерживает `keep_mounted`, поэтому закрытые шаги размонтируются и теряют своё открытое состояние (upstream держит их смонтированными)
+- Иконки встроены в файл как SVG, без `lucide-dioxus`
 - Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
 
 ### Prompt Input
@@ -680,9 +685,12 @@
 
 ### Subagent
 
-- Части: `Subagent` (корень; `open`, `default_open`, `on_open_change`; собирает `TraceCollapsible`), `SubagentHeader` (строка-триггер; `status`: `TraceStatus`, `icon` по умолчанию робот, `title`, `description` необязательно, например длительность), `SubagentContent` (детали, пусты при свёрнутом состоянии), `SubagentTask` (задача, которую получил субагент; ставится сверху содержимого), `SubagentTool` (бейдж инструмента или модели)
-- `SubagentHeader` и `SubagentContent` принимают атрибуты на обёртку `div`, потому что `TraceCollapsibleTrigger` и `TraceCollapsibleContent` не принимают `..attributes`; `SubagentTask` принимает их на свой `div`, `SubagentTool` на обёртку `span`
-- Зависит от `trace` и `badge`, которые ставятся автоматически
+- Блок (`registry:block`), а не компонент: собран из компонентов реестра без собственного оформления
+- Части: `Subagent` (`TraceCollapsible`: `title`, `status`, `duration`, `default_open`; `children` — задача, бейджи модели и инструментов, `Trace` из шагов и результат), `SubagentStep` (вызов инструмента; `title`, `status`, `output: Option<String>` показывает вывод в `CodeBlock`)
+- `Subagent` кладут в `Trace`
+- Установка: `oniko add subagent`; зависит от `trace`, `code-block` и `badge`, которые ставятся автоматически
+- `TraceCollapsibleContent` не поддерживает `keep_mounted`, поэтому закрытые шаги размонтируются и теряют своё открытое состояние (upstream держит их смонтированными)
+- Иконки встроены в файл как SVG, без `lucide-dioxus`
 - Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
 
 ### Stack Trace
@@ -695,10 +703,12 @@
 
 ### Task
 
-- Части: `Task` (корень; `open`, `default_open` (по умолчанию открыта), `on_open_change`; собирает `Collapsible`), `TaskTrigger` (`title`: заголовок с иконкой поиска и шевроном; `children` заменяют строку целиком), `TaskContent` (шаги задачи, видны только в раскрытом состоянии), `TaskItem` (строка текста внутри шагов), `TaskItemFile` (чип файла внутри строки)
-- `TaskTrigger` не принимает `..attributes` на кнопку, поэтому его атрибуты попадают на обёртку `div`; атрибуты `Task` и `TaskContent` тоже попадают на обёртки вокруг `Collapsible` и `CollapsibleContent`
-- Анимации появления не добавлены: закрытое содержимое размонтируется, поэтому выход анимировать нечем
-- Зависит от `collapsible`, который ставится автоматически
+- Блок (`registry:block`), а не компонент: собран из компонентов реестра без собственного оформления
+- Части: `Task` (`TraceCollapsible`: `title`, `status`, `default_open`; `children` попадают во вложенный `Trace`), `TaskStep` (шаг; `title`, `status`)
+- Пока `status` равен `Running`, задача раскрыта; выбор человека важнее. Несколько задач кладут в один `Trace`
+- Установка: `oniko add task`; зависит от `trace`, которые ставятся автоматически
+- `TraceCollapsibleContent` не поддерживает `keep_mounted`, поэтому закрытые шаги размонтируются и теряют своё открытое состояние (upstream держит их смонтированными)
+- Иконки встроены в файл как SVG, без `lucide-dioxus`
 - Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
 
 ### Terminal

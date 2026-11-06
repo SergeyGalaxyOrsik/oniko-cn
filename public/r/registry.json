@@ -212,8 +212,8 @@
     },
     {
       "name": "chain-of-thought",
-      "type": "registry:ui",
-      "description": "A collapsible list of reasoning steps, with optional search results and images."
+      "type": "registry:block",
+      "description": "A summary line that expands into the steps an agent took, built from Trace."
     },
     {
       "name": "context",
@@ -247,8 +247,8 @@
     },
     {
       "name": "plan",
-      "type": "registry:ui",
-      "description": "A collapsible card that shows an AI-generated plan, with a header, expandable content and a footer."
+      "type": "registry:block",
+      "description": "The steps the agent plans to take, and how far it has got, built from Trace."
     },
     {
       "name": "queue",
@@ -267,8 +267,8 @@
     },
     {
       "name": "reasoning",
-      "type": "registry:ui",
-      "description": "A collapsible panel that shows a model's thinking: it opens while streaming, closes shortly after, and labels the trigger with the thinking time."
+      "type": "registry:block",
+      "description": "A line for the agent's thinking that opens while the model thinks and closes when it is done, built from Trace."
     },
     {
       "name": "kbd",
@@ -422,8 +422,8 @@
     },
     {
       "name": "subagent",
-      "type": "registry:ui",
-      "description": "A trace line for work handed to a subagent, which expands to show its task, steps, tools and result."
+      "type": "registry:block",
+      "description": "A subagent run with its tool calls and result, built from Trace."
     },
     {
       "name": "stack-trace",
@@ -432,8 +432,8 @@
     },
     {
       "name": "task",
-      "type": "registry:ui",
-      "description": "A collapsible step of an AI agent's work, with a title trigger, a list of items and file chips."
+      "type": "registry:block",
+      "description": "The steps the agent takes, as it takes them, built from Trace."
     },
     {
       "name": "terminal",
