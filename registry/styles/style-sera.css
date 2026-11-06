@@ -933,6 +933,27 @@
     @apply text-muted-foreground top-1/2 right-0 size-3.5 -translate-y-1/2;
   }
 
+  .cn-native-select-wrapper {
+  }
+
+  .cn-field-orientation-vertical {
+  }
+
+  .cn-field-orientation-horizontal {
+  }
+
+  .cn-field-orientation-responsive {
+  }
+
+  .cn-input-group-button-size-sm {
+  }
+
+  .cn-input-otp-caret {
+  }
+
+  .cn-input-otp-input {
+  }
+
   /* MARK: Pagination */
   .cn-pagination-content {
     @apply gap-1;

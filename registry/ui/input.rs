@@ -8,7 +8,12 @@
 use dioxus::prelude::*;
 use oniko_cn::{cn, take_class};
 
-const INPUT_BASE: &str = "cn-input w-full min-w-0 outline-none file:inline-flex file:border-0 file:bg-transparent disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50";
+const INPUT_BASE: &str = "cn-input w-full min-w-0 outline-none file:inline-flex file:border-0 file:bg-transparent file:text-foreground placeholder:text-muted-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50";
+
+/// Input classes for any element, e.g. the control inside an input group.
+pub fn input_variants(class: Option<&str>) -> String {
+    cn!(INPUT_BASE, class)
+}
 
 #[component]
 pub fn Input(
@@ -21,7 +26,7 @@ pub fn Input(
     #[props(extends = GlobalAttributes, extends = input)] attributes: Vec<Attribute>,
 ) -> Element {
     let mut attributes = attributes;
-    let class = cn!(INPUT_BASE, take_class(&mut attributes));
+    let class = input_variants(take_class(&mut attributes).as_deref());
 
     rsx! {
         input {

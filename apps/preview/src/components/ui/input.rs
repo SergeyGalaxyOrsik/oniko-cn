@@ -8,7 +8,12 @@
 use dioxus::prelude::*;
 use oniko_cn::{cn, take_class};
 
-const INPUT_BASE: &str = "dark:bg-input/30 border-input focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 h-9 rounded-md border bg-transparent px-2.5 py-1 text-base shadow-xs transition-[color,box-shadow] file:h-7 file:text-sm file:font-medium focus-visible:ring-3 aria-invalid:ring-3 md:text-sm w-full min-w-0 outline-none file:inline-flex file:border-0 file:bg-transparent disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50";
+const INPUT_BASE: &str = "dark:bg-input/30 border-input focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:aria-invalid:border-destructive/50 h-9 rounded-md border bg-transparent px-2.5 py-1 text-base shadow-xs transition-[color,box-shadow] file:h-7 file:text-sm file:font-medium focus-visible:ring-3 aria-invalid:ring-3 md:text-sm w-full min-w-0 outline-none file:inline-flex file:border-0 file:bg-transparent file:text-foreground placeholder:text-muted-foreground disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50";
+
+/// Input classes for any element, e.g. the control inside an input group.
+pub fn input_variants(class: Option<&str>) -> String {
+    cn!(INPUT_BASE, class)
+}
 
 #[component]
 pub fn Input(
@@ -21,7 +26,7 @@ pub fn Input(
     #[props(extends = GlobalAttributes, extends = input)] attributes: Vec<Attribute>,
 ) -> Element {
     let mut attributes = attributes;
-    let class = cn!(INPUT_BASE, take_class(&mut attributes));
+    let class = input_variants(take_class(&mut attributes).as_deref());
 
     rsx! {
         input {

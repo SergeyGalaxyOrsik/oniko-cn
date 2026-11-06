@@ -930,6 +930,24 @@
     @apply text-muted-foreground top-1/2 right-1.5 size-3.5 -translate-y-1/2 group-data-[size=sm]/native-select:size-3 group-data-[size=sm]/native-select:-translate-y-[calc(--spacing(1.25))];
   }
 
+  .cn-native-select-wrapper {
+  }
+
+  .cn-field-orientation-vertical {
+  }
+
+  .cn-field-orientation-horizontal {
+  }
+
+  .cn-field-orientation-responsive {
+  }
+
+  .cn-input-otp-caret {
+  }
+
+  .cn-input-otp-input {
+  }
+
   /* MARK: Pagination */
   .cn-pagination-content {
     @apply gap-0.5;

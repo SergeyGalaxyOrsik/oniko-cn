@@ -328,11 +328,11 @@
 ### Field
 
 - Части: `Field`, `FieldSet`, `FieldLegend` (`FieldLegendVariant`: `Legend`, `Label`), `FieldGroup`, `FieldContent`, `FieldLabel`, `FieldTitle`, `FieldDescription`, `FieldSeparator`, `FieldError`
-- `Field`: `orientation` (`FieldOrientation`: `Vertical`, `Horizontal`, `Responsive`), `invalid`, `disabled`; состояние попадает в `data-invalid` и `data-disabled`
-- `FieldLabel` принимает `r#for` для связи с элементом управления
-- `FieldSeparator`: необязательный текст по центру линии
-- `FieldError`: выводит сообщение как `role="alert"`; список ошибок не поддерживается, передавайте готовый текст
-- Не зависит от других компонентов: подпись и разделитель написаны на обычных элементах
+- `Field`: `orientation` (`FieldOrientation`: `Vertical`, `Horizontal`, `Responsive`) попадает в `data-orientation`; как в shadcn/ui, состояния `invalid` и `disabled` нет: ставьте `"data-invalid": "true"` или `"data-disabled": "true"` на `Field`
+- `FieldLabel` принимает `r#for` для связи с элементом управления; `FieldTitle` рендерится с `data-slot="field-label"`, как в shadcn/ui
+- `FieldSeparator`: необязательный текст по центру линии (`data-content`)
+- `FieldError`: `role="alert"`; принимает `children` или `errors: Vec<Option<String>>` (одинаковые сообщения схлопываются, несколько разных выводятся списком); без содержимого ничего не рендерит
+- Зависит от `label` и `separator` (ставятся автоматически)
 - Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
 
 ### Input
@@ -340,6 +340,28 @@
 - Однострочное текстовое поле; без вариантов и размеров
 - Атрибуты HTML (`r#type`, `placeholder`, `disabled`, `aria-invalid`, `value`) передаются напрямую компоненту
 - Обработчики: `oninput`, `onchange`, `onfocus`, `onblur`, `onkeydown`, `onclick` (`Option<EventHandler<...>>`)
+- `input_variants(class)` даёт классы для собственных полей ввода, например внутри `InputGroupInput`
+- Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
+
+### Textarea
+
+- Многострочное поле; без вариантов и размеров, высота растёт по содержимому (`field-sizing-content`)
+- Атрибуты HTML (`rows`, `placeholder`, `disabled`, `aria-invalid`, `value`) и обработчики те же, что у `Input`
+- `textarea_variants(class)` даёт классы для собственных элементов
+- Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
+
+### Input Group
+
+- Части: `InputGroup`, `InputGroupAddon` (`align`: `InlineStart`, `InlineEnd`, `BlockStart`, `BlockEnd`; клик по аддону фокусирует `InputGroupInput`), `InputGroupButton` (`variant`, `size`: `Xs`, `Sm`, `IconXs`, `IconSm`; `r#type` по умолчанию `button`), `InputGroupText`, `InputGroupInput`, `InputGroupTextarea`
+- Как в shadcn/ui, `InputGroupText` без `data-slot`, а `InputGroupInput` и `InputGroupTextarea` получают `data-slot="input-group-control"`
+- Клик по `InputGroupButton` не доходит до аддона, поэтому фокус не переходит на поле. В shadcn/ui проверяется `closest("button")`, здесь это работает только для `InputGroupButton`
+- Зависит от `button`, `input` и `textarea` (ставятся автоматически)
+- Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
+
+### Native Select
+
+- Части: `NativeSelect` (`size`: `NativeSelectSize::Default`, `Sm`), `NativeSelectOption`, `NativeSelectOptGroup`
+- Как в shadcn/ui, `class` попадает на обёртку, а не на `select`; остальные атрибуты (`value`, `disabled`, `aria-invalid`) и обработчики идут на `select`
 - Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
 
 ### Item
@@ -360,8 +382,8 @@
 ### Input OTP
 
 - Части: `InputOTP`, `InputOTPGroup`, `InputOTPSlot`, `InputOTPSeparator`
-- `InputOTP`: `max_length` (по умолчанию 6), `pattern` (`OtpPattern`: `Any`, `Digits`, `DigitsAndChars`), `value` (управляемое значение), `default_value`, `on_value_change`, `on_complete` (вызывается один раз при заполнении), `disabled`, `name` (попадает в `FormData`), `aria_label`
-- `InputOTPSlot`: `index` (позиция в поле), `invalid` (ставит `aria-invalid`, слот красится в цвет ошибки)
+- `InputOTP`: `max_length` (по умолчанию 6), `pattern` (`OtpPattern`: `Any`, `Digits`, `Chars`, `DigitsAndChars` вместо регулярных выражений `input-otp`), `value` (управляемое значение), `default_value`, `onchange`, `oncomplete` (вызывается один раз при заполнении), `disabled`, `inputmode` (по умолчанию `numeric`), `container_class`; `class` и HTML-атрибуты (`id`, `name`, `required`, `aria-label`) идут на `input`, как в shadcn/ui
+- `InputOTPSlot`: `index` (позиция в поле); для красной рамки передайте `"aria-invalid": "true"`
 - Ввод идёт в один прозрачный `input` поверх слотов: работают клавиатура, вставка и автозаполнение кода (`autocomplete="one-time-code"`), без `web_sys`
 - Курсор показывается в первом пустом слоте, а при полном поле — в последнем
 - Редактирование в середине значения не поддерживается: Backspace удаляет последний символ

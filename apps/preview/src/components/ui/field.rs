@@ -2,11 +2,15 @@
 //!
 //! Compose a `FieldSet` with a `FieldLegend` and a `FieldGroup` of `Field`s. Each `Field` holds a `FieldLabel`,
 //! the control itself, a `FieldDescription` and a `FieldError`. Pass `r#for` to `FieldLabel` to point it at the control.
+//! To show the invalid or disabled state, set `"data-invalid": "true"` or `"data-disabled": "true"` on the `Field`.
 //!
 //! Installed by oniko-cn. This file is yours: edit it freely.
 
 use dioxus::prelude::*;
 use oniko_cn::{cn, take_class};
+
+use super::label::label_variants;
+use super::separator::Separator;
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum FieldOrientation {
@@ -31,12 +35,12 @@ impl FieldOrientation {
 
     pub fn class(self) -> &'static str {
         match self {
-            Self::Vertical => "flex-col [&>*]:w-full [&>.sr-only]:w-auto",
+            Self::Vertical => "flex-col *:w-full [&>.sr-only]:w-auto",
             Self::Horizontal => {
-                "flex-row items-center [&>[data-slot=field-label]]:flex-auto has-[>[data-slot=field-content]]:items-start has-[>[data-slot=field-content]]:[&>[role=checkbox],[role=radio],[role=switch]]:mt-px"
+                "flex-row items-center has-[>[data-slot=field-content]]:items-start *:data-[slot=field-label]:flex-auto has-[>[data-slot=field-content]]:[&>[role=checkbox],[role=radio]]:mt-px"
             }
             Self::Responsive => {
-                "flex-col [&>*]:w-full @md/field-group:flex-row @md/field-group:items-center @md/field-group:[&>*]:w-auto @md/field-group:[&>[data-slot=field-label]]:flex-auto @md/field-group:has-[>[data-slot=field-content]]:items-start @md/field-group:has-[>[data-slot=field-content]]:[&>[role=checkbox],[role=radio],[role=switch]]:mt-px"
+                "flex-col *:w-full @md/field-group:flex-row @md/field-group:items-center @md/field-group:*:w-auto @md/field-group:has-[>[data-slot=field-content]]:items-start @md/field-group:*:data-[slot=field-label]:flex-auto [&>.sr-only]:w-auto @md/field-group:has-[>[data-slot=field-content]]:[&>[role=checkbox],[role=radio]]:mt-px"
             }
         }
     }
@@ -60,13 +64,9 @@ impl FieldLegendVariant {
 }
 
 /// One field: a row or column that lays out its label, control, description and error.
-///
-/// Set `invalid` to show the error state, and `disabled` to dim the whole field.
 #[component]
 pub fn Field(
     #[props(default)] orientation: FieldOrientation,
-    #[props(default)] invalid: bool,
-    #[props(default)] disabled: bool,
     #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,
     children: Element,
 ) -> Element {
@@ -79,11 +79,9 @@ pub fn Field(
 
     rsx! {
         div {
-            "data-slot": "field",
             role: "group",
+            "data-slot": "field",
             "data-orientation": orientation.as_str(),
-            "data-invalid": invalid.then_some("true"),
-            "data-disabled": disabled.then_some("true"),
             class: class,
             ..attributes,
             {children}
@@ -187,10 +185,12 @@ pub fn FieldLabel(
     children: Element,
 ) -> Element {
     let mut attributes = attributes;
-    let class = cn!(
+    let extra = cn!(
         "has-data-checked:bg-primary/5 has-data-checked:border-primary/30 dark:has-data-checked:border-primary/20 dark:has-data-checked:bg-primary/10 gap-2 leading-snug group-data-[disabled=true]/field:opacity-50 has-[>[data-slot=field]]:rounded-md has-[>[data-slot=field]]:border has-[>[data-slot=field]]:not-has-[:disabled,[data-disabled]]:hover:bg-muted/50 has-[>[data-slot=field]]:has-[:focus-visible]:border-ring has-[>[data-slot=field]]:has-[:focus-visible]:ring-ring/50 has-[>[data-slot=field]]:has-[:focus-visible]:ring-3 *:data-[slot=field]:p-3 group/field-label peer/field-label flex w-fit",
+        "has-[>[data-slot=field]]:w-full has-[>[data-slot=field]]:flex-col",
         take_class(&mut attributes).as_deref()
     );
+    let class = label_variants(Some(extra.as_str()));
 
     rsx! {
         label {
@@ -203,6 +203,7 @@ pub fn FieldLabel(
 }
 
 /// A title for a field or a choice, without the form-control semantics of `FieldLabel`.
+/// It carries the `field-label` slot, so parents that target labels style it too.
 #[component]
 pub fn FieldTitle(
     #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,
@@ -216,7 +217,7 @@ pub fn FieldTitle(
 
     rsx! {
         div {
-            "data-slot": "field-title",
+            "data-slot": "field-label",
             class: class,
             ..attributes,
             {children}
@@ -231,7 +232,9 @@ pub fn FieldDescription(
 ) -> Element {
     let mut attributes = attributes;
     let class = cn!(
-        "text-muted-foreground text-left text-sm [[data-variant=legend]+&]:-mt-1.5 leading-normal font-normal last:mt-0 nth-last-2:-mt-1 group-has-[[data-orientation=horizontal]]/field:text-balance [&>a]:underline [&>a]:underline-offset-4 [&>a:hover]:text-primary",
+        "text-muted-foreground text-left text-sm [[data-variant=legend]+&]:-mt-1.5 leading-normal font-normal group-has-data-horizontal/field:text-balance",
+        "last:mt-0 nth-last-2:-mt-1",
+        "[&>a]:underline [&>a]:underline-offset-4 [&>a:hover]:text-primary",
         take_class(&mut attributes).as_deref()
     );
 
@@ -253,33 +256,38 @@ pub fn FieldSeparator(
 ) -> Element {
     let mut attributes = attributes;
     let class = cn!(
-        "-my-2 h-5 text-sm group-data-[variant=outline]/field-group:-mb-2 flex items-center",
+        "-my-2 h-5 text-sm group-data-[variant=outline]/field-group:-mb-2 relative",
         take_class(&mut attributes).as_deref()
     );
+    let has_content = children.is_some();
 
     rsx! {
         div {
             "data-slot": "field-separator",
+            "data-content": if has_content { "true" } else { "false" },
             class: class,
             ..attributes,
-            div { "data-slot": "field-separator-line", class: "bg-border shrink-0 h-px w-full flex-1" }
+            Separator { class: "absolute inset-0 top-1/2" }
             if let Some(children) = children {
                 span {
+                    class: "text-muted-foreground px-2 relative mx-auto block w-fit bg-background",
                     "data-slot": "field-separator-content",
-                    class: "text-muted-foreground px-2",
                     {children}
                 }
-                div { "data-slot": "field-separator-line", class: "bg-border shrink-0 h-px w-full flex-1" }
             }
         }
     }
 }
 
-/// The validation message of a field. Shown to assistive technology as an alert.
+/// The validation message of a field, shown to assistive technology as an alert.
+///
+/// Pass `children`, or `errors` with the messages to show. Renders nothing when both are empty.
+/// Several different messages become a bulleted list.
 #[component]
 pub fn FieldError(
     #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,
-    children: Element,
+    #[props(default)] errors: Vec<Option<String>>,
+    children: Option<Element>,
 ) -> Element {
     let mut attributes = attributes;
     let class = cn!(
@@ -287,13 +295,35 @@ pub fn FieldError(
         take_class(&mut attributes).as_deref()
     );
 
+    let mut unique: Vec<Option<String>> = Vec::new();
+    for error in errors {
+        if !unique.contains(&error) {
+            unique.push(error);
+        }
+    }
+
+    let content = match children {
+        Some(children) => children,
+        None if unique.is_empty() => return rsx! {},
+        None if unique.len() == 1 => {
+            rsx! { {unique.first().cloned().flatten()} }
+        }
+        None => rsx! {
+            ul { class: "ml-4 flex list-disc flex-col gap-1",
+                for message in unique.into_iter().flatten() {
+                    li { "{message}" }
+                }
+            }
+        },
+    };
+
     rsx! {
         div {
-            "data-slot": "field-error",
             role: "alert",
+            "data-slot": "field-error",
             class: class,
             ..attributes,
-            {children}
+            {content}
         }
     }
 }
