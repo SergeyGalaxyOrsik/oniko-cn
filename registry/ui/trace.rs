@@ -9,11 +9,6 @@ use oniko_cn::{cn, take_class};
 
 use super::collapsible::{Collapsible, CollapsibleContent, CollapsibleTrigger};
 
-const TRACE_LINE_BASE: &str = "group/trace-line cn-trace-line flex min-w-0 items-center";
-
-const TRACE_COLLAPSIBLE_TRIGGER: &str =
-    "cn-trace-collapsible-trigger group flex w-full min-w-0 items-center text-left outline-none";
-
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub enum TraceStatus {
     #[default]
@@ -24,24 +19,24 @@ pub enum TraceStatus {
 }
 
 impl TraceStatus {
-    /// Value of the `data-status` attribute.
-    pub fn as_str(self) -> &'static str {
+    /// Value of the `data-status` attribute, or `None` for a finished step.
+    pub fn as_str(self) -> Option<&'static str> {
         match self {
-            Self::Complete => "complete",
-            Self::Running => "running",
-            Self::Error => "error",
-            Self::Pending => "pending",
+            Self::Complete => None,
+            Self::Running => Some("running"),
+            Self::Error => Some("error"),
+            Self::Pending => Some("pending"),
         }
     }
+}
 
-    pub fn class(self) -> &'static str {
-        match self {
-            Self::Complete => "text-muted-foreground",
-            Self::Running => "text-foreground",
-            Self::Error => "text-destructive",
-            Self::Pending => "text-muted-foreground/50",
-        }
-    }
+/// `data-slot` and `class` for a part that is built from another component, which cannot take them as literal attributes.
+/// Callers' own attributes come after these, so they can override them.
+fn slot_and_class(slot: &'static str, class: String) -> [Attribute; 2] {
+    [
+        Attribute::new("data-slot", slot, None, false),
+        Attribute::new("class", class, None, false),
+    ]
 }
 
 /// Root of a trace. Stacks its steps vertically.
@@ -52,7 +47,7 @@ pub fn Trace(
 ) -> Element {
     let mut attributes = attributes;
     let class = cn!(
-        "cn-trace flex w-full flex-col",
+        "cn-trace flex w-full min-w-0 flex-col *:has-[>[data-slot=trace-line]]:flex *:has-[>[data-slot=trace-line]]:w-fit *:has-[>[data-slot=trace-line]]:max-w-full *:has-[>[data-slot=trace-line]]:min-w-0 *:has-[>[data-slot=trace-line]]:text-left *:has-[>[data-slot=trace-line]]:outline-none",
         take_class(&mut attributes).as_deref()
     );
 
@@ -75,8 +70,7 @@ pub fn TraceLine(
 ) -> Element {
     let mut attributes = attributes;
     let class = cn!(
-        TRACE_LINE_BASE,
-        status.class(),
+        "cn-trace-line flex w-fit max-w-full min-w-0 items-center text-muted-foreground transition-colors in-[a,button]:cursor-pointer in-[a:hover,button:hover]:text-foreground data-[status=error]:text-destructive data-[status=error]:in-[a:hover,button:hover]:text-destructive data-[status=pending]:opacity-60 data-[status=running]:*:data-[slot=trace-title]:shimmer",
         take_class(&mut attributes).as_deref()
     );
 
@@ -99,7 +93,7 @@ pub fn TraceIcon(
 ) -> Element {
     let mut attributes = attributes;
     let class = cn!(
-        "cn-trace-icon inline-flex items-center justify-center",
+        "cn-trace-icon flex shrink-0 items-center justify-center [&_svg]:pointer-events-none",
         take_class(&mut attributes).as_deref()
     );
 
@@ -114,7 +108,7 @@ pub fn TraceIcon(
     }
 }
 
-/// Single-line sentence of a trace step. Truncates, and pulses while the step runs.
+/// Single-line sentence of a trace step. Truncates, and shimmers while the step runs.
 #[component]
 pub fn TraceTitle(
     #[props(extends = GlobalAttributes, extends = span)] attributes: Vec<Attribute>,
@@ -122,7 +116,7 @@ pub fn TraceTitle(
 ) -> Element {
     let mut attributes = attributes;
     let class = cn!(
-        "min-w-0 truncate group-data-[status=running]/trace-line:animate-pulse",
+        "cn-trace-title min-w-0 truncate motion-reduce:shimmer-none",
         take_class(&mut attributes).as_deref()
     );
 
@@ -144,7 +138,7 @@ pub fn TraceDescription(
 ) -> Element {
     let mut attributes = attributes;
     let class = cn!(
-        "shrink-0 whitespace-nowrap text-muted-foreground",
+        "cn-trace-description shrink-0 text-muted-foreground/70 tabular-nums",
         take_class(&mut attributes).as_deref()
     );
 
@@ -170,59 +164,85 @@ pub fn TraceCollapsible(
 ) -> Element {
     let mut attributes = attributes;
     let class = cn!(
-        "flex w-full flex-col",
+        "cn-trace-collapsible flex w-full min-w-0 flex-col",
         take_class(&mut attributes).as_deref()
     );
 
+    attributes.splice(0..0, slot_and_class("trace-collapsible", class));
+
     rsx! {
-        div {
-            "data-slot": "trace-collapsible",
-            class: class,
-            ..attributes,
-            Collapsible {
-                open: open,
-                default_open: default_open,
-                on_open_change: on_open_change,
-                {children}
-            }
+        Collapsible {
+            open: open,
+            default_open: default_open,
+            on_open_change: on_open_change,
+            attributes: attributes,
+            {children}
         }
     }
 }
 
 /// Button that toggles a collapsible trace step. Wrap a `TraceLine` in it.
 #[component]
-pub fn TraceCollapsibleTrigger(children: Element) -> Element {
+pub fn TraceCollapsibleTrigger(
+    #[props(extends = GlobalAttributes, extends = button)] attributes: Vec<Attribute>,
+    children: Element,
+) -> Element {
+    let mut attributes = attributes;
+    let class = cn!(
+        "cn-trace-collapsible-trigger group/trace-collapsible-trigger flex w-fit max-w-full min-w-0 cursor-pointer items-center text-left text-muted-foreground transition-colors outline-none hover:text-foreground has-[[data-status=error]]:text-destructive",
+        take_class(&mut attributes).as_deref()
+    );
+
+    attributes.splice(0..0, slot_and_class("trace-collapsible-trigger", class));
+
     rsx! {
         CollapsibleTrigger {
-            "data-slot": "trace-collapsible-trigger",
-            class: TRACE_COLLAPSIBLE_TRIGGER,
+            attributes: attributes,
             {children}
-            svg {
-                "data-slot": "trace-collapsible-chevron",
-                class: "size-4 shrink-0 transition-transform group-data-[state=open]:rotate-180",
-                "aria-hidden": "true",
-                view_box: "0 0 24 24",
-                fill: "none",
-                stroke: "currentColor",
-                "stroke-width": "2",
-                "stroke-linecap": "round",
-                "stroke-linejoin": "round",
-                path { d: "m9 18 6-6-6-6" }
+            TraceIcon { class: "transition-transform group-aria-expanded/trace-collapsible-trigger:rotate-90",
+                svg {
+                    width: "24",
+                    height: "24",
+                    view_box: "0 0 24 24",
+                    fill: "none",
+                    stroke: "currentColor",
+                    stroke_width: "2",
+                    stroke_linecap: "round",
+                    stroke_linejoin: "round",
+                    path { d: "m9 18 6-6-6-6" }
+                }
             }
         }
     }
 }
 
 /// Details of a collapsible trace step, shown while the step is open.
+/// `class` goes on the inner wrapper, like upstream; every other attribute goes on the panel.
 #[component]
-pub fn TraceCollapsibleContent(children: Element) -> Element {
+pub fn TraceCollapsibleContent(
+    #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,
+    children: Element,
+) -> Element {
+    let mut attributes = attributes;
+    let class = cn!(
+        "cn-trace-collapsible-content-inner min-w-0 wrap-break-word text-muted-foreground",
+        take_class(&mut attributes).as_deref()
+    );
+
+    attributes.splice(
+        0..0,
+        slot_and_class(
+            "trace-collapsible-content",
+            "cn-trace-collapsible-content h-(--collapsible-panel-height) min-w-0 overflow-hidden transition-[height] data-ending-style:h-0 data-starting-style:h-0".to_string(),
+        ),
+    );
+
     rsx! {
         CollapsibleContent {
-            "data-slot": "trace-collapsible-content",
-            class: "cn-trace-collapsible-content",
+            attributes: attributes,
             div {
                 "data-slot": "trace-collapsible-content-inner",
-                class: "cn-trace-collapsible-content-inner",
+                class: class,
                 {children}
             }
         }

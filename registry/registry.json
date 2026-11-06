@@ -55,7 +55,7 @@
       "name": "bubble",
       "type": "registry:ui",
       "title": "Bubble",
-      "description": "A chat message bubble with variants, alignment and reactions.",
+      "description": "Displays conversational content in a message bubble. Supports variants, alignment, grouping, reactions, and collapsible content.",
       "dependencies": ["oniko-cn@0.1"],
       "files": [{ "path": "ui/bubble.rs", "type": "registry:ui" }]
     },
@@ -139,7 +139,7 @@
       "name": "code-block",
       "type": "registry:ui",
       "title": "Code Block",
-      "description": "Displays code, terminal output or a diff with an optional title, copy button and line numbers.",
+      "description": "Displays code, terminal output and diffs with an optional header, line numbers and a copy button.",
       "dependencies": ["oniko-cn@0.1"],
       "registryDependencies": ["button"],
       "files": [{ "path": "ui/code_block.rs", "type": "registry:ui" }]
@@ -631,7 +631,7 @@
       "name": "trace",
       "type": "registry:ui",
       "title": "Trace",
-      "description": "A compact list of AI steps, such as searches and commands, that can expand to show details.",
+      "description": "The building block for reasoning, tool calls, sources and more.",
       "dependencies": ["oniko-cn@0.1"],
       "registryDependencies": ["collapsible"],
       "files": [{ "path": "ui/trace.rs", "type": "registry:ui" }]
