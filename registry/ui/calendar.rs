@@ -783,11 +783,12 @@ pub fn Calendar(
             .map(CalendarDate::month_start)
     });
     let controlled_month = use_prop(month.map(CalendarDate::month_start));
+    // Reads `detected` so the effect runs again once the clock arrives.
     use_effect(move || {
-        if internal_month.peek().is_none()
-            && let Some(today) = today_now
+        if let Some(now) = today.or(detected())
+            && internal_month.peek().is_none()
         {
-            internal_month.set(Some(today.month_start()));
+            internal_month.set(Some(now.month_start()));
         }
     });
     let ready = month.is_some() || internal_month().is_some();
