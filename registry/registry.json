@@ -251,7 +251,7 @@
       "name": "dropdown-menu",
       "type": "registry:ui",
       "title": "Dropdown Menu",
-      "description": "A menu of actions, toggles and choices that opens from a trigger.",
+      "description": "Displays a menu of actions, toggles and choices when a trigger is activated, with groups, shortcuts, checkbox and radio items and submenus.",
       "dependencies": ["oniko-cn@0.1"],
       "registryDependencies": ["button"],
       "files": [{ "path": "ui/dropdown_menu.rs", "type": "registry:ui" }]
@@ -260,8 +260,9 @@
       "name": "context-menu",
       "type": "registry:ui",
       "title": "Context Menu",
-      "description": "A menu that opens at the pointer on right click, with items, checkbox and radio options.",
+      "description": "Displays a menu at the pointer on right click or long press, with groups, shortcuts, checkbox and radio items and submenus.",
       "dependencies": ["oniko-cn@0.1"],
+      "registryDependencies": ["dropdown-menu"],
       "files": [{ "path": "ui/context_menu.rs", "type": "registry:ui" }]
     },
     {
@@ -458,8 +459,9 @@
       "name": "menubar",
       "type": "registry:ui",
       "title": "Menubar",
-      "description": "A horizontal bar of menus with actions, toggles and choices that open from their triggers.",
+      "description": "A visually persistent horizontal bar of menus with actions, toggles, choices and submenus, common in desktop applications.",
       "dependencies": ["oniko-cn@0.1"],
+      "registryDependencies": ["dropdown-menu"],
       "files": [{ "path": "ui/menubar.rs", "type": "registry:ui" }]
     },
     {
