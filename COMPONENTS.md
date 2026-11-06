@@ -40,7 +40,7 @@
 | Input OTP | `registry/ui/input_otp.rs` | `oniko add input-otp` | web, desktop |
 | Input | `registry/ui/input.rs` | `oniko add input` | web, desktop |
 | Checkpoint | `registry/ui/checkpoint.rs` | `oniko add checkpoint` | web, desktop |
-| File Tree | `registry/ui/file_tree.rs` | `oniko add file-tree` | web, desktop |
+| File Tree | `registry/blocks/file_tree.rs` | `oniko add file-tree` | web, desktop |
 | Message | `registry/ui/message.rs` | `oniko add message` | web, desktop |
 | Attachment | `registry/ui/attachment.rs` | `oniko add attachment` | web, desktop |
 | Context | `registry/ui/context.rs` | `oniko add context` | web, desktop |
@@ -56,11 +56,11 @@
 | Model Selector | `registry/ui/model_selector.rs` | `oniko add model-selector` | web, desktop |
 | Subagent | `registry/blocks/subagent.rs` | `oniko add subagent` | web, desktop |
 | Suggestion | `registry/ui/suggestion.rs` | `oniko add suggestion` | web, desktop |
-| Stack Trace | `registry/ui/stack_trace.rs` | `oniko add stack-trace` | web, desktop |
+| Stack Trace | `registry/blocks/stack_trace.rs` | `oniko add stack-trace` | web, desktop |
 | Task | `registry/blocks/task.rs` | `oniko add task` | web, desktop |
-| Test Results | `registry/ui/test_results.rs` | `oniko add test-results` | web, desktop |
-| Terminal | `registry/ui/terminal.rs` | `oniko add terminal` | web, desktop |
-| Tool | `registry/ui/tool.rs` | `oniko add tool` | web, desktop |
+| Test Results | `registry/blocks/test_results.rs` | `oniko add test-results` | web, desktop |
+| Terminal | `registry/blocks/terminal.rs` | `oniko add terminal` | web, desktop |
+| Tool | `registry/blocks/tool.rs` | `oniko add tool` | web, desktop |
 | Kbd | `registry/ui/kbd.rs` | `oniko add kbd` | web, desktop |
 | Label | `registry/ui/label.rs` | `oniko add label` | web, desktop |
 | Direction | `registry/ui/direction.rs` | `oniko add direction` | web, desktop |
@@ -573,11 +573,10 @@
 
 ### File Tree
 
-- Части: `FileTree` (корень, `role="tree"`), `FileTreeFolder` (`path`, `name`; строка раскрывается через `Collapsible`), `FileTreeFile` (`path`, `name`; строка выбирается кликом, Enter или Space), `FileTreeIcon`, `FileTreeName`, `FileTreeActions`
-- `FileTree`: `expanded: Option<Vec<String>>` и `selected: Option<String>` делают состояние управляемым (`None` значит «без управления»), `default_expanded`, `on_expanded_change`, `on_select: EventHandler<String>` получает путь
-- `FileTreeActions` внутри строки файла не выбирает её; у папок действий нет, потому что строка папки целиком — кнопка
-- Дерево собирает приложение: рекурсивным вызовом `FileTreeFolder` и `FileTreeFile`; стрелочной навигации с клавиатуры по дереву нет
-- Зависит от `collapsible` (ставится автоматически)
+- Блок (`registry:block`): дерево файлов, которые изменил агент. Папка — `Collapsible`, файл — `Button`, как в upstream
+- `FileNode` (перечисление): `File { name, path }` и `Folder { name, path, children }`; `FileTreeNode { node, selected, on_select }` рекурсивно выводит узел и его детей, `selected` — путь выбранного файла (получает `aria-current`)
+- Папки открыты по умолчанию; шеврон поворачивается по `group-data-panel-open/button`; стрелочной навигации по дереву нет, как и в upstream
+- Зависит от `collapsible` и `button`, которые ставятся автоматически
 - Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
 
 ### Context
@@ -706,10 +705,11 @@
 
 ### Stack Trace
 
-- Части: `StackTrace` (корень; `trace: String` с сырым текстом ошибки, `open`, `default_open`, `on_open_change`; собирает `Collapsible`), `StackTraceHeader`, `StackTraceError` (строка ошибки), `StackTraceErrorType` (тип, например `TypeError`; пусто, если типа нет), `StackTraceErrorMessage` (текст ошибки), `StackTraceActions`, `StackTraceCopyButton` (копирует весь сырой текст в буфер обмена), `StackTraceExpandButton` (раскрывает и сворачивает кадры), `StackTraceContent` (виден только в раскрытом состоянии), `StackTraceFrames` (`show_internal`, `on_file_path_click: Option<EventHandler<StackFileLocation>>`)
-- Разбор без регулярных выражений: первая строка трассировки — ошибка (`Тип: сообщение`), остальные непустые строки — кадры (`at fn (path:line:col)` или `at path:line:col`); доступны функция `parse_stack_trace` и типы `ParsedStackTrace`, `StackFrame`, `StackFileLocation`
-- Кадры из `node_modules`, `node:` и `internal/` помечаются как внутренние (`data-internal`) и скрываются при `show_internal: false`
-- Зависит от `button` и `collapsible`, которые ставятся автоматически
+- Блок (`registry:block`): упавший вызов инструмента и его кадры, собранные из `Trace`
+- `StackTrace { stack, default_open }`: первая строка `stack` — ошибка (заголовок «Failed: …»), остальные — кадры `at имя (файл:строка:столбец)`; без регулярных выражений
+- Свои кадры — ссылки `#файл:строка`; кадры из `node_modules` и `node:` сворачиваются в строку «N framework frames»
+- `keepMounted` из upstream не поддерживается: `TraceCollapsibleContent` не принимает его, закрытое содержимое не монтируется
+- Зависит от `trace`, который ставится автоматически
 - Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
 
 ### Task
@@ -724,24 +724,26 @@
 
 ### Terminal
 
-- Части: `Terminal` (корень; `output: String`, `is_streaming`, `auto_scroll` (по умолчанию включён), `on_clear: Option<EventHandler<()>>`; без `children` собирает стандартный вид: заголовок, статус, кнопки и вывод), `TerminalHeader`, `TerminalTitle` (значок и текст «Terminal», `children` заменяют текст), `TerminalStatus` (пульсирующая точка, виден только при `is_streaming`), `TerminalActions`, `TerminalCopyButton` (копирует вывод без escape-последовательностей; принимает `onclick`), `TerminalClearButton` (виден только если задан `on_clear`), `TerminalContent` (вывод; прокручивается вниз при изменении, мигающий курсор виден при `is_streaming`)
-- ANSI-последовательности удаляются из вывода, цвета не выводятся
-- Зависит от `button`, который ставится автоматически
+- Блок (`registry:block`): команда, которую запускает агент, и её вывод по мере поступления, собранные из `Trace` и `CodeBlock`
+- `TerminalLine { command, output, state, default_open }`; `TerminalState`: `Running`, `Exited(код)` (не ноль — ошибка, заголовок «cmd exited with code N»), `Failed`
+- Пока команда выполняется и вывод не пуст, строка открыта; после первого клика пользователя состояние остаётся за ним. `default_open` задаёт начальное состояние
+- Зависит от `trace` и `code-block`, которые ставятся автоматически
 - Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
 
 ### Test Results
 
-- Части: `TestResults` (корень; `summary: Option<TestRunSummary>` с полями `passed`, `failed`, `skipped`, `total`, `duration_ms`), `TestResultsHeader`, `TestResultsSummary` (значки с числами прошедших, упавших и пропущенных), `TestResultsDuration` (длительность, ничего не выводит без `duration_ms`), `TestResultsProgress` (полоса прошедших и упавших долей с подписью `passed/total`), `TestResultsContent`, `TestSuite` (`name`, `status`, `open`, `default_open`, `on_open_change`; собирает `Collapsible`), `TestSuiteName` (триггер с шевроном, статусом и именем; `children` ставятся справа, например `TestSuiteStats`), `TestSuiteStats` (`passed`, `failed`, `skipped` как `Option<u32>`), `TestSuiteContent` (виден только в раскрытом состоянии), `Test` (`name`, `status`, `duration_ms`; `children` ставятся под строкой, например `TestError`), `TestStatusIcon` (значок статуса; перечисление `TestStatus` с вариантами `Passed`, `Failed`, `Skipped`, `Running`), `TestName`, `TestDuration`, `TestError`, `TestErrorMessage`, `TestErrorStack`
-- `TestSuiteName` не принимает `..attributes`, потому что `CollapsibleTrigger` не принимает атрибуты, как и `QueueSectionTrigger`
-- Зависит от `collapsible` и `badge`, которые ставятся автоматически
+- Блок (`registry:block`): запуск тестов агентом, собранный из `Trace` и `CodeBlock`
+- Типы `Test { name, status, error }`, `TestStatus` (`Passed`, `Failed`, `Skipped`) и `TestSuite { name, tests }`; `TestResults { suites, default_open, open_failures }` выводит строку «Ran N tests, X failed» со строкой на каждый набор (наборы с падением открыты), `TestRow { test, default_open }` — одну строку теста, упавший раскрывается и показывает ошибку
+- `keepMounted` из upstream не поддерживается: `TraceCollapsibleContent` не принимает его, закрытое содержимое не монтируется
+- Зависит от `trace` и `code-block`, которые ставятся автоматически
 - Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
 
 ### Tool
 
-- Части: `Tool` (корень; `open`, `default_open`, `on_open_change`; собирает `Collapsible`), `ToolHeader` (`state: ToolState`, `title`, `tool_name`; строка с именем, бейджем статуса и шевроном, по умолчанию имя «Tool»), `ToolContent` (виден только в раскрытом состоянии), `ToolInput` (`input: String`, выводится в моноширинном блоке; сериализацию делает вызывающий код), `ToolOutput` (`output: Option<String>`, `error_text: Option<String>`; ничего не выводит, если оба пусты)
-- `ToolState` (перечисление): `InputStreaming` (по умолчанию), `InputAvailable`, `ApprovalRequested`, `ApprovalResponded`, `OutputAvailable`, `OutputError`, `OutputDenied`; каждому состоянию соответствуют свой значок и подпись бейджа
-- `ToolHeader` не передаёт `..attributes` на кнопку, поэтому его атрибуты попадают на обёртку `div`
-- Зависит от `collapsible` и `badge`, которые ставятся автоматически
+- Блок (`registry:block`): вызов инструмента агента от входа до результата, собранный из `Trace` и `CodeBlock`
+- `ToolLine { command, state, streaming, default_open }`; `ToolState`: `Input` (идёт, пока `streaming`, иначе «Failed to run»), `Output(текст)`, `Error(текст)`, `Denied`. Заголовки и статусы взяты из таблицы состояний в документации
+- Запрос подтверждения — не строка: его показывают через `Item` вне `Trace`, как в примере `Approval`
+- Зависит от `trace` и `code-block`, которые ставятся автоматически
 - Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
 
 ### Radio Group

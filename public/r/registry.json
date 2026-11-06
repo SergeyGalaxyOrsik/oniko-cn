@@ -227,8 +227,8 @@
     },
     {
       "name": "file-tree",
-      "type": "registry:ui",
-      "description": "A nested tree of folders and files that expand and select, for showing the files an agent changed."
+      "type": "registry:block",
+      "description": "The files the agent changed, as a folder tree."
     },
     {
       "name": "message",
@@ -432,8 +432,8 @@
     },
     {
       "name": "stack-trace",
-      "type": "registry:ui",
-      "description": "Displays an error and its call frames in a collapsible monospace panel, with copy and expand controls."
+      "type": "registry:block",
+      "description": "Displays a failed tool call and its stack frames."
     },
     {
       "name": "task",
@@ -442,18 +442,18 @@
     },
     {
       "name": "terminal",
-      "type": "registry:ui",
-      "description": "Displays command output in a monospace panel with copy and clear actions and a streaming indicator, with ANSI escape sequences stripped."
+      "type": "registry:block",
+      "description": "Displays a command the agent runs, with its output as it streams."
     },
     {
       "name": "test-results",
-      "type": "registry:ui",
-      "description": "Summarizes a test run with counts, a progress bar and collapsible suites of tests, with error messages and stack traces for failures."
+      "type": "registry:block",
+      "description": "Displays a test run by the agent, with its suites and failures."
     },
     {
       "name": "tool",
-      "type": "registry:ui",
-      "description": "Shows one tool call of an AI agent: its name, a status badge and a collapsible panel with the input and the output or error."
+      "type": "registry:block",
+      "description": "Displays a tool call the agent makes, from input to output."
     }
   ]
 }

@@ -354,12 +354,12 @@
     },
     {
       "name": "file-tree",
-      "type": "registry:ui",
+      "type": "registry:block",
       "title": "File Tree",
-      "description": "A nested tree of folders and files that expand and select, for showing the files an agent changed.",
+      "description": "The files the agent changed, as a folder tree.",
       "dependencies": ["oniko-cn@0.1"],
-      "registryDependencies": ["collapsible"],
-      "files": [{ "path": "ui/file_tree.rs", "type": "registry:ui" }]
+      "registryDependencies": ["collapsible", "button"],
+      "files": [{ "path": "blocks/file_tree.rs", "type": "registry:block" }]
     },
     {
       "name": "message",
@@ -702,12 +702,12 @@
     },
     {
       "name": "stack-trace",
-      "type": "registry:ui",
+      "type": "registry:block",
       "title": "Stack Trace",
-      "description": "Displays an error and its call frames in a collapsible monospace panel, with copy and expand controls.",
+      "description": "Displays a failed tool call and its stack frames.",
       "dependencies": ["oniko-cn@0.1"],
-      "registryDependencies": ["button", "collapsible"],
-      "files": [{ "path": "ui/stack_trace.rs", "type": "registry:ui" }]
+      "registryDependencies": ["trace"],
+      "files": [{ "path": "blocks/stack_trace.rs", "type": "registry:block" }]
     },
     {
       "name": "task",
@@ -720,30 +720,30 @@
     },
     {
       "name": "terminal",
-      "type": "registry:ui",
+      "type": "registry:block",
       "title": "Terminal",
-      "description": "Displays command output in a monospace panel with copy and clear actions and a streaming indicator, with ANSI escape sequences stripped.",
+      "description": "Displays a command the agent runs, with its output as it streams.",
       "dependencies": ["oniko-cn@0.1"],
-      "registryDependencies": ["button"],
-      "files": [{ "path": "ui/terminal.rs", "type": "registry:ui" }]
+      "registryDependencies": ["trace", "code-block"],
+      "files": [{ "path": "blocks/terminal.rs", "type": "registry:block" }]
     },
     {
       "name": "test-results",
-      "type": "registry:ui",
+      "type": "registry:block",
       "title": "Test Results",
-      "description": "Summarizes a test run with counts, a progress bar and collapsible suites of tests, with error messages and stack traces for failures.",
+      "description": "Displays a test run by the agent, with its suites and failures.",
       "dependencies": ["oniko-cn@0.1"],
-      "registryDependencies": ["collapsible", "badge"],
-      "files": [{ "path": "ui/test_results.rs", "type": "registry:ui" }]
+      "registryDependencies": ["trace", "code-block"],
+      "files": [{ "path": "blocks/test_results.rs", "type": "registry:block" }]
     },
     {
       "name": "tool",
-      "type": "registry:ui",
+      "type": "registry:block",
       "title": "Tool",
-      "description": "Shows one tool call of an AI agent: its name, a status badge and a collapsible panel with the input and the output or error.",
+      "description": "Displays a tool call the agent makes, from input to output.",
       "dependencies": ["oniko-cn@0.1"],
-      "registryDependencies": ["collapsible", "badge"],
-      "files": [{ "path": "ui/tool.rs", "type": "registry:ui" }]
+      "registryDependencies": ["trace", "code-block"],
+      "files": [{ "path": "blocks/tool.rs", "type": "registry:block" }]
     }
   ]
 }
