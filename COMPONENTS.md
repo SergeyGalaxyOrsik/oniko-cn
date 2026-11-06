@@ -172,12 +172,14 @@
 
 ### Command
 
-- Части: `Command`, `CommandInput`, `CommandList`, `CommandEmpty`, `CommandGroup`, `CommandItem`, `CommandSeparator`, `CommandShortcut`
-- `CommandGroup`: `heading: Option<String>`; группа скрывается, если ни один её пункт не подходит под запрос
-- `CommandItem`: обязательный `value` (ищется по нему и по `keywords`), `keywords`, `disabled`, `on_select: EventHandler<String>`
-- Поиск: подстрока без учёта регистра, без нечёткого ранжирования как в cmdk; порядок результатов — порядок на экране
-- Стрелки вверх/вниз двигают подсветку по видимым пунктам, `Enter` выбирает подсвеченный (или первый подходящий), наведение мыши тоже подсвечивает
-- `CommandDialog` (командная палитра в диалоге) не реализован: собирается из `Dialog` и `Command` вручную
+- Части: `Command`, `CommandDialog`, `CommandInput`, `CommandList`, `CommandEmpty`, `CommandGroup`, `CommandItem`, `CommandSeparator`, `CommandShortcut`
+- `Command`: `value` / `on_value_change` (подсвеченный пункт), `label`, `should_filter`, `filter` (оценка пункта, `0.0` скрывает), `loop`
+- `CommandItem`: `value` необязателен (по умолчанию текст пункта), `keywords`, `disabled`, `on_select: EventHandler<String>`; в конце каждого пункта лежит иконка-галочка, как у shadcn
+- `CommandGroup`: `heading: Option<String>`; группа скрывается, если ни один её пункт не подходит под запрос. `CommandSeparator` скрывается при поиске (`always_render` отключает это)
+- Поиск: нечёткая оценка из cmdk (`command-score`), но результаты не сортируются по оценке, порядок остаётся документным
+- Клавиши: стрелки, `Home`/`End`, `Ctrl+N/P/J/K`, `Cmd+стрелка`, `Alt+стрелка` (группы), `Enter`; после каждого поиска подсвечивается первый пункт
+- `CommandDialog`: `open`, `default_open`, `on_open_change`, `title`, `description`, `show_close_button` (по умолчанию `false`); собран на `Dialog`
+- Зависит от `dialog` и `input-group` (ставятся автоматически)
 - Без `dioxus-primitives` (на crates.io лежит пустышка 0.0.0): состояние и клавиатура ведутся самим компонентом
 - Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
 
@@ -221,12 +223,21 @@
 
 ### Combobox
 
-- Части: `Combobox`, `ComboboxInput`, `ComboboxTrigger`, `ComboboxContent`, `ComboboxList`, `ComboboxItem`, `ComboboxGroup`, `ComboboxLabel`, `ComboboxEmpty`, `ComboboxSeparator`
-- `Combobox`: `value: Option<String>` делает выбор управляемым (`None` значит «без управления»), `default_value` задаёт начальный выбор, `on_value_change: EventHandler<String>`, `disabled`
-- `ComboboxItem`: `value` — что сохраняется; `label` — текст для поиска и для поля после выбора (по умолчанию равен `value`). Передавайте `label`, если содержимое пункта не совпадает с текстом
-- Элементы регистрируются, пока список открыт; стрелки вверх и вниз, Enter, Escape и поиск по вводу работают только по отрисованным пунктам
-- `ComboboxEmpty` кладётся внутрь `ComboboxContent`: показывается, когда ни один пункт не подходит
-- Список — абсолютно позиционированный блок под полем (без JS-библиотек); множественный выбор (`Chips`) и кнопка очистки у shadcn здесь не реализованы
+- Части: `Combobox`, `ComboboxInput`, `ComboboxContent`, `ComboboxList`, `ComboboxItem`, `ComboboxGroup`, `ComboboxLabel`, `ComboboxCollection`, `ComboboxEmpty`, `ComboboxSeparator`, `ComboboxChips`, `ComboboxChip`, `ComboboxChipsInput`, `ComboboxTrigger`, `ComboboxValue`, `use_combobox_anchor`
+- `Combobox`: одиночный выбор через `value` / `default_value` / `on_value_change: EventHandler<Option<String>>`, множественный (`multiple`) через `values` / `default_values` / `on_values_change` (в React это одно свойство `value`); `input_value`, `open`, `auto_highlight`, `filter`, `disabled`, `read_only`, `required`, `name`
+- Пункты — дочерние `ComboboxItem { value, label }`, а не массив `items` с render-функцией; `label` участвует в поиске и показывается в поле после выбора
+- `ComboboxInput`: `show_trigger`, `show_clear`, `disabled`; `ComboboxValue { render }` отдаёт выбранные значения для чипов
+- Окно открывается в top layer (`popover="manual"`), позиционируется скриптом: `side`, `align`, `side_offset`, `align_offset`, переворот и сдвиг у краёв, `--anchor-width`, `--available-height`, `data-side`
+- Фокус остаётся в поле, подсветка — `data-highlighted` и `aria-activedescendant`
+- Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
+
+### Select
+
+- Части: `Select`, `SelectTrigger`, `SelectValue`, `SelectContent`, `SelectGroup`, `SelectLabel`, `SelectItem`, `SelectSeparator`, `SelectScrollUpButton`, `SelectScrollDownButton`
+- `Select`: `value` / `default_value` / `on_value_change: EventHandler<Option<String>>` (пустая строка в `value` значит «управляется, ничего не выбрано»), `open`, `items: Vec<SelectOption>` (запись без значения — подпись для «ничего не выбрано»), `disabled`, `read_only`, `required`, `name`
+- `SelectItem`: без `value` это пункт «ничего не выбрано»; `label` нужен, если `items` не задан
+- `SelectContent`: `side`, `side_offset`, `align`, `align_offset`, `align_item_with_trigger`; окно в top layer, переворот и сдвиг у краёв, стрелки прокрутки, поиск по первым буквам
+- Без множественного выбора (`multiple`) и без поиска по буквам на закрытом триггере
 - Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
 
 ### Table

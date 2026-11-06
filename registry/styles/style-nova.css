@@ -426,6 +426,27 @@
     @apply -ml-1 opacity-50 hover:opacity-100;
   }
 
+  .cn-combobox-chip-indicator-icon {
+  }
+
+  .cn-combobox-chip-input {
+  }
+
+  .cn-combobox-clear {
+  }
+
+  .cn-combobox-clear-icon {
+  }
+
+  .cn-combobox-group {
+  }
+
+  .cn-combobox-input {
+  }
+
+  .cn-combobox-item-indicator-icon {
+  }
+
   /* MARK: Command */
   .cn-command {
     @apply bg-popover text-popover-foreground rounded-xl! p-1;
@@ -481,6 +502,9 @@
 
   .cn-command-shortcut-aria {
     @apply group-data-focused/command-item:text-foreground;
+  }
+
+  .cn-command-item-indicator {
   }
 
   /* MARK: Context Menu */
@@ -1183,6 +1207,9 @@
     @apply text-muted-foreground hidden w-full justify-center py-2 text-center text-sm group-data-empty/select-list:flex;
   }
 
+  .cn-select-item-indicator-icon {
+  }
+
   /* MARK: Separator */
   .cn-separator {
     @apply bg-border shrink-0;
@@ -1565,9 +1592,10 @@
     @apply rounded-none border-0 bg-transparent py-2 shadow-none ring-0 focus-visible:ring-0 disabled:bg-transparent aria-invalid:ring-0 dark:bg-transparent dark:disabled:bg-transparent;
   }
 
-  /* MARK: Menu Translucent */
   .cn-menu-target {
   }
+
+  /* MARK: Menu Translucent */
 
   .cn-menu-translucent {
     @apply animate-none! relative bg-popover/70 before:pointer-events-none before:absolute before:inset-0 before:-z-1 before:rounded-[inherit] before:backdrop-blur-2xl before:backdrop-saturate-150 **:data-[slot$=-item]:focus:bg-foreground/10 **:data-[slot$=-item]:data-highlighted:bg-foreground/10 **:data-[slot$=-separator]:bg-foreground/5 **:data-[slot$=-trigger]:focus:bg-foreground/10 **:data-[slot$=-trigger]:aria-expanded:bg-foreground/10! **:data-[variant=destructive]:focus:bg-foreground/10! **:data-[variant=destructive]:text-accent-foreground! **:data-[variant=destructive]:**:text-accent-foreground!;

@@ -63,7 +63,7 @@
     {
       "name": "command",
       "type": "registry:ui",
-      "description": "A filterable list of actions that the user searches and picks with the keyboard or the mouse."
+      "description": "Command menu for search and quick actions."
     },
     {
       "name": "breadcrumb",
@@ -113,7 +113,7 @@
     {
       "name": "combobox",
       "type": "registry:ui",
-      "description": "A text input that filters a list of options and selects one of them."
+      "description": "Autocomplete input with a list of suggestions."
     },
     {
       "name": "dialog",
@@ -338,7 +338,7 @@
     {
       "name": "select",
       "type": "registry:ui",
-      "description": "A button that opens a list of options and picks one of them."
+      "description": "Displays a list of options for the user to pick from, triggered by a button."
     },
     {
       "name": "sheet",
