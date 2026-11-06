@@ -328,12 +328,12 @@
     },
     {
       "name": "chain-of-thought",
-      "type": "registry:ui",
+      "type": "registry:block",
       "title": "Chain of Thought",
-      "description": "A collapsible list of reasoning steps, with optional search results and images.",
+      "description": "A summary line that expands into the steps an agent took, built from Trace.",
       "dependencies": ["oniko-cn@0.1"],
-      "registryDependencies": ["collapsible", "badge"],
-      "files": [{ "path": "ui/chain_of_thought.rs", "type": "registry:ui" }]
+      "registryDependencies": ["trace", "code-block", "badge"],
+      "files": [{ "path": "blocks/chain_of_thought.rs", "type": "registry:block" }]
     },
     {
       "name": "context",
@@ -390,12 +390,12 @@
     },
     {
       "name": "plan",
-      "type": "registry:ui",
+      "type": "registry:block",
       "title": "Plan",
-      "description": "A collapsible card that shows an AI-generated plan, with a header, expandable content and a footer.",
+      "description": "The steps the agent plans to take, and how far it has got, built from Trace.",
       "dependencies": ["oniko-cn@0.1"],
-      "registryDependencies": ["button", "card", "collapsible"],
-      "files": [{ "path": "ui/plan.rs", "type": "registry:ui" }]
+      "registryDependencies": ["trace"],
+      "files": [{ "path": "blocks/plan.rs", "type": "registry:block" }]
     },
     {
       "name": "queue",
@@ -426,12 +426,12 @@
     },
     {
       "name": "reasoning",
-      "type": "registry:ui",
+      "type": "registry:block",
       "title": "Reasoning",
-      "description": "A collapsible panel that shows a model's thinking: it opens while streaming, closes shortly after, and labels the trigger with the thinking time.",
+      "description": "A line for the agent's thinking that opens while the model thinks and closes when it is done, built from Trace.",
       "dependencies": ["oniko-cn@0.1"],
-      "registryDependencies": ["collapsible"],
-      "files": [{ "path": "ui/reasoning.rs", "type": "registry:ui" }]
+      "registryDependencies": ["trace"],
+      "files": [{ "path": "blocks/reasoning.rs", "type": "registry:block" }]
     },
     {
       "name": "kbd",
@@ -685,12 +685,12 @@
     },
     {
       "name": "subagent",
-      "type": "registry:ui",
+      "type": "registry:block",
       "title": "Subagent",
-      "description": "A trace line for work handed to a subagent, which expands to show its task, steps, tools and result.",
+      "description": "A subagent run with its tool calls and result, built from Trace.",
       "dependencies": ["oniko-cn@0.1"],
-      "registryDependencies": ["trace", "badge"],
-      "files": [{ "path": "ui/subagent.rs", "type": "registry:ui" }]
+      "registryDependencies": ["trace", "code-block", "badge"],
+      "files": [{ "path": "blocks/subagent.rs", "type": "registry:block" }]
     },
     {
       "name": "stack-trace",
@@ -703,12 +703,12 @@
     },
     {
       "name": "task",
-      "type": "registry:ui",
+      "type": "registry:block",
       "title": "Task",
-      "description": "A collapsible step of an AI agent's work, with a title trigger, a list of items and file chips.",
+      "description": "The steps the agent takes, as it takes them, built from Trace.",
       "dependencies": ["oniko-cn@0.1"],
-      "registryDependencies": ["collapsible"],
-      "files": [{ "path": "ui/task.rs", "type": "registry:ui" }]
+      "registryDependencies": ["trace"],
+      "files": [{ "path": "blocks/task.rs", "type": "registry:block" }]
     },
     {
       "name": "terminal",

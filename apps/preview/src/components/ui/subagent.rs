@@ -1,171 +1,101 @@
-//! Subagent: a trace line for work the agent handed to a subagent. Its header shows the title and status,
-//! and expands to show the task, the subagent's own steps, the tools and model it used, and its result.
-//!
-//! `Subagent` holds the open state, `SubagentHeader` is the clickable line, and `SubagentContent` holds
-//! the details. `SubagentTask` and `SubagentTool` fill the details.
+//! Subagent: a line for work the agent handed to a subagent, such as "Ran the research agent".
+//! Open it for the tool calls the subagent made and what it found.
+//! `Subagent` is the collapsible line and `SubagentStep` is one tool call. Put a `Subagent` in a `Trace`,
+//! and the `SubagentStep`s in a `Trace` inside it.
 //!
 //! Installed by oniko-cn. This file is yours: edit it freely.
 
 use dioxus::prelude::*;
-use oniko_cn::{cn, take_class};
 
-use super::badge::{Badge, BadgeVariant};
+use super::code_block::{CodeBlock, CodeBlockContent, CodeBlockSize};
 use super::trace::{
     TraceCollapsible, TraceCollapsibleContent, TraceCollapsibleTrigger, TraceDescription,
     TraceIcon, TraceLine, TraceStatus, TraceTitle,
 };
 
-fn robot_icon() -> Element {
+/// A spinner while the step runs, an alert when it failed, a check otherwise.
+fn status_icon(status: TraceStatus) -> Element {
     rsx! {
         svg {
-            "data-slot": "subagent-icon",
-            class: "size-4 shrink-0",
-            "aria-hidden": "true",
+            class: if status == TraceStatus::Running { "animate-spin" },
             view_box: "0 0 24 24",
             fill: "none",
             stroke: "currentColor",
             stroke_width: "2",
             stroke_linecap: "round",
             stroke_linejoin: "round",
-            path { d: "M12 8V4H8" }
-            rect { width: "16", height: "12", x: "4", y: "8", rx: "2" }
-            path { d: "M2 14h2" }
-            path { d: "M20 14h2" }
-            path { d: "M15 13v2" }
-            path { d: "M9 13v2" }
-        }
-    }
-}
-
-/// Root of a subagent line. Closed by default; the header opens and closes it.
-#[component]
-pub fn Subagent(
-    /// Controlled open state. When set, `on_open_change` is the only way to change it.
-    open: Option<bool>,
-    /// Open state at first render when `open` is not controlled.
-    #[props(default)]
-    default_open: bool,
-    on_open_change: Option<EventHandler<bool>>,
-    #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,
-    children: Element,
-) -> Element {
-    let mut attributes = attributes;
-    let class = cn!(
-        "flex w-full flex-col",
-        take_class(&mut attributes).as_deref()
-    );
-
-    rsx! {
-        div {
-            "data-slot": "subagent",
-            class: class,
-            ..attributes,
-            TraceCollapsible {
-                open: open,
-                default_open: default_open,
-                on_open_change: on_open_change,
-                {children}
+            match status {
+                TraceStatus::Running => rsx! {
+                    path { d: "M21 12a9 9 0 1 1-6.219-8.56" }
+                },
+                TraceStatus::Error => rsx! {
+                    circle { cx: "12", cy: "12", r: "10" }
+                    line { x1: "12", x2: "12", y1: "8", y2: "12" }
+                    line { x1: "12", x2: "12.01", y1: "16", y2: "16" }
+                },
+                _ => rsx! {
+                    circle { cx: "12", cy: "12", r: "10" }
+                    path { d: "m9 12 2 2 4-4" }
+                },
             }
         }
     }
 }
 
-/// The clickable line of a subagent. `icon` defaults to a robot; `description` is optional,
-/// for example a duration.
+/// The run. `children` are its details: the task, the model and tools as badges, a `Trace` of
+/// `SubagentStep`s and the result. Write `title` as "Running ..." while it runs and "Ran ..." after.
 #[component]
-pub fn SubagentHeader(
+pub fn Subagent(
+    title: String,
     #[props(default)] status: TraceStatus,
-    icon: Option<Element>,
-    title: Element,
-    description: Option<Element>,
-    #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,
+    /// How long it ran, such as "48s".
+    duration: Option<String>,
+    #[props(default)] default_open: bool,
+    children: Element,
 ) -> Element {
-    let mut attributes = attributes;
-    let class = cn!(take_class(&mut attributes).as_deref());
-    let icon = icon.unwrap_or_else(robot_icon);
-
     rsx! {
-        div {
-            "data-slot": "subagent-header",
-            class: class,
-            ..attributes,
+        TraceCollapsible { default_open: default_open,
             TraceCollapsibleTrigger {
                 TraceLine { status: status,
-                    TraceIcon { {icon} }
-                    TraceTitle { {title} }
-                    if let Some(description) = description {
-                        TraceDescription { {description} }
+                    TraceIcon { {status_icon(status)} }
+                    TraceTitle { "{title}" }
+                    if let Some(duration) = duration {
+                        TraceDescription { "{duration}" }
                     }
                 }
             }
+            TraceCollapsibleContent { class: "flex flex-col gap-3", {children} }
         }
     }
 }
 
-/// The details of a subagent, shown while it is open. Renders nothing while closed.
+/// One tool call of the subagent. With `output` it expands to show it.
 #[component]
-pub fn SubagentContent(
-    #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,
-    children: Element,
+pub fn SubagentStep(
+    /// What it ran, such as "Ran grep -rn cacheKey scripts".
+    title: String,
+    #[props(default)] status: TraceStatus,
+    output: Option<String>,
 ) -> Element {
-    let mut attributes = attributes;
-    let class = cn!(
-        "empty:hidden ml-2 mt-2 flex flex-col gap-3 border-l pl-4 text-sm",
-        take_class(&mut attributes).as_deref()
-    );
+    let line = rsx! {
+        TraceLine { status: status,
+            TraceIcon { {status_icon(status)} }
+            TraceTitle { "{title}" }
+        }
+    };
+
+    let Some(output) = output else {
+        return line;
+    };
 
     rsx! {
-        div {
-            "data-slot": "subagent-content",
-            class: class,
-            ..attributes,
+        TraceCollapsible {
+            TraceCollapsibleTrigger { {line} }
             TraceCollapsibleContent {
-                {children}
+                CodeBlock { size: CodeBlockSize::Sm,
+                    CodeBlockContent { wrap: true, class: "max-h-64", code: output }
+                }
             }
-        }
-    }
-}
-
-/// The task the subagent was given. Put it at the top of `SubagentContent`.
-#[component]
-pub fn SubagentTask(
-    #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,
-    children: Element,
-) -> Element {
-    let mut attributes = attributes;
-    let class = cn!(
-        "text-muted-foreground",
-        take_class(&mut attributes).as_deref()
-    );
-
-    rsx! {
-        div {
-            "data-slot": "subagent-task",
-            class: class,
-            ..attributes,
-            {children}
-        }
-    }
-}
-
-/// A tool or model the subagent used, shown as an outline badge.
-#[component]
-pub fn SubagentTool(
-    #[props(extends = GlobalAttributes, extends = span)] attributes: Vec<Attribute>,
-    children: Element,
-) -> Element {
-    let mut attributes = attributes;
-    let class = cn!(
-        "text-xs font-normal",
-        take_class(&mut attributes).as_deref()
-    );
-
-    rsx! {
-        span {
-            "data-slot": "subagent-tool",
-            class: "contents",
-            ..attributes,
-            Badge { variant: BadgeVariant::Outline, class: class, {children} }
         }
     }
 }

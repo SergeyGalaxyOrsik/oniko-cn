@@ -16,7 +16,6 @@
     --color-orange-800: oklch(47% 0.157 37.304);
     --color-amber-50: oklch(98.7% 0.022 95.277);
     --color-amber-200: oklch(92.4% 0.12 95.746);
-    --color-amber-500: oklch(76.9% 0.188 70.08);
     --color-amber-900: oklch(41.4% 0.112 45.904);
     --color-amber-950: oklch(27.9% 0.077 45.635);
     --color-green-50: oklch(98.2% 0.018 155.826);
@@ -30,7 +29,6 @@
     --color-emerald-600: oklch(59.6% 0.145 163.225);
     --color-sky-50: oklch(97.7% 0.013 236.62);
     --color-sky-300: oklch(82.8% 0.111 230.318);
-    --color-sky-500: oklch(68.5% 0.169 237.323);
     --color-sky-700: oklch(50% 0.134 242.749);
     --color-sky-950: oklch(29.3% 0.066 243.157);
     --color-blue-50: oklch(97% 0.014 254.604);
@@ -1285,9 +1283,6 @@
   }
   .rotate-90 {
     rotate: 90deg;
-  }
-  .rotate-180 {
-    rotate: 180deg;
   }
   .\[transform\:\.\.\.\] {
     transform: ...;
@@ -4314,11 +4309,6 @@
       border-bottom-width: 0px;
     }
   }
-  .empty\:hidden {
-    &:empty {
-      display: none;
-    }
-  }
   .focus-within\:border-ring {
     &:focus-within {
       border-color: var(--ring);
@@ -5017,11 +5007,6 @@
   .has-data-\[slot\=kbd\]\:pr-1\.5 {
     &:has(*[data-slot="kbd"]) {
       padding-right: calc(var(--spacing) * 1.5);
-    }
-  }
-  .has-data-\[slot\=plan-action\]\:grid-cols-\[1fr_auto\] {
-    &:has(*[data-slot="plan-action"]) {
-      grid-template-columns: 1fr auto;
     }
   }
   .has-data-checked\:border-primary\/30 {

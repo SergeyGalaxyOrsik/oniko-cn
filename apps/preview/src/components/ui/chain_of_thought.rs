@@ -1,271 +1,100 @@
-//! Chain of Thought: a collapsible list of reasoning steps, with optional search results and images.
+//! Chain of Thought: a summary line that expands into the steps an agent took, such as "Researched in 3 steps".
+//! Built from `Trace`: `ChainOfThought` is the summary and `ChainOfThoughtStep` is one step in it.
+//! While `status` is `Running` the summary opens by itself, until the person opens or closes it.
 //!
 //! Installed by oniko-cn. This file is yours: edit it freely.
 
 use dioxus::prelude::*;
-use oniko_cn::{cn, take_class};
 
-use super::badge::{Badge, BadgeVariant};
-use super::collapsible::{Collapsible, CollapsibleContent, CollapsibleTrigger};
+use super::trace::{
+    Trace, TraceCollapsible, TraceCollapsibleContent, TraceCollapsibleTrigger, TraceIcon,
+    TraceLine, TraceStatus, TraceTitle,
+};
 
-#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
-pub enum ChainOfThoughtStepStatus {
-    #[default]
-    Complete,
-    Active,
-    Pending,
-}
-
-impl ChainOfThoughtStepStatus {
-    /// Value of the `data-status` attribute.
-    pub fn as_str(self) -> &'static str {
-        match self {
-            Self::Complete => "complete",
-            Self::Active => "active",
-            Self::Pending => "pending",
-        }
-    }
-
-    pub fn class(self) -> &'static str {
-        match self {
-            Self::Complete => "text-muted-foreground",
-            Self::Active => "text-foreground",
-            Self::Pending => "text-muted-foreground/50",
-        }
-    }
-}
-
-fn dot_icon() -> Element {
+/// A spinner while the step runs, an alert when it failed, a check otherwise.
+fn status_icon(status: TraceStatus) -> Element {
     rsx! {
         svg {
-            "data-slot": "chain-of-thought-dot-icon",
-            class: "size-4 shrink-0",
+            class: if status == TraceStatus::Running { "animate-spin" },
             view_box: "0 0 24 24",
-            fill: "currentColor",
-            circle { cx: "12", cy: "12", r: "3" }
+            fill: "none",
+            stroke: "currentColor",
+            stroke_width: "2",
+            stroke_linecap: "round",
+            stroke_linejoin: "round",
+            match status {
+                TraceStatus::Running => rsx! {
+                    path { d: "M21 12a9 9 0 1 1-6.219-8.56" }
+                },
+                TraceStatus::Error => rsx! {
+                    circle { cx: "12", cy: "12", r: "10" }
+                    line { x1: "12", x2: "12", y1: "8", y2: "12" }
+                    line { x1: "12", x2: "12.01", y1: "16", y2: "16" }
+                },
+                _ => rsx! {
+                    circle { cx: "12", cy: "12", r: "10" }
+                    path { d: "m9 12 2 2 4-4" }
+                },
+            }
         }
     }
 }
 
-/// Root of the chain. Shows and hides its steps, and is open by default.
+/// The summary and its steps. `children` are the steps, each a `ChainOfThoughtStep` or any `Trace` part.
 #[component]
 pub fn ChainOfThought(
-    /// Controlled open state. When set, `on_open_change` is the only way to change it.
-    open: Option<bool>,
-    /// Open state at first render when `open` is not controlled.
-    #[props(default = true)]
+    /// What happened, such as "Researching" while it runs and "Researched in 3 steps" after.
+    title: String,
+    #[props(default)] status: TraceStatus,
+    /// Open at first render. Otherwise the summary is open only while `status` is `Running`.
+    #[props(default)]
     default_open: bool,
-    on_open_change: Option<EventHandler<bool>>,
-    #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,
     children: Element,
 ) -> Element {
-    let mut attributes = attributes;
-    let class = cn!(
-        "flex w-full flex-col gap-4",
-        take_class(&mut attributes).as_deref()
-    );
+    let mut chosen = use_signal(|| default_open.then_some(true));
 
     rsx! {
-        div {
-            "data-slot": "chain-of-thought",
-            class: class,
-            ..attributes,
-            Collapsible {
-                open: open,
-                default_open: default_open,
-                on_open_change: on_open_change,
-                {children}
-            }
-        }
-    }
-}
-
-/// The clickable title of the chain. Defaults to "Chain of Thought".
-#[component]
-pub fn ChainOfThoughtHeader(
-    #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,
-    children: Option<Element>,
-) -> Element {
-    let mut attributes = attributes;
-    let class = cn!(take_class(&mut attributes).as_deref());
-    let label = children.unwrap_or_else(|| rsx! { "Chain of Thought" });
-
-    rsx! {
-        div {
-            "data-slot": "chain-of-thought-header",
-            class: class,
-            ..attributes,
-            CollapsibleTrigger {
-                class: "group flex w-full items-center gap-2 text-left text-sm text-muted-foreground transition-colors hover:text-foreground",
-                svg {
-                "data-slot": "chain-of-thought-header-icon",
-                class: "size-4 shrink-0",
-                view_box: "0 0 24 24",
-                fill: "none",
-                stroke: "currentColor",
-                stroke_width: "2",
-                stroke_linecap: "round",
-                stroke_linejoin: "round",
-                path { d: "M12 18V5" }
-                path { d: "M15 13a4.17 4.17 0 0 1-3-4 4.17 4.17 0 0 1-3 4" }
-                path { d: "M17.598 6.5A3 3 0 1 0 12 5a3 3 0 1 0-5.598 1.5" }
-                path { d: "M17.997 5.125a4 4 0 0 1 2.526 5.77" }
-                path { d: "M18 18a4 4 0 0 0 2-7.464" }
-                path { d: "M19.967 17.483A4 4 0 1 1 12 18a4 4 0 1 1-7.967-.517" }
-                path { d: "M6 18a4 4 0 0 1-2-7.464" }
-                path { d: "M6.003 5.125a4 4 0 0 0-2.526 5.77" }
-            }
-            span { "data-slot": "chain-of-thought-header-label", class: "flex-1", {label} }
-            svg {
-                "data-slot": "chain-of-thought-header-chevron",
-                class: "size-4 shrink-0 transition-transform group-data-[state=open]:rotate-180",
-                view_box: "0 0 24 24",
-                fill: "none",
-                stroke: "currentColor",
-                stroke_width: "2",
-                stroke_linecap: "round",
-                stroke_linejoin: "round",
-                path { d: "m6 9 6 6 6-6" }
-            }
-            }
-        }
-    }
-}
-
-/// One reasoning step. `icon` defaults to a dot; `description` is optional.
-#[component]
-pub fn ChainOfThoughtStep(
-    #[props(default)] status: ChainOfThoughtStepStatus,
-    icon: Option<Element>,
-    label: Element,
-    description: Option<Element>,
-    #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,
-) -> Element {
-    let mut attributes = attributes;
-    let class = cn!(
-        "flex gap-2 text-sm",
-        status.class(),
-        take_class(&mut attributes).as_deref()
-    );
-    let icon = icon.unwrap_or_else(dot_icon);
-
-    rsx! {
-        div {
-            "data-slot": "chain-of-thought-step",
-            "data-status": status.as_str(),
-            class: class,
-            ..attributes,
-            div {
-                "data-slot": "chain-of-thought-step-icon",
-                class: "mt-0.5 flex size-4 shrink-0 items-center justify-center",
-                {icon}
-            }
-            div { class: "flex min-w-0 flex-col gap-1",
-                div { "data-slot": "chain-of-thought-step-label", {label} }
-                if let Some(description) = description {
-                    div {
-                        "data-slot": "chain-of-thought-step-description",
-                        class: "text-xs text-muted-foreground",
-                        {description}
+        Trace {
+            TraceCollapsible {
+                open: chosen().unwrap_or(status == TraceStatus::Running),
+                on_open_change: move |next| chosen.set(Some(next)),
+                TraceCollapsibleTrigger {
+                    TraceLine { status: status,
+                        TraceIcon { {status_icon(status)} }
+                        TraceTitle { "{title}" }
                     }
                 }
-            }
-        }
-    }
-}
-
-#[component]
-pub fn ChainOfThoughtSearchResults(
-    #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,
-    children: Element,
-) -> Element {
-    let mut attributes = attributes;
-    let class = cn!(
-        "flex flex-wrap items-center gap-2",
-        take_class(&mut attributes).as_deref()
-    );
-
-    rsx! {
-        div {
-            "data-slot": "chain-of-thought-search-results",
-            class: class,
-            ..attributes,
-            {children}
-        }
-    }
-}
-
-/// A single search result, shown as a secondary badge.
-#[component]
-pub fn ChainOfThoughtSearchResult(
-    #[props(extends = GlobalAttributes, extends = span)] attributes: Vec<Attribute>,
-    children: Element,
-) -> Element {
-    let mut attributes = attributes;
-    let class = cn!(take_class(&mut attributes).as_deref());
-
-    rsx! {
-        span {
-            "data-slot": "chain-of-thought-search-result",
-            class: class,
-            ..attributes,
-            Badge { variant: BadgeVariant::Secondary, class: "text-xs font-normal", {children} }
-        }
-    }
-}
-
-/// The part of a step that is hidden while the chain is closed.
-#[component]
-pub fn ChainOfThoughtContent(
-    #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,
-    children: Element,
-) -> Element {
-    let mut attributes = attributes;
-    let class = cn!(take_class(&mut attributes).as_deref());
-
-    rsx! {
-        div {
-            "data-slot": "chain-of-thought-content-wrapper",
-            class: class,
-            ..attributes,
-            CollapsibleContent {
-                class: "mt-2 flex flex-col gap-3 text-popover-foreground outline-none",
-                {children}
-            }
-        }
-    }
-}
-
-/// An image inside a step, with an optional caption below it.
-#[component]
-pub fn ChainOfThoughtImage(
-    caption: Option<Element>,
-    #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,
-    children: Element,
-) -> Element {
-    let mut attributes = attributes;
-    let class = cn!(
-        "mt-2 flex flex-col gap-2",
-        take_class(&mut attributes).as_deref()
-    );
-
-    rsx! {
-        div {
-            "data-slot": "chain-of-thought-image",
-            class: class,
-            ..attributes,
-            div {
-                "data-slot": "chain-of-thought-image-frame",
-                class: "flex w-full items-center justify-center overflow-hidden rounded-md border bg-muted p-3",
-                {children}
-            }
-            if let Some(caption) = caption {
-                p {
-                    "data-slot": "chain-of-thought-image-caption",
-                    class: "text-xs text-muted-foreground",
-                    {caption}
+                TraceCollapsibleContent {
+                    Trace { {children} }
                 }
             }
+        }
+    }
+}
+
+/// One step. With `details` it expands to show them, such as search results or command output.
+#[component]
+pub fn ChainOfThoughtStep(
+    title: String,
+    #[props(default)] status: TraceStatus,
+    #[props(default)] default_open: bool,
+    details: Option<Element>,
+) -> Element {
+    let line = rsx! {
+        TraceLine { status: status,
+            TraceIcon { {status_icon(status)} }
+            TraceTitle { "{title}" }
+        }
+    };
+
+    let Some(details) = details else {
+        return line;
+    };
+
+    rsx! {
+        TraceCollapsible { default_open: default_open,
+            TraceCollapsibleTrigger { {line} }
+            TraceCollapsibleContent { {details} }
         }
     }
 }
