@@ -63,6 +63,7 @@ pub mod sheet;
 pub mod sidebar;
 pub mod skeleton;
 pub mod slider;
+pub mod sonner;
 pub mod sources;
 pub mod spinner;
 pub mod stack_trace;

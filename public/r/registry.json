@@ -138,7 +138,7 @@
     {
       "name": "popover",
       "type": "registry:ui",
-      "description": "A floating panel that opens from a trigger and closes on outside click or Escape."
+      "description": "Displays rich content in a portal, triggered by a button."
     },
     {
       "name": "date-picker",
@@ -153,7 +153,7 @@
     {
       "name": "hover-card",
       "type": "registry:ui",
-      "description": "A floating card that opens when the pointer rests on, or focus lands on, a trigger."
+      "description": "For sighted users to preview content available behind a link."
     },
     {
       "name": "field",
@@ -378,7 +378,12 @@
     {
       "name": "toast",
       "type": "registry:ui",
-      "description": "Displays short messages that dismiss themselves, with an optional action."
+      "description": "A succinct message that is displayed temporarily."
+    },
+    {
+      "name": "sonner",
+      "type": "registry:ui",
+      "description": "An opinionated toast component."
     },
     {
       "name": "toggle",
@@ -393,7 +398,7 @@
     {
       "name": "tooltip",
       "type": "registry:ui",
-      "description": "A short label that opens when the pointer rests on, or focus lands on, a trigger."
+      "description": "A popup that displays information related to an element when the element receives keyboard focus or the mouse hovers over it."
     },
     {
       "name": "trace",
