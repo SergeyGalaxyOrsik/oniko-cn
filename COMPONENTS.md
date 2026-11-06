@@ -362,18 +362,30 @@
 - Зависит от `button`, `calendar`, `popover` (ставятся автоматически)
 - Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
 
+### Dropdown Menu
+
+- Порт Base UI-варианта shadcn/ui. Части: `DropdownMenu`, `DropdownMenuPortal`, `DropdownMenuTrigger`, `DropdownMenuContent`, `DropdownMenuGroup`, `DropdownMenuLabel`, `DropdownMenuItem`, `DropdownMenuCheckboxItem`, `DropdownMenuRadioGroup`, `DropdownMenuRadioItem`, `DropdownMenuSeparator`, `DropdownMenuShortcut`, `DropdownMenuSub`, `DropdownMenuSubTrigger`, `DropdownMenuSubContent`
+- `DropdownMenu` не рендерит элемент; `open` + `on_open_change` (управляемое состояние), `default_open`, `modal`
+- `DropdownMenuTrigger` по умолчанию обычная `button`; `variant` и `size` оформляют её как `Button` (аналог `render={<Button />}`)
+- `DropdownMenuContent`: `side`, `align`, `side_offset` (4), `align_offset`; позиционирование через `position: fixed` и `get_client_rect`, переворот на противоположную сторону и сдвиг у края окна, после открытия не пересчитывается
+- Пункты фокусируются при наведении (`data-highlighted`), `ArrowUp`/`ArrowDown` с зацикливанием, `Home`/`End`, поиск по первой букве, `Escape` возвращает фокус на триггер, клик вне меню закрывает; подменю открываются наведением, кликом, `Enter` и стрелкой «вперёд»
+- Чекбокс- и радио-пункты не закрывают меню (`close_on_click: false`), как в Base UI
+- Не выносится в портал: `DropdownMenuPortal` лишь рендерит детей; `position: fixed` обходит `overflow: hidden`, а `transform` у предка учитывается при измерении
+- Файл экспортирует общие части (`MenuPopup`, `MenuItem` и др.), на которых построены `ContextMenu` и `Menubar`
+- Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
+
 ### Context Menu
 
-- Части: `ContextMenu`, `ContextMenuTrigger`, `ContextMenuContent`, `ContextMenuItem`, `ContextMenuCheckboxItem`, `ContextMenuRadioGroup`, `ContextMenuRadioItem`, `ContextMenuLabel`, `ContextMenuSeparator`, `ContextMenuShortcut`, `ContextMenuGroup`
-- `ContextMenu`: `open: Option<bool>` с `on_open_change` (управляемое состояние) или без них (внутреннее состояние)
-- Открывается по правому клику (`oncontextmenu`) у `ContextMenuTrigger` в координатах курсора; повторный правый клик при открытом меню переносит его
-- Закрывается по клику вне меню, `Escape`, `Tab` и после выбора пункта; стрелки `ArrowUp`/`ArrowDown` переходят по пунктам, наведение мыши тоже фокусирует пункт
-- `ContextMenuItem`: `variant` (`ContextMenuItemVariant`: `Default`, `Destructive`), `inset`, `disabled`, `onclick`
-- `ContextMenuCheckboxItem`: `checked` (управляемое) или `default_checked`, `on_checked_change`
-- `ContextMenuRadioGroup`: `value` (управляемое) или `default_value`, `on_value_change`; `ContextMenuRadioItem` задаёт `value`
-- Без подменю (`ContextMenuSub`): нужен отдельный механизм позиционирования, не реализован
-- Позиция: `position: fixed` в точке курсора; переворота у края окна нет
-- Без `dioxus-primitives` (на crates.io лежит пустышка 0.0.0)
+- Порт Base UI-варианта shadcn/ui. Части: `ContextMenu`, `ContextMenuPortal`, `ContextMenuTrigger`, `ContextMenuContent`, `ContextMenuGroup`, `ContextMenuLabel`, `ContextMenuItem`, `ContextMenuCheckboxItem`, `ContextMenuRadioGroup`, `ContextMenuRadioItem`, `ContextMenuSeparator`, `ContextMenuShortcut`, `ContextMenuSub`, `ContextMenuSubTrigger`, `ContextMenuSubContent`
+- Открывается по правому клику и долгому нажатию (500 мс) на `ContextMenuTrigger` у курсора (`side` справа, `align` start, `align_offset` 4)
+- Поведение пунктов, подменю, клавиатуры и позиционирования то же, что у `DropdownMenu`; зависит от `dropdown-menu` (в upstream зависимости нет)
+- Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
+
+### Menubar
+
+- Порт Base UI-варианта shadcn/ui, построен на `DropdownMenu`. Части: `Menubar`, `MenubarPortal`, `MenubarMenu`, `MenubarTrigger`, `MenubarContent`, `MenubarGroup`, `MenubarSeparator`, `MenubarLabel`, `MenubarItem`, `MenubarShortcut`, `MenubarCheckboxItem`, `MenubarRadioGroup`, `MenubarRadioItem`, `MenubarSub`, `MenubarSubTrigger`, `MenubarSubContent`
+- Открыто не больше одного меню; при открытом меню наведение на другой триггер переключает меню, `ArrowLeft`/`ArrowRight` переходят между триггерами и открытыми меню, в закрытом состоянии в табе только один триггер
+- Триггеры получают `relative z-41`, чтобы оставаться доступными над слоем, который ловит клики вне меню
 - Доступен во всех 8 стилях: vega, nova, maia, lyra, mira, luma, rhea, sera
 
 ### Hover Card

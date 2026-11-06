@@ -14,10 +14,6 @@ use crate::components::ui::dropdown_menu::{
     DropdownMenuTrigger,
 };
 
-// Our DropdownMenuTrigger always renders a Button, so the plain `<button>` trigger of upstream is
-// a ghost button stripped of its padding.
-const TEXT_TRIGGER: &str = "flex h-auto items-center gap-1 p-0 font-normal hover:bg-transparent";
-
 #[component]
 pub fn Examples() -> Element {
     rsx! {
@@ -138,7 +134,7 @@ fn BreadcrumbDropdown() -> Element {
                     }
                     BreadcrumbItem {
                         DropdownMenu {
-                            DropdownMenuTrigger { variant: ButtonVariant::Ghost, class: TEXT_TRIGGER,
+                            DropdownMenuTrigger { class: "flex items-center gap-1",
                                 "Components"
                                 span { "data-icon": "inline-end", class: "contents",
                                     ChevronDown { class: "size-3.5" }
@@ -229,7 +225,7 @@ fn BreadcrumbRtl() -> Element {
                     }
                     BreadcrumbItem {
                         DropdownMenu {
-                            DropdownMenuTrigger { variant: ButtonVariant::Ghost, class: TEXT_TRIGGER,
+                            DropdownMenuTrigger { class: "flex items-center gap-1",
                                 "المكونات"
                                 span { "data-icon": "inline-end", class: "contents",
                                     ChevronDown { class: "size-3.5" }

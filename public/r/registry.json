@@ -168,12 +168,12 @@
     {
       "name": "dropdown-menu",
       "type": "registry:ui",
-      "description": "A menu of actions, toggles and choices that opens from a trigger."
+      "description": "Displays a menu of actions, toggles and choices when a trigger is activated, with groups, shortcuts, checkbox and radio items and submenus."
     },
     {
       "name": "context-menu",
       "type": "registry:ui",
-      "description": "A menu that opens at the pointer on right click, with items, checkbox and radio options."
+      "description": "Displays a menu at the pointer on right click or long press, with groups, shortcuts, checkbox and radio items and submenus."
     },
     {
       "name": "input-otp",
@@ -288,7 +288,7 @@
     {
       "name": "menubar",
       "type": "registry:ui",
-      "description": "A horizontal bar of menus with actions, toggles and choices that open from their triggers."
+      "description": "A visually persistent horizontal bar of menus with actions, toggles, choices and submenus, common in desktop applications."
     },
     {
       "name": "message-scroller",

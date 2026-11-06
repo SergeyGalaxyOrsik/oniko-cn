@@ -1,220 +1,109 @@
-//! ContextMenu: a floating menu that opens at the pointer on right click and runs an action or toggles an option.
+//! ContextMenu: a menu that opens at the pointer on right click or long press.
 //!
-//! The menu is positioned with `position: fixed` at the pointer and dismissed by a transparent full-screen
-//! layer, `Escape` or `Tab`. Arrow keys move focus between items and hovering an item focuses it. No
-//! `dioxus-primitives` crate is used: it is not published on crates.io, so submenus are not provided and the
-//! menu is not flipped at viewport edges.
+//! A port of shadcn/ui's Base UI context menu. It reuses the popup, keyboard navigation, submenus and
+//! item behavior of `DropdownMenu`, so it needs that component installed. The popup opens next to the
+//! pointer (`side` right and `align` start by default), flips and shifts to stay inside the window, and
+//! closes on `Escape`, on a click outside or when an item is chosen. A touch held for half a second opens
+//! it too.
 //!
 //! Installed by oniko-cn. This file is yours: edit it freely.
-
-use std::rc::Rc;
-use std::sync::atomic::{AtomicUsize, Ordering};
 
 use dioxus::prelude::*;
 use oniko_cn::{cn, take_class};
 
-static NEXT_ID: AtomicUsize = AtomicUsize::new(0);
+pub use super::dropdown_menu::{
+    DropdownMenuAlign as ContextMenuAlign, DropdownMenuItemVariant as ContextMenuItemVariant,
+    DropdownMenuSide as ContextMenuSide,
+};
+use super::dropdown_menu::{
+    DropdownMenuSub, MenuCheckboxItem, MenuItem, MenuPopup, MenuRadioGroup, MenuRadioItem,
+    MenuState, MenuSubTrigger, use_menu_state,
+};
 
-const ITEM_BASE: &str = "group/context-menu-item relative flex w-full cursor-default items-center text-left outline-none select-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0";
+const CONTENT_CLASS: &str = "data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 ring-foreground/10 bg-popover text-popover-foreground min-w-36 rounded-md p-1 shadow-md ring-1 duration-100 data-[side=inline-start]:slide-in-from-right-2 data-[side=inline-end]:slide-in-from-left-2 animate-none! relative bg-popover/70 before:pointer-events-none before:absolute before:inset-0 before:-z-1 before:rounded-[inherit] before:backdrop-blur-2xl before:backdrop-saturate-150 **:data-[slot$=-item]:focus:bg-foreground/10 **:data-[slot$=-item]:data-highlighted:bg-foreground/10 **:data-[slot$=-separator]:bg-foreground/5 **:data-[slot$=-trigger]:focus:bg-foreground/10 **:data-[slot$=-trigger]:aria-expanded:bg-foreground/10! **:data-[variant=destructive]:focus:bg-foreground/10! **:data-[variant=destructive]:text-accent-foreground! **:data-[variant=destructive]:**:text-accent-foreground! z-50 max-h-(--available-height) origin-(--transform-origin) overflow-x-hidden overflow-y-auto outline-none";
+const ITEM_CLASS: &str = "focus:bg-accent focus:text-accent-foreground data-[variant=destructive]:text-destructive data-[variant=destructive]:focus:bg-destructive/10 dark:data-[variant=destructive]:focus:bg-destructive/20 data-[variant=destructive]:focus:text-destructive data-[variant=destructive]:*:[svg]:text-destructive focus:*:[svg]:text-accent-foreground gap-2 rounded-sm px-2 py-1.5 text-sm data-inset:pl-8 [&_svg:not([class*='size-'])]:size-4 group/context-menu-item relative flex cursor-default items-center outline-hidden select-none data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0";
+const SUB_TRIGGER_CLASS: &str = "focus:bg-accent focus:text-accent-foreground data-open:bg-accent data-open:text-accent-foreground rounded-sm px-2 py-1.5 text-sm data-inset:pl-8 [&_svg:not([class*='size-'])]:size-4 flex cursor-default items-center outline-hidden select-none [&_svg]:pointer-events-none [&_svg]:shrink-0";
+const CHECKBOX_ITEM_CLASS: &str = "focus:bg-accent focus:text-accent-foreground gap-2 rounded-sm py-1.5 pr-8 pl-2 text-sm data-inset:pl-8 [&_svg:not([class*='size-'])]:size-4 relative flex cursor-default items-center outline-hidden select-none data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0";
+const RADIO_ITEM_CLASS: &str = "focus:bg-accent focus:text-accent-foreground gap-2 rounded-sm py-1.5 pr-8 pl-2 text-sm data-inset:pl-8 [&_svg:not([class*='size-'])]:size-4 relative flex cursor-default items-center outline-hidden select-none data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0";
+const INDICATOR_CLASS: &str = "absolute right-2 pointer-events-none";
 
-/// Keeps a signal equal to a prop, so context readers never see a stale value.
-fn use_prop<T: Clone + PartialEq + 'static>(value: T) -> Signal<T> {
-    let mut signal = use_signal(|| value.clone());
-    if *signal.peek() != value {
-        signal.set(value);
-    }
-    signal
-}
+const LONG_PRESS_MS: u32 = 500;
 
-fn state(checked: bool) -> &'static str {
-    if checked { "checked" } else { "unchecked" }
-}
-
-#[derive(Clone, Copy)]
-struct ContextMenuContext {
-    internal: Signal<bool>,
-    controlled: Signal<Option<bool>>,
-    position: Signal<(f64, f64)>,
-    on_open_change: Option<EventHandler<bool>>,
-    id: usize,
-}
-
-impl ContextMenuContext {
-    fn is_open(self) -> bool {
-        (self.controlled)().unwrap_or_else(|| (self.internal)())
-    }
-
-    fn set_open(mut self, open: bool) {
-        if self.controlled.peek().is_none() {
-            self.internal.set(open);
-        }
-        if let Some(handler) = self.on_open_change {
-            handler.call(open);
-        }
-    }
-
-    fn open_at(mut self, x: f64, y: f64) {
-        self.position.set((x, y));
-        if !self.is_open() {
-            self.set_open(true);
-        }
-    }
-}
-
-#[derive(Clone, Copy)]
-struct RadioGroupContext {
-    internal: Signal<String>,
-    controlled: Signal<Option<String>>,
-    on_value_change: Option<EventHandler<String>>,
-}
-
-impl RadioGroupContext {
-    fn value(self) -> String {
-        (self.controlled)().unwrap_or_else(|| (self.internal)())
-    }
-
-    fn select(mut self, value: String) {
-        if self.controlled.peek().is_none() {
-            self.internal.set(value.clone());
-        }
-        if let Some(handler) = self.on_value_change {
-            handler.call(value);
-        }
-    }
-}
-
-/// Owns the open state and the pointer position. Pass `open` and `on_open_change` to control it.
+/// Owns the open state. Pass `open` and `on_open_change` to control it, or use `default_open`.
+/// Renders no element of its own.
 #[component]
 pub fn ContextMenu(
     /// Controlled open state. When set, `on_open_change` is the only way to change it.
     open: Option<bool>,
+    /// Open state at first render when `open` is not controlled.
+    #[props(default)]
+    default_open: bool,
     on_open_change: Option<EventHandler<bool>>,
     children: Element,
 ) -> Element {
-    let internal = use_signal(|| false);
-    let controlled = use_prop(open);
-    let position = use_signal(|| (0.0, 0.0));
-    let id = use_hook(|| NEXT_ID.fetch_add(1, Ordering::Relaxed));
-    use_context_provider(|| ContextMenuContext {
-        internal,
-        controlled,
-        position,
-        on_open_change,
-        id,
-    });
+    let state = use_menu_state(open, default_open, on_open_change, true, None);
+    use_context_provider(|| state);
 
-    rsx! { {children} }
+    rsx! {
+        {children}
+    }
 }
 
-/// The area that opens the menu on right click. Wraps the content the menu belongs to.
+/// Upstream's portal. The popup is already positioned with `position: fixed`, so this renders its children.
+#[component]
+pub fn ContextMenuPortal(children: Element) -> Element {
+    rsx! {
+        {children}
+    }
+}
+
+/// The area that opens the menu on right click, and on a long press on touch screens.
 #[component]
 pub fn ContextMenuTrigger(
     #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,
     children: Element,
 ) -> Element {
-    let ctx = use_context::<ContextMenuContext>();
+    let state = use_context::<MenuState>();
     let mut attributes = attributes;
-    let class = cn!(take_class(&mut attributes));
+    let class = cn!("select-none", take_class(&mut attributes).as_deref());
+    let mut press = use_signal(|| 0u64);
 
     rsx! {
         div {
             "data-slot": "context-menu-trigger",
+            "data-popup-open": state.is_open().then_some(""),
             class: class,
             oncontextmenu: move |event| {
                 event.prevent_default();
                 let point = event.client_coordinates();
-                ctx.open_at(point.x, point.y);
+                state.open_at(point.x, point.y);
             },
-            ..attributes,
-            {children}
-        }
-    }
-}
-
-fn move_focus(id: usize, step: i32) {
-    let script = format!(
-        r#"const root = document.getElementById("context-menu-{id}");
-if (root) {{
-  const items = Array.from(root.querySelectorAll("[role^='menuitem']:not(:disabled)"));
-  if (items.length) {{
-    const step = {step};
-    const index = items.indexOf(document.activeElement);
-    const next = index < 0 ? (step > 0 ? 0 : items.length - 1) : (index + step + items.length) % items.length;
-    items[next].focus();
-  }}
-}}
-return true;"#
-    );
-    spawn(async move {
-        let _ = document::eval(&script).await;
-    });
-}
-
-fn focus_item(node: Signal<Option<Rc<MountedData>>>) {
-    if let Some(item) = node.peek().clone() {
-        spawn(async move {
-            let _ = item.set_focus(true).await;
-        });
-    }
-}
-
-/// The menu panel and a transparent layer behind it. Renders nothing while the menu is closed.
-#[component]
-pub fn ContextMenuContent(
-    #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,
-    children: Element,
-) -> Element {
-    let ctx = use_context::<ContextMenuContext>();
-    if !ctx.is_open() {
-        return rsx! {};
-    }
-
-    let mut attributes = attributes;
-    let class = cn!(
-        "data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 ring-foreground/10 bg-popover text-popover-foreground min-w-36 rounded-md p-1 shadow-md ring-1 duration-100 fixed z-50 outline-none",
-        take_class(&mut attributes).as_deref()
-    );
-    let (x, y) = (ctx.position)();
-    let id = ctx.id;
-
-    rsx! {
-        div {
-            "data-slot": "context-menu-backdrop",
-            class: "fixed inset-0 z-40",
-            onclick: move |_| ctx.set_open(false),
-            oncontextmenu: move |event| {
-                event.prevent_default();
-                let point = event.client_coordinates();
-                ctx.open_at(point.x, point.y);
-            },
-        }
-        div {
-            "data-slot": "context-menu-content",
-            "data-state": "open",
-            id: "context-menu-{id}",
-            role: "menu",
-            tabindex: "-1",
-            style: "left: {x}px; top: {y}px",
-            class: class,
-            onmounted: move |event| {
-                let node = event.data();
+            ontouchstart: move |event| {
+                let Some(touch) = event.touches().first().map(|touch| touch.client_coordinates()) else {
+                    return;
+                };
+                let ticket = *press.peek() + 1;
+                press.set(ticket);
                 spawn(async move {
-                    let _ = node.set_focus(true).await;
+                    let _ = document::eval(&format!("setTimeout(() => dioxus.send(true), {LONG_PRESS_MS})"))
+                        .recv::<bool>()
+                        .await;
+                    if *press.peek() == ticket && !state.is_open() {
+                        state.open_at(touch.x, touch.y);
+                    }
                 });
             },
-            onkeydown: move |event| {
-                match event.key() {
-                    Key::Escape | Key::Tab => ctx.set_open(false),
-                    Key::ArrowDown => {
-                        event.prevent_default();
-                        move_focus(id, 1);
-                    }
-                    Key::ArrowUp => {
-                        event.prevent_default();
-                        move_focus(id, -1);
-                    }
-                    _ => {}
-                }
+            ontouchmove: move |_| {
+                let ticket = *press.peek() + 1;
+                press.set(ticket);
+            },
+            ontouchend: move |_| {
+                let ticket = *press.peek() + 1;
+                press.set(ticket);
+            },
+            ontouchcancel: move |_| {
+                let ticket = *press.peek() + 1;
+                press.set(ticket);
             },
             ..attributes,
             {children}
@@ -222,218 +111,42 @@ pub fn ContextMenuContent(
     }
 }
 
-#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
-pub enum ContextMenuItemVariant {
-    #[default]
-    Default,
-    Destructive,
-}
-
-impl ContextMenuItemVariant {
-    fn data(self) -> &'static str {
-        match self {
-            Self::Default => "default",
-            Self::Destructive => "destructive",
-        }
-    }
-}
-
-/// An action. Runs `onclick`, then closes the menu.
 #[component]
-pub fn ContextMenuItem(
-    #[props(default)] variant: ContextMenuItemVariant,
-    #[props(default)] inset: bool,
-    #[props(default)] disabled: bool,
-    onclick: Option<EventHandler<MouseEvent>>,
-    #[props(extends = GlobalAttributes, extends = button)] attributes: Vec<Attribute>,
-    children: Element,
-) -> Element {
-    let ctx = use_context::<ContextMenuContext>();
-    let mut node = use_signal(|| None::<Rc<MountedData>>);
-    let mut attributes = attributes;
-    let class = cn!(
-        ITEM_BASE,
-        "focus:bg-accent focus:text-accent-foreground data-[variant=destructive]:text-destructive data-[variant=destructive]:focus:bg-destructive/10 dark:data-[variant=destructive]:focus:bg-destructive/20 data-[variant=destructive]:focus:text-destructive data-[variant=destructive]:*:[svg]:text-destructive focus:*:[svg]:text-accent-foreground gap-2 rounded-sm px-2 py-1.5 text-sm data-inset:pl-8 [&_svg:not([class*='size-'])]:size-4",
-        take_class(&mut attributes).as_deref()
-    );
-
-    rsx! {
-        button {
-            "data-slot": "context-menu-item",
-            "data-variant": variant.data(),
-            "data-inset": inset.then_some("true"),
-            r#type: "button",
-            role: "menuitem",
-            tabindex: "-1",
-            disabled: disabled,
-            class: class,
-            onmounted: move |event| node.set(Some(event.data())),
-            onmouseenter: move |_| focus_item(node),
-            onclick: move |event| {
-                if let Some(handler) = onclick {
-                    handler.call(event);
-                }
-                ctx.set_open(false);
-            },
-            ..attributes,
-            {children}
-        }
-    }
-}
-
-/// An option that can be checked. Pass `checked` to control it, or use `default_checked`.
-/// Toggles, reports through `on_checked_change`, then closes the menu.
-#[component]
-pub fn ContextMenuCheckboxItem(
-    checked: Option<bool>,
-    #[props(default)] default_checked: bool,
-    on_checked_change: Option<EventHandler<bool>>,
-    #[props(default)] inset: bool,
-    #[props(default)] disabled: bool,
-    onclick: Option<EventHandler<MouseEvent>>,
-    #[props(extends = GlobalAttributes, extends = button)] attributes: Vec<Attribute>,
-    children: Element,
-) -> Element {
-    let ctx = use_context::<ContextMenuContext>();
-    let mut internal = use_signal(|| default_checked);
-    let mut node = use_signal(|| None::<Rc<MountedData>>);
-    let is_checked = checked.unwrap_or(internal());
-    let mut attributes = attributes;
-    let class = cn!(
-        ITEM_BASE,
-        "focus:bg-accent focus:text-accent-foreground gap-2 rounded-sm py-1.5 pr-8 pl-2 text-sm data-inset:pl-8 [&_svg:not([class*='size-'])]:size-4",
-        take_class(&mut attributes).as_deref()
-    );
-
-    rsx! {
-        button {
-            "data-slot": "context-menu-checkbox-item",
-            "data-state": state(is_checked),
-            "data-inset": inset.then_some("true"),
-            r#type: "button",
-            role: "menuitemcheckbox",
-            tabindex: "-1",
-            aria_checked: is_checked,
-            disabled: disabled,
-            class: class,
-            onmounted: move |event| node.set(Some(event.data())),
-            onmouseenter: move |_| focus_item(node),
-            onclick: move |event| {
-                if checked.is_none() {
-                    internal.set(!is_checked);
-                }
-                if let Some(handler) = on_checked_change {
-                    handler.call(!is_checked);
-                }
-                if let Some(handler) = onclick {
-                    handler.call(event);
-                }
-                ctx.set_open(false);
-            },
-            ..attributes,
-            span {
-                "data-slot": "context-menu-item-indicator",
-                class: "absolute right-2 pointer-events-none flex items-center justify-center",
-                if is_checked {
-                    svg {
-                        view_box: "0 0 24 24",
-                        fill: "none",
-                        stroke: "currentColor",
-                        stroke_width: "2",
-                        stroke_linecap: "round",
-                        stroke_linejoin: "round",
-                        path { d: "M20 6 9 17l-5-5" }
-                    }
-                }
-            }
-            {children}
-        }
-    }
-}
-
-/// Groups radio items. Pass `value` to control it, or use `default_value`.
-#[component]
-pub fn ContextMenuRadioGroup(
-    value: Option<String>,
-    #[props(default)] default_value: String,
-    on_value_change: Option<EventHandler<String>>,
+pub fn ContextMenuContent(
+    #[props(default)] align: ContextMenuAlign,
+    #[props(default = 4.0)] align_offset: f64,
+    #[props(default = ContextMenuSide::Right)] side: ContextMenuSide,
+    #[props(default = 0.0)] side_offset: f64,
     #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,
     children: Element,
 ) -> Element {
     let mut attributes = attributes;
-    let class = cn!(take_class(&mut attributes));
-    let internal = use_signal(|| default_value);
-    let controlled = use_prop(value);
-    use_context_provider(|| RadioGroupContext {
-        internal,
-        controlled,
-        on_value_change,
-    });
+    let class = cn!(CONTENT_CLASS, take_class(&mut attributes).as_deref());
 
     rsx! {
-        div {
-            "data-slot": "context-menu-radio-group",
-            role: "group",
-            class: class,
-            ..attributes,
+        MenuPopup {
+            slot: "context-menu-content",
+            class_name: class,
+            side,
+            align,
+            side_offset,
+            align_offset,
+            attributes,
             {children}
         }
     }
 }
 
-/// One option of the enclosing `ContextMenuRadioGroup`. Selecting it sets the group value, then closes the menu.
 #[component]
-pub fn ContextMenuRadioItem(
-    value: String,
-    #[props(default)] inset: bool,
-    #[props(default)] disabled: bool,
-    onclick: Option<EventHandler<MouseEvent>>,
-    #[props(extends = GlobalAttributes, extends = button)] attributes: Vec<Attribute>,
+pub fn ContextMenuGroup(
+    #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,
     children: Element,
 ) -> Element {
-    let ctx = use_context::<ContextMenuContext>();
-    let group = use_context::<RadioGroupContext>();
-    let mut node = use_signal(|| None::<Rc<MountedData>>);
-    let is_checked = group.value() == value;
-    let mut attributes = attributes;
-    let class = cn!(
-        ITEM_BASE,
-        "focus:bg-accent focus:text-accent-foreground gap-2 rounded-sm py-1.5 pr-8 pl-2 text-sm data-inset:pl-8 [&_svg:not([class*='size-'])]:size-4",
-        take_class(&mut attributes).as_deref()
-    );
-
     rsx! {
-        button {
-            "data-slot": "context-menu-radio-item",
-            "data-state": state(is_checked),
-            "data-inset": inset.then_some("true"),
-            r#type: "button",
-            role: "menuitemradio",
-            tabindex: "-1",
-            aria_checked: is_checked,
-            disabled: disabled,
-            class: class,
-            onmounted: move |event| node.set(Some(event.data())),
-            onmouseenter: move |_| focus_item(node),
-            onclick: move |event| {
-                group.select(value.clone());
-                if let Some(handler) = onclick {
-                    handler.call(event);
-                }
-                ctx.set_open(false);
-            },
+        div {
+            "data-slot": "context-menu-group",
+            role: "group",
             ..attributes,
-            span {
-                "data-slot": "context-menu-item-indicator",
-                class: "absolute right-2 pointer-events-none flex items-center justify-center",
-                if is_checked {
-                    svg {
-                        view_box: "0 0 24 24",
-                        fill: "currentColor",
-                        circle { cx: "12", cy: "12", r: "4" }
-                    }
-                }
-            }
             {children}
         }
     }
@@ -463,6 +176,187 @@ pub fn ContextMenuLabel(
 }
 
 #[component]
+pub fn ContextMenuItem(
+    #[props(default)] variant: ContextMenuItemVariant,
+    #[props(default)] inset: bool,
+    #[props(default)] disabled: bool,
+    /// Close the menu after the item is clicked.
+    #[props(default = true)]
+    close_on_click: bool,
+    onclick: Option<EventHandler<MouseEvent>>,
+    #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,
+    children: Element,
+) -> Element {
+    let mut attributes = attributes;
+    let class = cn!(ITEM_CLASS, take_class(&mut attributes).as_deref());
+
+    rsx! {
+        MenuItem {
+            slot: "context-menu-item",
+            class_name: class,
+            variant,
+            inset,
+            disabled,
+            close_on_click,
+            onclick,
+            attributes,
+            {children}
+        }
+    }
+}
+
+/// Owns the open state of a submenu. Renders no element of its own.
+#[component]
+pub fn ContextMenuSub(
+    open: Option<bool>,
+    #[props(default)] default_open: bool,
+    on_open_change: Option<EventHandler<bool>>,
+    children: Element,
+) -> Element {
+    rsx! {
+        DropdownMenuSub { open, default_open, on_open_change, {children} }
+    }
+}
+
+#[component]
+pub fn ContextMenuSubTrigger(
+    #[props(default)] inset: bool,
+    #[props(default)] disabled: bool,
+    #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,
+    children: Element,
+) -> Element {
+    let mut attributes = attributes;
+    let class = cn!(SUB_TRIGGER_CLASS, take_class(&mut attributes).as_deref());
+
+    rsx! {
+        MenuSubTrigger {
+            slot: "context-menu-sub-trigger",
+            class_name: class,
+            inset,
+            disabled,
+            attributes,
+            {children}
+        }
+    }
+}
+
+/// The popup of a submenu. It opens to the right of its trigger.
+#[component]
+pub fn ContextMenuSubContent(
+    #[props(default)] align: ContextMenuAlign,
+    #[props(default = 4.0)] align_offset: f64,
+    #[props(default = ContextMenuSide::Right)] side: ContextMenuSide,
+    #[props(default = 0.0)] side_offset: f64,
+    #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,
+    children: Element,
+) -> Element {
+    let mut attributes = attributes;
+    let class = cn!(
+        CONTENT_CLASS,
+        "shadow-lg animate-none! relative bg-popover/70 before:pointer-events-none before:absolute before:inset-0 before:-z-1 before:rounded-[inherit] before:backdrop-blur-2xl before:backdrop-saturate-150 **:data-[slot$=-item]:focus:bg-foreground/10 **:data-[slot$=-item]:data-highlighted:bg-foreground/10 **:data-[slot$=-separator]:bg-foreground/5 **:data-[slot$=-trigger]:focus:bg-foreground/10 **:data-[slot$=-trigger]:aria-expanded:bg-foreground/10! **:data-[variant=destructive]:focus:bg-foreground/10! **:data-[variant=destructive]:text-accent-foreground! **:data-[variant=destructive]:**:text-accent-foreground!",
+        take_class(&mut attributes).as_deref()
+    );
+
+    rsx! {
+        MenuPopup {
+            slot: "context-menu-sub-content",
+            class_name: class,
+            side,
+            align,
+            side_offset,
+            align_offset,
+            attributes,
+            {children}
+        }
+    }
+}
+
+/// A menu item with a check indicator. Pass `checked` to control it, or use `default_checked`.
+#[component]
+pub fn ContextMenuCheckboxItem(
+    checked: Option<bool>,
+    #[props(default)] default_checked: bool,
+    on_checked_change: Option<EventHandler<bool>>,
+    #[props(default)] inset: bool,
+    #[props(default)] disabled: bool,
+    #[props(default)] close_on_click: bool,
+    onclick: Option<EventHandler<MouseEvent>>,
+    #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,
+    children: Element,
+) -> Element {
+    let mut attributes = attributes;
+    let class = cn!(CHECKBOX_ITEM_CLASS, take_class(&mut attributes).as_deref());
+
+    rsx! {
+        MenuCheckboxItem {
+            slot: "context-menu-checkbox-item",
+            class_name: class,
+            indicator_class: INDICATOR_CLASS,
+            checked,
+            default_checked,
+            on_checked_change,
+            inset,
+            disabled,
+            close_on_click,
+            onclick,
+            attributes,
+            {children}
+        }
+    }
+}
+
+/// Groups radio items. Pass `value` to control it, or use `default_value`.
+#[component]
+pub fn ContextMenuRadioGroup(
+    value: Option<String>,
+    #[props(default)] default_value: String,
+    on_value_change: Option<EventHandler<String>>,
+    #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,
+    children: Element,
+) -> Element {
+    rsx! {
+        MenuRadioGroup {
+            slot: "context-menu-radio-group",
+            value,
+            default_value,
+            on_value_change,
+            attributes,
+            {children}
+        }
+    }
+}
+
+/// A menu item that is checked when its `value` equals the group's value.
+#[component]
+pub fn ContextMenuRadioItem(
+    value: String,
+    #[props(default)] inset: bool,
+    #[props(default)] disabled: bool,
+    #[props(default)] close_on_click: bool,
+    onclick: Option<EventHandler<MouseEvent>>,
+    #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,
+    children: Element,
+) -> Element {
+    let mut attributes = attributes;
+    let class = cn!(RADIO_ITEM_CLASS, take_class(&mut attributes).as_deref());
+
+    rsx! {
+        MenuRadioItem {
+            slot: "context-menu-radio-item",
+            class_name: class,
+            indicator_class: INDICATOR_CLASS,
+            value,
+            inset,
+            disabled,
+            close_on_click,
+            onclick,
+            attributes,
+            {children}
+        }
+    }
+}
+
+#[component]
 pub fn ContextMenuSeparator(
     #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,
 ) -> Element {
@@ -476,13 +370,13 @@ pub fn ContextMenuSeparator(
         div {
             "data-slot": "context-menu-separator",
             role: "separator",
+            "aria-orientation": "horizontal",
             class: class,
             ..attributes,
         }
     }
 }
 
-/// Keyboard shortcut hint, aligned to the end of an item.
 #[component]
 pub fn ContextMenuShortcut(
     #[props(extends = GlobalAttributes, extends = span)] attributes: Vec<Attribute>,
@@ -497,26 +391,6 @@ pub fn ContextMenuShortcut(
     rsx! {
         span {
             "data-slot": "context-menu-shortcut",
-            class: class,
-            ..attributes,
-            {children}
-        }
-    }
-}
-
-/// Wraps related items so they can be grouped together.
-#[component]
-pub fn ContextMenuGroup(
-    #[props(extends = GlobalAttributes, extends = div)] attributes: Vec<Attribute>,
-    children: Element,
-) -> Element {
-    let mut attributes = attributes;
-    let class = cn!(take_class(&mut attributes));
-
-    rsx! {
-        div {
-            "data-slot": "context-menu-group",
-            role: "group",
             class: class,
             ..attributes,
             {children}

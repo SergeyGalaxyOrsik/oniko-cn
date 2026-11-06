@@ -7,7 +7,7 @@ use lucide_dioxus::{
 };
 
 use super::Example;
-use crate::components::ui::button::{ButtonSize, ButtonVariant};
+use crate::components::ui::button::ButtonVariant;
 use crate::components::ui::dropdown_menu::{
     DropdownMenu, DropdownMenuAlign, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem,
     DropdownMenuTrigger,
@@ -346,8 +346,6 @@ fn InputGroupDropdown() -> Element {
                     InputGroupAddon { align: InputGroupAlign::InlineEnd,
                         DropdownMenu {
                             DropdownMenuTrigger {
-                                variant: ButtonVariant::Ghost,
-                                size: ButtonSize::Default,
                                 class: input_group_button_variants(
                                     ButtonVariant::Ghost,
                                     InputGroupButtonSize::IconXs,
@@ -356,7 +354,10 @@ fn InputGroupDropdown() -> Element {
                                 "aria-label": "More",
                                 Ellipsis { size: 16 }
                             }
-                            DropdownMenuContent { align: DropdownMenuAlign::End,
+                            DropdownMenuContent {
+                                align: DropdownMenuAlign::End,
+                                side_offset: 8.0,
+                                align_offset: -4.0,
                                 DropdownMenuGroup {
                                     DropdownMenuItem { "Settings" }
                                     DropdownMenuItem { "Copy path" }
@@ -371,8 +372,6 @@ fn InputGroupDropdown() -> Element {
                     InputGroupAddon { align: InputGroupAlign::InlineEnd,
                         DropdownMenu {
                             DropdownMenuTrigger {
-                                variant: ButtonVariant::Ghost,
-                                size: ButtonSize::Default,
                                 class: input_group_button_variants(
                                     ButtonVariant::Ghost,
                                     InputGroupButtonSize::Xs,
@@ -381,7 +380,10 @@ fn InputGroupDropdown() -> Element {
                                 "Search In... "
                                 ChevronDown { size: 12 }
                             }
-                            DropdownMenuContent { align: DropdownMenuAlign::End,
+                            DropdownMenuContent {
+                                align: DropdownMenuAlign::End,
+                                side_offset: 8.0,
+                                align_offset: -4.0,
                                 DropdownMenuGroup {
                                     DropdownMenuItem { "Documentation" }
                                     DropdownMenuItem { "Blog Posts" }
