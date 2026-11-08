@@ -1,5 +1,12 @@
 mod components;
 mod demos;
+/// The gallery examples, shared with apps/preview so each page shows every upstream example.
+#[path = "../../preview/src/examples/mod.rs"]
+#[allow(
+    dead_code,
+    reason = "the site takes titles from the registry, not from the gallery"
+)]
+mod examples;
 mod icons;
 mod layout;
 mod pages;

@@ -88,14 +88,3 @@ pub fn CodeBlock(
         }
     }
 }
-
-/// A bordered stage for live component previews.
-#[component]
-pub fn Preview(children: Element, #[props(default)] class: String) -> Element {
-    rsx! {
-        div {
-            class: "flex min-h-48 flex-wrap items-center justify-center gap-3 rounded-xl border border-(--l-ink)/8 bg-(--l-cell) p-8 {class}",
-            {children}
-        }
-    }
-}

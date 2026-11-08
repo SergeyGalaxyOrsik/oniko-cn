@@ -32,11 +32,11 @@ A passing `cargo check` does not prove a component renders. Look at it.
 | `apps/*/assets/tailwind.css` | `dx` | `dx serve` and `dx build` regenerate it. Commit it, because `asset!()` needs the file to exist when the app compiles. |
 | `apps/site/src/components/ui/` | `oniko add` | Run `cargo run -p oniko-cli -- add <name> --overwrite --cwd apps/site`. Never edit by hand. |
 
-To change a component, edit `registry/ui/<name>.rs`, rebuild `public/r`, then reinstall it into the preview.
+To change a component, edit `registry/ui/<name>.rs`, rebuild `public/r`, then reinstall it into the preview and the site.
 
 ## Work on the website
 
-`apps/site` is the website at `oniko.orsik.site/ui`, built with oniko-cn itself in the `mira` style. Its design follows `oniko.orsik.site`: the `--l-*` color scale and the shared classes in `apps/site/src/widgets.rs`. Component pages are generated from `registry/registry.json`, so a new component gets a page automatically. Add a live preview and a usage snippet for it in `apps/site/src/demos.rs`.
+`apps/site` is the website at `oniko.orsik.site/ui`, built with oniko-cn itself in the `mira` style. Its design follows `oniko.orsik.site`: the `--l-*` color scale and the shared classes in `apps/site/src/widgets.rs`. Component pages are generated from `registry/registry.json`, so a new component gets a page automatically. The page shows the examples from `apps/preview/src/examples/`, which the site compiles in as its own module, so port examples once, in the preview. A short usage snippet can go in `apps/site/src/demos.rs`.
 
 `apps/site/Dockerfile` builds the image that serves the site and the registry (`/ui/r`). Run `cd apps/site && dx serve --web` to work on it locally.
 
@@ -46,7 +46,7 @@ To change a component, edit `registry/ui/<name>.rs`, rebuild `public/r`, then re
 2. Add an entry to `registry/registry.json` with its `dependencies` (Cargo crates as `name@version`) and `registryDependencies`.
 3. If a placeholder class has no rule in a style, add the `.cn-...` rule to every file in `registry/styles/`.
 4. Run `cargo run -p oniko-cli -- build`.
-5. Run `cargo run -p oniko-cli -- add <name> --cwd apps/preview` and port the examples of its docs page into `apps/preview/src/examples/<name>.rs`.
+5. Run `cargo run -p oniko-cli -- add <name> --cwd apps/preview` and port the examples of its docs page into `apps/preview/src/examples/<name>.rs`. Install it into the site too: `cargo run -p oniko-cli -- add <name> --cwd apps/site`.
 6. Add a row to `COMPONENTS.md`.
 7. Run `scripts/check.sh`, then look at the component in `dx serve --web` and `dx serve --desktop`.
 

@@ -11,6 +11,8 @@ dioxus = { workspace = true, features = ["router"] }
 oniko-registry.workspace = true
 serde_json.workspace = true
 oniko-cn = { path = "../../crates/oniko-cn" }
+# The component pages show the gallery examples from apps/preview, which use these icons.
+lucide-dioxus = { version = "3.63", features = ["all-icons"] }
 
 [features]
 default = ["web"]

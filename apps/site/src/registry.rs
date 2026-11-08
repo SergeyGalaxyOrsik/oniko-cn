@@ -1,5 +1,7 @@
 use oniko_registry::RegistryItem;
 
+use crate::examples::{Group, PAGES};
+
 mod generated {
     include!(concat!(env!("OUT_DIR"), "/components.rs"));
 }
@@ -18,6 +20,22 @@ impl Component {
         self.item.description.as_deref().unwrap_or_default()
     }
 
+    /// The gallery page that shows this component's examples.
+    pub fn examples_slug(&self) -> &'static str {
+        match self.name {
+            // Upstream documents Sonner on the Toast page.
+            "sonner" => "toast",
+            name => PAGES.iter().find(|p| p.slug == name).map_or("", |p| p.slug),
+        }
+    }
+
+    pub fn group(&self) -> Group {
+        PAGES
+            .iter()
+            .find(|p| p.slug == self.name)
+            .map_or(Group::Components, |p| p.group)
+    }
+
     /// The source `oniko add` writes, with the site's style compiled in.
     pub fn source(&self) -> &str {
         self.item
@@ -28,7 +46,7 @@ impl Component {
     }
 }
 
-/// Every component in the registry, sorted by title. The JSON is produced by
+/// Every component and block in the registry, sorted by title. The JSON is produced by
 /// `oniko build` and checked by the repository tests, so it always parses.
 pub fn components() -> Vec<Component> {
     let mut all: Vec<Component> = generated::COMPONENTS

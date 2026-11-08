@@ -2,10 +2,11 @@ use dioxus::prelude::*;
 
 use crate::Route;
 use crate::components::ui::button::{Button, ButtonSize, ButtonVariant, button_variants};
-use crate::demos::demo;
+use crate::demos::usage;
+use crate::examples::PageExamples;
 use crate::icons::{ArrowRightIcon, PlusIcon};
 use crate::registry::{component, components};
-use crate::widgets::{CONTAINER, CodeBlock, Preview, SECTION_TITLE};
+use crate::widgets::{CONTAINER, CodeBlock, SECTION_TITLE};
 
 const LOAD_STYLESHEET: &str = r#"rsx! {
     document::Stylesheet { href: asset!("/assets/tailwind.css") }
@@ -187,7 +188,7 @@ fn ComponentIndex() -> Element {
             div { class: CONTAINER,
                 h2 { class: SECTION_TITLE,
                     "The components. "
-                    span { class: "text-(--l-faint)", "More land every week." }
+                    span { class: "text-(--l-faint)", "All {components().len()} of them." }
                 }
                 div { class: "mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-3",
                     for c in components() {
@@ -290,18 +291,22 @@ pub fn ComponentPage(name: String) -> Element {
             DocHeader { title: "Not found", lead: "There is no component called {name}." }
         };
     };
-    let demo = demo(c.name);
+    let usage = usage(c.name);
+    let slug = c.examples_slug();
 
     rsx! {
         DocHeader { title: c.title().to_string(), lead: c.description().to_string() }
-        if let Some(demo) = &demo {
-            div { class: "mt-8", Preview { {(demo.preview)()} } }
-        }
         h2 { class: PROSE_H2, "Installation" }
         CodeBlock { label: "terminal", code: "oniko add {c.name}" }
-        if let Some(demo) = &demo {
+        if let Some(usage) = usage {
             h2 { class: PROSE_H2, "Usage" }
-            CodeBlock { code: demo.usage }
+            CodeBlock { code: usage }
+        }
+        if !slug.is_empty() {
+            h2 { class: PROSE_H2, "Examples" }
+            div { class: "flex flex-col gap-10",
+                PageExamples { key: "{slug}", slug: slug.to_string() }
+            }
         }
         h2 { class: PROSE_H2, "Source" }
         p { class: PROSE_P, "This is the file oniko add writes, shown for the mira style." }

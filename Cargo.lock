@@ -3683,6 +3683,7 @@ name = "oniko-site"
 version = "0.1.0"
 dependencies = [
  "dioxus",
+ "lucide-dioxus",
  "oniko-cn",
  "oniko-registry",
  "serde_json",

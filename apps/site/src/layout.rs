@@ -1,6 +1,7 @@
 use dioxus::prelude::*;
 
 use crate::components::ui::button::{ButtonSize, ButtonVariant, button_variants};
+use crate::examples::Group;
 use crate::icons::GithubIcon;
 use crate::registry::components;
 use crate::widgets::{CONTAINER, ThemeToggle};
@@ -89,21 +90,23 @@ pub fn DocsLayout() -> Element {
 
     rsx! {
         div { class: "{CONTAINER} flex gap-12 py-10",
-            aside { class: "sticky top-24 hidden h-fit w-52 shrink-0 md:block",
+            aside { class: "sticky top-24 hidden max-h-[calc(100vh-8rem)] w-52 shrink-0 overflow-y-auto overscroll-contain md:block",
                 nav { aria_label: "Docs", class: "flex flex-col gap-6",
                     div {
                         p { class: "mb-2 px-2.5 text-[12px] font-medium text-(--l-faint)", "Getting started" }
                         Link { to: Route::Introduction {}, class: item(route == Route::Introduction {}), "Introduction" }
                         Link { to: Route::Installation {}, class: item(route == Route::Installation {}), "Installation" }
                     }
-                    div {
-                        p { class: "mb-2 px-2.5 text-[12px] font-medium text-(--l-faint)", "Components" }
-                        for component in components() {
-                            Link {
-                                key: "{component.name}",
-                                to: Route::ComponentPage { name: component.name.to_string() },
-                                class: item(route == Route::ComponentPage { name: component.name.to_string() }),
-                                "{component.title()}"
+                    for group in [Group::Components, Group::AiElements] {
+                        div { key: "{group.title()}",
+                            p { class: "mb-2 px-2.5 text-[12px] font-medium text-(--l-faint)", "{group.title()}" }
+                            for component in components().into_iter().filter(|c| c.group() == group) {
+                                Link {
+                                    key: "{component.name}",
+                                    to: Route::ComponentPage { name: component.name.to_string() },
+                                    class: item(route == Route::ComponentPage { name: component.name.to_string() }),
+                                    "{component.title()}"
+                                }
                             }
                         }
                     }

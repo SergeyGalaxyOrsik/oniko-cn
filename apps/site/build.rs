@@ -1,4 +1,4 @@
-//! Embeds every `registry:ui` item, compiled for the site's style, so the
+//! Embeds every `registry:ui` and `registry:block` item, compiled for the site's style, so the
 //! component pages list and show exactly what `oniko add` installs.
 
 use std::error::Error;
@@ -20,7 +20,10 @@ fn main() -> Result<(), Box<dyn Error>> {
         .as_array()
         .ok_or("registry.json has no items")?;
     let mut out = String::from("pub const COMPONENTS: &[(&str, &str)] = &[\n");
-    for item in items.iter().filter(|i| i["type"] == "registry:ui") {
+    for item in items
+        .iter()
+        .filter(|i| i["type"] == "registry:ui" || i["type"] == "registry:block")
+    {
         let name = item["name"]
             .as_str()
             .ok_or("registry item without a name")?;
