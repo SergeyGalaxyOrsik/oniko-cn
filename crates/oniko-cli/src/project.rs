@@ -60,6 +60,19 @@ pub fn ensure_module_dir(root: &Path, dir: &Path) -> Result<()> {
     Ok(())
 }
 
+/// Apps use a few variants of each component, so the rest would warn.
+const UI_MOD_HEADER: &str = "//! Components installed by `oniko add`.\n#![allow(dead_code)]\n";
+
+/// Declares the components directory and allows dead code in it.
+pub fn ensure_ui_dir(root: &Path, dir: &Path) -> Result<()> {
+    ensure_module_dir(root, dir)?;
+    let file = module_file(&root.join(dir));
+    if fs::read_to_string(&file)?.trim().is_empty() {
+        fs::write(&file, UI_MOD_HEADER)?;
+    }
+    Ok(())
+}
+
 /// Declares `file`'s stem in the `mod.rs` of its directory.
 pub fn declare_file_module(root: &Path, file: &Path) -> Result<()> {
     let dir = file
@@ -204,6 +217,20 @@ mod tests {
         assert_eq!(components, "pub mod ui;\n");
         let ui = fs::read_to_string(dir.path().join("src/components/ui/mod.rs")).unwrap();
         assert_eq!(ui, "pub mod button;\n");
+    }
+
+    #[test]
+    fn ui_dir_allows_dead_code_and_keeps_declarations() {
+        let dir = crate_dir();
+        let ui = Path::new("src/components/ui");
+        ensure_ui_dir(dir.path(), ui).unwrap();
+        declare_file_module(dir.path(), &ui.join("button.rs")).unwrap();
+        ensure_ui_dir(dir.path(), ui).unwrap();
+        let ui_mod = fs::read_to_string(dir.path().join("src/components/ui/mod.rs")).unwrap();
+        assert_eq!(
+            ui_mod,
+            "//! Components installed by `oniko add`.\n#![allow(dead_code)]\npub mod button;\n"
+        );
     }
 
     #[test]

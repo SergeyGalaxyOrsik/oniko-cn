@@ -93,54 +93,53 @@ fn published_registry_matches_sources() {
     );
 }
 
-#[test]
-fn preview_installs_every_component_unmodified() {
-    let preview = root().join("apps/preview");
-    let config = fs::read_to_string(preview.join("oniko.toml")).unwrap();
-    let style = config
-        .lines()
-        .find_map(|l| l.strip_prefix("style = \""))
-        .and_then(|l| l.strip_suffix('"'))
-        .expect("apps/preview/oniko.toml has a style");
-    let ui_dir = preview.join("src/components/ui");
+/// The apps that install every component with `oniko add`.
+const APPS: [&str; 2] = ["apps/preview", "apps/site"];
 
+#[test]
+fn apps_install_every_component_unmodified() {
     let mut violations = Vec::new();
-    let mut expected_files = BTreeSet::from(["mod.rs".to_string()]);
-    for item in registry().items.iter().filter(|i| is_installable(i)) {
-        let path = root().join(format!("public/r/styles/{style}/{}.json", item.name));
-        let compiled: RegistryItem =
-            serde_json::from_str(&fs::read_to_string(&path).unwrap()).unwrap();
-        for file in &compiled.files {
-            let name = Path::new(&file.path)
-                .file_name()
-                .unwrap()
-                .to_string_lossy()
-                .to_string();
-            match fs::read_to_string(ui_dir.join(&name)) {
-                Err(_) => {
-                    violations.push(format!("`{}` is not installed in apps/preview", item.name))
+    for app in APPS {
+        let config = fs::read_to_string(root().join(app).join("oniko.toml")).unwrap();
+        let style = config
+            .lines()
+            .find_map(|l| l.strip_prefix("style = \""))
+            .and_then(|l| l.strip_suffix('"'))
+            .unwrap_or_else(|| panic!("{app}/oniko.toml has no style"));
+        let ui_dir = format!("{app}/src/components/ui");
+
+        let mut expected_files = BTreeSet::from(["mod.rs".to_string()]);
+        for item in registry().items.iter().filter(|i| is_installable(i)) {
+            let path = root().join(format!("public/r/styles/{style}/{}.json", item.name));
+            let compiled: RegistryItem =
+                serde_json::from_str(&fs::read_to_string(&path).unwrap()).unwrap();
+            for file in &compiled.files {
+                let name = Path::new(&file.path)
+                    .file_name()
+                    .unwrap()
+                    .to_string_lossy()
+                    .to_string();
+                match fs::read_to_string(root().join(&ui_dir).join(&name)) {
+                    Err(_) => violations.push(format!("`{}` is not installed in {app}", item.name)),
+                    Ok(installed) if Some(installed.as_str()) != file.content.as_deref() => {
+                        violations.push(format!("{ui_dir}/{name} differs from the registry"))
+                    }
+                    Ok(_) => {}
                 }
-                Ok(installed) if Some(installed.as_str()) != file.content.as_deref() => violations
-                    .push(format!(
-                        "apps/preview/src/components/ui/{name} differs from the registry"
-                    )),
-                Ok(_) => {}
+                expected_files.insert(name);
             }
-            expected_files.insert(name);
         }
-    }
-    for entry in fs::read_dir(&ui_dir).unwrap() {
-        let name = entry.unwrap().file_name().to_string_lossy().to_string();
-        if !expected_files.contains(&name) {
-            violations.push(format!(
-                "apps/preview/src/components/ui/{name} is not a registry component"
-            ));
+        for entry in fs::read_dir(root().join(&ui_dir)).unwrap() {
+            let name = entry.unwrap().file_name().to_string_lossy().to_string();
+            if !expected_files.contains(&name) {
+                violations.push(format!("{ui_dir}/{name} is not a registry component"));
+            }
         }
     }
     assert_no_violations(
         violations,
         "edit registry/ui/ or registry/blocks/, then `cargo run -p oniko-cli -- build` and \
-         `cargo run -p oniko-cli -- add <name> --overwrite --cwd apps/preview`",
+         `cargo run -p oniko-cli -- add <name> --overwrite --cwd <app>` for apps/preview and apps/site",
     );
 }
 

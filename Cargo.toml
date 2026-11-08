@@ -1,6 +1,6 @@
 [workspace]
 resolver = "3"
-members = ["crates/*", "apps/preview"]
+members = ["crates/*", "apps/preview", "apps/site"]
 
 [workspace.package]
 version = "0.1.0"
@@ -35,3 +35,9 @@ unwrap_used = "deny"
 expect_used = "deny"
 dbg_macro = "deny"
 todo = "deny"
+
+# dx builds web releases with this profile. wasm-bindgen needs the custom sections that
+# `strip` removes, and dx runs wasm-opt on the output instead.
+[profile.wasm-release]
+inherits = "release"
+strip = false
